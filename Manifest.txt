@@ -1,0 +1,7 @@
+History.txt
+Manifest.txt
+README.txt
+Rakefile
+bin/ruby_protobuf
+lib/ruby_protobuf.rb
+test/test_ruby_protobuf.rb
