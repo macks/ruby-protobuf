@@ -18,7 +18,7 @@ module Protobuf
       end
 
       def define_field(rule, type, name, tag, opts={})
-        (@fields ||= {})[tag] = Protobuf::Field::BaseField.build self, rule, type, name, tag, opts
+        (@fields ||= {})[tag] = Protobuf::Field.build self, rule, type, name, tag, opts
       end
     end
 
