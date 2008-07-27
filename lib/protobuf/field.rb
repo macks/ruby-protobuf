@@ -149,6 +149,10 @@ module Protobuf
       def typed_default_value(default=nil)
         default or ''
       end
+
+      def acceptable?(val)
+        val.instance_of? String
+      end
     end
     
     class BytesField < Base
@@ -157,51 +161,55 @@ module Protobuf
       end
     end
 
-    class AbstractNumeric < Base
+    class Numeric < Base
       def typed_default_value(default=nil)
         default or 0
       end
     end
     
-    class Int32Field < AbstractNumeric
+    class Int32Field < Numeric
     end
     
-    class Int64Field < AbstractNumeric
+    class Int64Field < Numeric
     end
     
-    class Uint32Field < AbstractNumeric
+    class Uint32Field < Numeric
     end
     
-    class Uint64Field < AbstractNumeric
+    class Uint64Field < Numeric
     end
     
-    class Sint32Field < AbstractNumeric
+    class Sint32Field < Numeric
     end
     
-    class Sint64Field < AbstractNumeric
+    class Sint64Field < Numeric
     end
     
-    class DoubleField < AbstractNumeric
+    class DoubleField < Numeric
     end
     
-    class FloatField < AbstractNumeric
+    class FloatField < Numeric
     end
     
-    class Fixed32Field < AbstractNumeric
+    class Fixed32Field < Numeric
     end
     
-    class Fixed64Field < AbstractNumeric
+    class Fixed64Field < Numeric
     end
     
-    class Sfinxed32Field < AbstractNumeric
+    class Sfinxed32Field < Numeric
     end
     
-    class Sfixed64Field < AbstractNumeric
+    class Sfixed64Field < Numeric
     end
     
     class BoolField < Base
       def typed_default_value(default=nil)
         default or false
+      end
+
+      def acceptable?(val)
+        [TrueClass, FalseClass].include? val.class
       end
     end
     
