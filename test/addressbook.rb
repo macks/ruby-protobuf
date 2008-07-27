@@ -25,7 +25,18 @@ module Tutorial
   end
 end
 
+puts :PERSON
 person = Tutorial::Person.new
 puts person.name.inspect
 puts person.id.inspect
 puts person.phone.inspect
+
+puts :ADDRESS_BOOK
+address_book = Tutorial::AddressBook.new
+puts address_book.person.inspect
+puts address_book.person.class.name
+address_book.person << person
+puts address_book.person.inspect
+address_book.person << 1
+puts address_book.person.inspect
+

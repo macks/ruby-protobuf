@@ -6,21 +6,45 @@ module Protobuf
 
     class InvalidRuleError < StandardError; end
 
-    class TypedArray < Array
-      def initialize(klass)
-        @klass = klass
-      end
-
-      def check_type?(val)
-        raise TypeError.new("#{val.class.name} should be an instance of #{@klass.name}") unless val.is_a? @klass
+    class FieldArray < Array
+      def initialize(field)
+        @field = field
       end
 
       def []=(nth, val)
-        super if check_type? val
+        if @field.acceptable? val
+          super
+        else
+          raise TypeError
+        end
       end
 
       def <<(val)
-        super if check_type? val
+        if @field.acceptable? val
+          super
+        else
+          raise TypeError
+        end
+      end
+
+      def push(val)
+        if @field.acceptable? val
+          super
+        else
+          raise TypeError
+        end
+      end
+
+      def unshift(val)
+        if @field.acceptable? val
+          super
+        else
+          raise TypeError
+        end
+      end
+
+      def to_s
+        "[#{@field.name}]"
       end
     end
 
@@ -43,12 +67,14 @@ module Protobuf
 
       def initialize(message_class, rule, type, name, tag, opts={})
         @message_class, @rule, @type, @name, @tag, @default = message_class, rule, type, name, tag, opts[:default]
+        @error_message = 'Type invalid'
       end
 
       def default_value
         case rule
         when :repeated
-          TypedArray.new self
+          puts 'repeated!!'
+          FieldArray.new self
         when :required, :optional
           typed_default_value default
         else
@@ -60,17 +86,39 @@ module Protobuf
         default
       end
 
-      def define_accessor_to(message_instance)
+      def define_accessor(message_instance)
+        message_instance.instance_variable_set "@#{name}", default_value
+        define_getter message_instance
+        define_setter message_instance unless rule == :repeated
+      end
+
+      def define_getter(message_instance)
         message_instance.instance_eval %Q{
           def #{name}
             @#{name}
           end
+        }
+      end
 
+      def define_setter(message_instance)
+        message_instance.instance_eval %Q{
           def #{name}=(val)
-            @#{name} = val
+            field = get_field_by_name #{name.inspect}
+            if field.acceptable? val
+              @#{name} = val
+            else
+              raise TypeError.new(field.error_message)
+            end
           end
         }
-        message_instance.instance_variable_set "@#{name}", default_value
+      end
+
+      def acceptable?(val)
+        true
+      end
+
+      def error_message
+        @error_message
       end
 
       def to_s
@@ -162,6 +210,10 @@ module Protobuf
         else
           default
         end
+      end
+
+      def acceptable?(val)
+        val.instance_of? type
       end
     end
   end

@@ -20,12 +20,26 @@ module Protobuf
       def define_field(rule, type, name, tag, opts={})
         (@fields ||= {})[tag] = Protobuf::Field.build self, rule, type, name, tag, opts
       end
+
+      def get_field_by_name(name)
+        @fields.find {|f| f.name == name}
+      end
+
+      def get_field_by_tag(tag)
+        @fields.find {|f| f.tag == tag}
+      end
     end
 
     def initialize
-      self.class.fields.each do |tag, f|
-        f.define_accessor_to self
+      fields.each do |tag, f|
+        f.define_accessor self
       end
     end
+
+    protected
+
+    def fields; self.class.fields end
+    def get_field_by_name(name); self.class.get_field_by_name(name) end
+    def get_field_by_tag(tag); self.class.get_field_by_tag(tag) end
   end
 end
