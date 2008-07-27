@@ -28,6 +28,9 @@ end
 
 puts :PHONE_NUMBER
 phone_number = Tutorial::Person::PhoneNumber.new
+phone_number.type = Tutorial::Person::PhoneType.MOBILE
+phone_number.type = Tutorial::Person::PhoneType.HOME
+phone_number.type = Tutorial::Person::PhoneType.WORK
 phone_number.type = 0
 phone_number.type = 1
 phone_number.type = 2
