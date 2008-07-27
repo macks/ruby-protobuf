@@ -1,4 +1,4 @@
-module ProtoBuf
+module Protobuf
   class WireType
     VARINT = 0
     FIXED64 = 1

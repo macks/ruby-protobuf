@@ -1,3 +1,5 @@
+require 'stringio'
+require 'protobuf/decoder'
 require 'protobuf/field'
 
 module Protobuf
@@ -22,11 +24,22 @@ module Protobuf
       end
 
       def get_field_by_name(name)
-        @fields.values.find {|field| field.name == name}
+        @fields.values.find {|field| field.name == name.to_sym}
       end
 
       def get_field_by_tag(tag)
         @fields[tag]
+      end
+
+      def get_field(tag_or_name)
+        case tag_or_name
+        when Integer
+          get_field_by_tag tag_or_name
+        when String, Symbol
+          get_field_by_name tag_or_name
+        else
+          raise TypeError
+        end
       end
     end
 
@@ -36,10 +49,43 @@ module Protobuf
       end
     end
 
-    protected
+    def parse_from_string(str)
+      parse_from StringIO.new(str)
+    end
+
+    def parse_from_file(filename)
+      if filename.is_a? File
+        parse_from filename
+      else
+        File.open(filename, 'r') do |f|
+          parse_from f
+        end
+      end
+    end
+
+    def parse_from(stream)
+      Protobuf::Decoder.decode stream, self
+    end
+    
+    def [](tag_or_name)
+      if field = get_field(tag_or_name)
+        send field.name
+      else
+        raise ArgumentError.new("No such field: #{tag_or_name}")
+      end
+    end
+
+    def []=(tag_or_name, val)
+      if field = get_field(tag_or_name)
+        send "#{field.name}=", val
+      else
+        raise ArgumentError.new("No such field: #{tag_or_name}")
+      end
+    end
 
     def fields; self.class.fields end
     def get_field_by_name(name); self.class.get_field_by_name(name) end
     def get_field_by_tag(tag); self.class.get_field_by_tag(tag) end
+    def get_field(tag_or_name); self.class.get_field(tag_or_name) end
   end
 end

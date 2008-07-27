@@ -90,6 +90,10 @@ module Protobuf
         }
       end
 
+      def repeated?; rule == :repeated end
+      def required?; rule == :required end
+      def optional?; rule == :optional end
+
       def acceptable?(val)
         true
       end

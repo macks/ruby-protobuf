@@ -1,6 +1,6 @@
 require 'protobuf/wire_type'
 
-module ProtoBuf
+module Protobuf
   class InvalidWireType < StandardError; end
 
   module WireFormat
@@ -9,6 +9,7 @@ module ProtoBuf
       each_with_index do |byte, index|
         value |= byte << (7 * index)
       end
+      value
     end
 
     def to_string
@@ -18,39 +19,48 @@ module ProtoBuf
 
   class Decoder
     class <<self
-      def decode(stream)
-        self.new(stream).decode
+      def decode(stream, message)
+        self.new(stream, message).decode
       end
     end
 
-    def initialize(stream=nil)
-      @stream = stream
+    def initialize(stream=nil, message=nil)
+      @stream, @message = stream, message
     end
 
-    def decode(stream=@stream)
+    def decode(stream=@stream, message=@message)
       until stream.eof?
-        field_number, wire_type = read_key stream
-value =
+        tag, wire_type = read_key stream
         case wire_type
         when WireType::VARINT
           bytes = read_varint stream
-          bytes.to_varint
+          if message.get_field(tag).repeated?
+            #message[tag] << bytes.to_varint
+          else
+            message[tag] = bytes.to_varint
+          end
         when WireType::FIXED64
           read_fixed64 stream
+          # TODO
         when WireType::LENGTH_DELIMITED
           bytes = read_length_delimited stream
-          bytes.to_string
+          if message.get_field(tag).repeated?
+            #message[tag] << bytes.to_string
+          else
+            message[tag] = bytes.to_string
+          end
         when WireType::START_GROUP
           read_start_group stream
+          # TODO
         when WireType::END_GROUP
           read_end_group stream
+          # TODO
         when WireType::FIXED32
           read_fixed32 stream
+          # TODO
         else
           raise InvalidWiretype.new(wire_type)
         end
-
-puts "#{field_number}: #{value}"
       end
     end
 
@@ -59,8 +69,8 @@ puts "#{field_number}: #{value}"
     def read_key(stream)
       bytes = read_varint stream
       wire_type = bytes[0] & 0b00000111
-      field_number = bytes[0] >> 3 # TODO
-      [field_number, wire_type]
+      tag = bytes[0] >> 3 # TODO
+      [tag, wire_type]
     end
 
     def read_varint(stream)

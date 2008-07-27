@@ -34,6 +34,8 @@ class AddressbookTest < Test::Unit::TestCase
       address_book.person << 1
     end
     assert_equal 1, address_book.person.size
+    address_book.person << Tutorial::Person.new
+    assert_equal 2, address_book.person.size
   end
 end
 
