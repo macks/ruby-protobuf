@@ -1,9 +1,8 @@
 require 'test/unit'
-require 'protobuf/message'
 require 'test/addressbook'
 
-class DecoderTest < Test::Unit::TestCase
-  def test_decode
+class ParseTest < Test::Unit::TestCase
+  def test_parse
     person = Tutorial::Person.new
     person.parse_from_file 'test/data/data.bin'
     assert_equal 1234, person.id
