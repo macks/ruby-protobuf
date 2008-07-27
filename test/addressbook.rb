@@ -1,4 +1,5 @@
 require 'protobuf/message'
+require 'protobuf/enum'
 
 module Tutorial
   class Person < Protobuf::Message
@@ -6,7 +7,7 @@ module Tutorial
     required :int32, :id, 2
     optional :string, :email, 3
 
-    module PhoneType
+    class PhoneType < Protobuf::Enum
       MOBILE = 0
       HOME = 1
       WORK = 2
@@ -25,6 +26,16 @@ module Tutorial
   end
 end
 
+puts :PHONE_NUMBER
+phone_number = Tutorial::Person::PhoneNumber.new
+phone_number.type = 0
+phone_number.type = 1
+phone_number.type = 2
+begin
+  phone_number.type = 3
+rescue TypeError
+end
+
 puts :PERSON
 person = Tutorial::Person.new
 puts person.name.inspect
@@ -37,6 +48,10 @@ puts address_book.person.inspect
 puts address_book.person.class.name
 address_book.person << person
 puts address_book.person.inspect
-address_book.person << 1
+begin
+  address_book.person << 1
+  raise ArgumentError
+rescue TypeError
+end
 puts address_book.person.inspect
 

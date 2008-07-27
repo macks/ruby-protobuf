@@ -6,74 +6,51 @@ module Protobuf
 
     class InvalidRuleError < StandardError; end
 
-    class FieldArray < Array
-      def initialize(field)
-        @field = field
-      end
-
-      def []=(nth, val)
-        if @field.acceptable? val
-          super
-        else
-          raise TypeError
-        end
-      end
-
-      def <<(val)
-        if @field.acceptable? val
-          super
-        else
-          raise TypeError
-        end
-      end
-
-      def push(val)
-        if @field.acceptable? val
-          super
-        else
-          raise TypeError
-        end
-      end
-
-      def unshift(val)
-        if @field.acceptable? val
-          super
-        else
-          raise TypeError
-        end
-      end
-
-      def to_s
-        "[#{@field.name}]"
-      end
-    end
-
     class Base
       class <<self
         def build(message_class, rule, type, name, tag, opts={})
-          field_class_for(type).new message_class, rule, type, name, tag, opts
+          field_class = nil
+          begin
+            field_class = eval "Protobuf::Field::#{type.to_s.capitalize}Field"
+          rescue NameError
+            type = typename_to_class message_class, type
+            field_class =
+              if type.superclass == Protobuf::Enum
+                Protobuf::Field::Enum
+              elsif type.superclass == Protobuf::Message
+                Protobuf::Field::Message
+              else
+                raise $!
+              end
+          end
+          field_class.new message_class, rule, type, name, tag, opts
         end
 
-        def field_class_for(type)
-          begin
-            eval "Protobuf::Field::#{type.to_s.capitalize}Field"
-          rescue NameError
-            Protobuf::Field::MessageField
+        def typename_to_class(message_class, type)
+          modules = message_class.to_s.split('::')
+          while
+            begin
+              type = eval((modules | [type.to_s]).join('::'))
+              break
+            rescue NameError
+              modules.empty? ? raise($!) : modules.pop
+            end
           end
+          type
         end
       end
 
       attr_accessor :message_class, :rule, :type, :name, :tag, :default
 
       def initialize(message_class, rule, type, name, tag, opts={})
-        @message_class, @rule, @type, @name, @tag, @default = message_class, rule, type, name, tag, opts[:default]
+        @message_class, @rule, @type, @name, @tag, @default = 
+          message_class, rule, type, name, tag, opts[:default]
         @error_message = 'Type invalid'
       end
 
       def default_value
         case rule
         when :repeated
-          puts 'repeated!!'
           FieldArray.new self
         when :required, :optional
           typed_default_value default
@@ -122,7 +99,49 @@ module Protobuf
       end
 
       def to_s
-        "#{rule} #{type} #{name} = #{tag} [default=#{default}]"
+        "#{rule} #{type} #{name} = #{tag} #{default ? "[default=#{default}]" : ''}"
+      end
+    end
+
+    class FieldArray < Array
+      def initialize(field)
+        @field = field
+      end
+
+      def []=(nth, val)
+        if @field.acceptable? val
+          super
+        else
+          raise TypeError
+        end
+      end
+
+      def <<(val)
+        if @field.acceptable? val
+          super
+        else
+          raise TypeError
+        end
+      end
+
+      def push(val)
+        if @field.acceptable? val
+          super
+        else
+          raise TypeError
+        end
+      end
+
+      def unshift(val)
+        if @field.acceptable? val
+          super
+        else
+          raise TypeError
+        end
+      end
+
+      def to_s
+        "[#{@field.name}]"
       end
     end
 
@@ -186,24 +205,7 @@ module Protobuf
       end
     end
     
-    class MessageField < Base
-      def initialize(message_class, rule, type, name, tag, opts={})
-        super
-        modulize_type!
-      end
-
-      def modulize_type!
-        modules = message_class.to_s.split('::')
-        while
-          begin
-            @type = eval((modules | [type.to_s]).join('::'))
-            break
-          rescue NameError
-            modules.empty? ? raise($!) : modules.pop
-          end
-        end
-      end
-
+    class Message < Base
       def typed_default_value(default=nil)
         if default.is_a? Symbol
           type.module_eval default.to_s
@@ -214,6 +216,12 @@ module Protobuf
 
       def acceptable?(val)
         val.instance_of? type
+      end
+    end
+
+    class Enum < Base
+      def acceptable?(val)
+        type.valid_tag? val
       end
     end
   end

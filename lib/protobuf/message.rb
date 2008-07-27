@@ -22,17 +22,17 @@ module Protobuf
       end
 
       def get_field_by_name(name)
-        @fields.find {|f| f.name == name}
+        @fields.values.find {|field| field.name == name}
       end
 
       def get_field_by_tag(tag)
-        @fields.find {|f| f.tag == tag}
+        @fields[tag]
       end
     end
 
     def initialize
-      fields.each do |tag, f|
-        f.define_accessor self
+      fields.each do |tag, field|
+        field.define_accessor self
       end
     end
 
