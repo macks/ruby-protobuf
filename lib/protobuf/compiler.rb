@@ -11,6 +11,7 @@ module Protobuf
 
     def initialize
       @indent_level = 0
+      @ret = ''
     end
 
     def indent
@@ -18,7 +19,8 @@ module Protobuf
     end
 
     def puts_with_indent(string)
-      puts "#{indent}#{string}"
+      #puts "#{indent}#{string}"
+      @ret += "#{indent}#{string}\n"
     end
     alias putswi puts_with_indent
 
@@ -36,8 +38,8 @@ module Protobuf
           when /^message\s+(\w+)\s*\{$/
             putswi "class #{$1} < Protobuf::Message"
             @indent_level += 1
-          when /^(required|optional|repeated)\s+(\w+)\s+(\w+)\s*=\s*(\d+)\s*(\[\s*default\s*=\s*(\w+)\s*\])?\s*;$/
-            rule, type, name, tag, default = $1, $2, $3, $4, $6
+          when /^(required|optional|repeated)\s+(\w+(\.\w+)?)\s+(\w+)\s*=\s*(\d+)\s*(\[\s*default\s*=\s*(\w+)\s*\])?\s*;$/
+            rule, type, name, tag, default = $1, $2, $4, $5, $7
             if default
               default = default =~ /\d+(\.\d+)/ \
                 ? ", {:default => #{default}}" \
@@ -53,7 +55,7 @@ module Protobuf
             @indent_level -= 1
             putswi "end"
           when ''
-            puts ''
+            putswi ''
           end
         end
         while 0 < @indent_level 
@@ -61,6 +63,7 @@ module Protobuf
           putswi "end"
         end
       end
+      @ret
     end
   end
 end
