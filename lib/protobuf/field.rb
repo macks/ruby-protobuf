@@ -1,3 +1,5 @@
+require 'protobuf/wire_type'
+
 module Protobuf
   module Field
     def self.build(message_class, rule, type, name, tag, opts={})
@@ -94,7 +96,7 @@ module Protobuf
         if repeated?
           set_array message_instance, bytes
         else
-          set_value message_instance, bytes
+          set_bytes message_instance, bytes
         end
       end
 
@@ -102,7 +104,15 @@ module Protobuf
         raise NotImplementedError
       end
 
-      def set_value(message_instance, bytes)
+      def set_bytes(message_instance, bytes)
+        raise NotImplementedError
+      end
+
+      def get(value)
+        get_bytes value
+      end
+
+      def get_bytes(value)
         raise NotImplementedError
       end
 
@@ -182,6 +192,10 @@ module Protobuf
     end
 
     class StringField < Base
+      def wire_type
+        Protobuf::WireType::LENGTH_DELIMITED
+      end
+
       def typed_default_value(default=nil)
         default or ''
       end
@@ -190,61 +204,113 @@ module Protobuf
         val.instance_of? String
       end
 
-      def set_value(method_instance, bytes)
+      def set_bytes(method_instance, bytes)
         method_instance.send("#{name}=", bytes.to_string)
+      end
+
+      def get_bytes(value)
+        bytes = value.unpack('U*')
+        size = Varint.get_bytes bytes.size
+        size + bytes
       end
     end
     
     class BytesField < Base
+      def wire_type
+        Protobuf::WireType::VARINT
+      end
+
       def typed_default_value(default=nil)
         default or ''
       end
     end
 
-    class Numeric < Base
+    class Varint < Base
+      def wire_type
+        Protobuf::WireType::VARINT
+      end
+
       def typed_default_value(default=nil)
         default or 0
       end
  
-      def set_value(method_instance, bytes)
+      def set_bytes(method_instance, bytes)
         method_instance.send("#{name}=", bytes.to_varint)
+      end
+
+      def self.get_bytes(value)
+        # TODO should refactor
+        bytes = []
+        until value == 0
+          byte = 0
+          7.times do |i|
+            byte |= (value & 1) << i
+            value >>= 1
+          end
+          byte |= 0b10000000
+          bytes << byte
+        end
+        bytes[0] &= 0b01111111
+        bytes
+      end
+
+      def get_bytes(value)
+        self.class.get_bytes value
       end
     end
     
-    class Int32Field < Numeric
+    class Int32Field < Varint
     end
     
-    class Int64Field < Numeric
+    class Int64Field < Varint
     end
     
-    class Uint32Field < Numeric
+    class Uint32Field < Varint
     end
     
-    class Uint64Field < Numeric
+    class Uint64Field < Varint
     end
     
-    class Sint32Field < Numeric
+    class Sint32Field < Varint
     end
     
-    class Sint64Field < Numeric
+    class Sint64Field < Varint
     end
     
-    class DoubleField < Numeric
+    class DoubleField < Varint
+      def wire_type
+        Protobuf::WireType::FIXED64
+      end
     end
     
-    class FloatField < Numeric
+    class FloatField < Varint
+      def wire_type
+        Protobuf::WireType::FIXED32
+      end
     end
     
-    class Fixed32Field < Numeric
+    class Fixed32Field < Varint
+      def wire_type
+        Protobuf::WireType::FIXED32
+      end
     end
     
-    class Fixed64Field < Numeric
+    class Fixed64Field < Varint
+      def wire_type
+        Protobuf::WireType::FIXED64
+      end
     end
     
-    class Sfinxed32Field < Numeric
+    class Sfinxed32Field < Varint
+      def wire_type
+        Protobuf::WireType::FIXED32
+      end
     end
     
-    class Sfixed64Field < Numeric
+    class Sfixed64Field < Varint
+      def wire_type
+        Protobuf::WireType::FIXED64
+      end
     end
     
     class BoolField < Base
@@ -258,6 +324,10 @@ module Protobuf
     end
     
     class Message < Base
+      def wire_type
+        Protobuf::WireType::LENGTH_DELIMITED
+      end
+
       def typed_default_value(default=nil)
         if default.is_a? Symbol
           type.module_eval default.to_s
@@ -270,7 +340,7 @@ module Protobuf
         val.instance_of? type
       end
  
-      def set_value(method_instance, bytes)
+      def set_bytes(method_instance, bytes)
         message = type.new
         #message.parse_from bytes
         message.parse_from_string bytes.to_string # TODO
@@ -284,15 +354,19 @@ module Protobuf
         arr = method_instance.send name
         arr << message
       end
+
+      def get_bytes(value)
+        stringio = StringIO.new ''
+        value.serialize_to stringio
+        bytes = stringio.string.unpack 'C*'
+        size = Varint.get_bytes bytes.size
+        size + bytes
+      end
     end
 
-    class Enum < Base
+    class Enum < Varint
       def acceptable?(val)
         type.valid_tag? val
-      end
-
-      def set_value(method_instance, bytes)
-        method_instance.send("#{name}=", bytes.to_varint)
       end
     end
   end

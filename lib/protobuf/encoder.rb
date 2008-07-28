@@ -1,3 +1,5 @@
+require 'protobuf/wire_type'
+
 module Protobuf
   class Encoder
     class <<self
@@ -11,6 +13,20 @@ module Protobuf
     end
 
     def encode(stream=@stream, message=@message)
+      message.each_field do |field, value|
+        if field.repeated?
+          value.each do |val|
+            bytes = field.get val
+            stream.write bytes.pack('C*')
+          end
+        else
+          key = (field.tag << 3) | field.wire_type
+          key_bytes = Protobuf::Field::Varint.get_bytes key
+          stream.write key_bytes.pack('C*')
+          bytes = field.get value
+          stream.write bytes.pack('C*')
+        end
+      end
     end
   end
 end

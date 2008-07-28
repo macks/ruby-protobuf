@@ -115,5 +115,11 @@ module Protobuf
     def get_field_by_name(name); self.class.get_field_by_name(name) end
     def get_field_by_tag(tag); self.class.get_field_by_tag(tag) end
     def get_field(tag_or_name); self.class.get_field(tag_or_name) end
+
+    def each_field(&block)
+      fields.to_a.sort{|(t1, f1), (t2, f2)| t1 <=> t2}.each do |tag, field|
+        block.call field, self[tag]
+      end
+    end
   end
 end
