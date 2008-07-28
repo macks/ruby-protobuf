@@ -34,21 +34,13 @@ module Protobuf
         case wire_type
         when WireType::VARINT
           bytes = read_varint stream
-          if message.get_field(tag).repeated?
-            #message[tag] << bytes.to_varint
-          else
-            message[tag] = bytes.to_varint
-          end
+          message.set_field tag, bytes
         when WireType::FIXED64
           read_fixed64 stream
           # TODO
         when WireType::LENGTH_DELIMITED
           bytes = read_length_delimited stream
-          if message.get_field(tag).repeated?
-            #message[tag] << bytes.to_string
-          else
-            message[tag] = bytes.to_string
-          end
+          message.set_field tag, bytes
         when WireType::START_GROUP
           read_start_group stream
           # TODO
@@ -62,6 +54,7 @@ module Protobuf
           raise InvalidWiretype.new(wire_type)
         end
       end
+      message
     end
 
     protected

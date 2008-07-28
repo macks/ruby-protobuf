@@ -66,20 +66,29 @@ module Protobuf
     def parse_from(stream)
       Protobuf::Decoder.decode stream, self
     end
+
+    def set_field(tag, bytes)
+      get_field_by_tag(tag).set self, bytes
+    end
+    
+    def merge_field(tag, value)
+      # TODO
+      #get_field_by_tag(tag).merge self, bytes
+    end
     
     def [](tag_or_name)
       if field = get_field(tag_or_name)
         send field.name
       else
-        raise ArgumentError.new("No such field: #{tag_or_name}")
+        raise NoMethodError.new("No such method: #{tag_or_name}")
       end
     end
 
-    def []=(tag_or_name, val)
-      if field = get_field(tag_or_name)
-        send "#{field.name}=", val
+    def []=(tag_or_name, value)
+      if field = get_field(tag_or_name) and not field.repeated?
+        send "#{field.name}=", value
       else
-        raise ArgumentError.new("No such field: #{tag_or_name}")
+        raise NoMethodError.new("No such method: #{tag_or_name}=")
       end
     end
 

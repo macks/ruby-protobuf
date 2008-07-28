@@ -90,6 +90,38 @@ module Protobuf
         }
       end
 
+      def set(message_instance, bytes)
+        if repeated?
+          set_array message_instance, bytes
+        else
+          set_value message_instance, bytes
+        end
+      end
+
+      def set_array(message_instance, bytes)
+        raise NotImplementedError
+      end
+
+      def set_value(message_instance, bytes)
+        raise NotImplementedError
+      end
+
+      def merge(message_instance, bytes)
+        if repeated?
+          merge_array method_instance, bytes
+        else
+          merge_value method_instance, bytes
+        end
+      end
+
+      def merge_array(message_instance, bytes)
+        raise NotImplementedError
+      end
+
+      def merge_value(message_instance, bytes)
+        raise NotImplementedError
+      end
+
       def repeated?; rule == :repeated end
       def required?; rule == :required end
       def optional?; rule == :optional end
@@ -157,6 +189,10 @@ module Protobuf
       def acceptable?(val)
         val.instance_of? String
       end
+
+      def set_value(method_instance, bytes)
+        method_instance.send("#{name}=", bytes.to_string)
+      end
     end
     
     class BytesField < Base
@@ -168,6 +204,10 @@ module Protobuf
     class Numeric < Base
       def typed_default_value(default=nil)
         default or 0
+      end
+ 
+      def set_value(method_instance, bytes)
+        method_instance.send("#{name}=", bytes.to_varint)
       end
     end
     
@@ -229,11 +269,30 @@ module Protobuf
       def acceptable?(val)
         val.instance_of? type
       end
+ 
+      def set_value(method_instance, bytes)
+        message = type.new
+        #message.parse_from bytes
+        message.parse_from_string bytes.to_string # TODO
+        method_instance.send("#{name}=", message)
+      end
+ 
+      def set_array(method_instance, bytes)
+        message = type.new
+        #message.parse_from bytes
+        message.parse_from_string bytes.to_string
+        arr = method_instance.send name
+        arr << message
+      end
     end
 
     class Enum < Base
       def acceptable?(val)
         type.valid_tag? val
+      end
+
+      def set_value(method_instance, bytes)
+        method_instance.send("#{name}=", bytes.to_varint)
       end
     end
   end
