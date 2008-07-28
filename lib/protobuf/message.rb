@@ -1,5 +1,6 @@
 require 'stringio'
 require 'protobuf/decoder'
+require 'protobuf/encoder'
 require 'protobuf/field'
 
 module Protobuf
@@ -49,8 +50,8 @@ module Protobuf
       end
     end
 
-    def parse_from_string(str)
-      parse_from StringIO.new(str)
+    def parse_from_string(string)
+      parse_from StringIO.new(string)
     end
 
     def parse_from_file(filename)
@@ -65,6 +66,24 @@ module Protobuf
 
     def parse_from(stream)
       Protobuf::Decoder.decode stream, self
+    end
+
+    def serialize_to_string(string)
+      serialize_to StringIO.new(string)
+    end
+
+    def serialize_to_file(filename)
+      if filename.is_a? File
+        serialize_to filename
+      else
+        File.open(filename, 'w') do |f|
+          serialize_to f
+        end
+      end
+    end
+
+    def serialize_to(stream)
+      Protobuf::Encoder.encode stream, self
     end
 
     def set_field(tag, bytes)
