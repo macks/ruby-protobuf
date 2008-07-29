@@ -210,8 +210,8 @@ module Protobuf
 
       def get_bytes(value)
         bytes = value.unpack('U*')
-        size = Varint.get_bytes bytes.size
-        size + bytes
+        string_size = Varint.get_bytes bytes.size
+        string_size + bytes
       end
     end
     
@@ -239,7 +239,7 @@ module Protobuf
       end
 
       def self.get_bytes(value)
-        # TODO should refactor
+        # TODO should refactor using unpack('w*')
         bytes = []
         until value == 0
           byte = 0
@@ -250,7 +250,9 @@ module Protobuf
           byte |= 0b10000000
           bytes << byte
         end
-        bytes[0] &= 0b01111111
+        #bytes[0] &= 0b01111111
+        #bytes
+        bytes[bytes.size - 1] &= 0b01111111
         bytes
       end
 
@@ -359,8 +361,9 @@ module Protobuf
         stringio = StringIO.new ''
         value.serialize_to stringio
         bytes = stringio.string.unpack 'C*'
-        size = Varint.get_bytes bytes.size
-        size + bytes
+        string_size = Varint.get_bytes bytes.size
+        string_size + bytes
+        #bytes + string_size
       end
     end
 

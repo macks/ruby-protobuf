@@ -5,6 +5,7 @@ module Protobuf
 
   module WireFormat
     def to_varint
+      # TODO should refactor using pack('w*')
       value = 0
       each_with_index do |byte, index|
         value |= byte << (7 * index)
