@@ -299,7 +299,7 @@ module Protobuf
  
       #TODO
       def self.max
-        0x7fefffffffffffff
+        '0x7fefffffffffffff'.unpack('f').first
       end
 
       #TODO
@@ -321,7 +321,7 @@ module Protobuf
  
       #TODO
       def self.max
-        0x7fefffffffffffff
+        '0x7fefffffffffffff'.unpack('f').first
       end
 
       #TODO
