@@ -85,8 +85,6 @@ module Protobuf
             field = get_field_by_name #{name.inspect}
             if field.acceptable? val
               @#{name} = val
-            else
-              raise TypeError.new(field.error_message)
             end
           end
         }
@@ -136,6 +134,9 @@ module Protobuf
       def required?; rule == :required end
       def optional?; rule == :optional end
 
+      def max; self.class.max end
+      def min; self.class.min end
+
       def acceptable?(val)
         true
       end
@@ -157,32 +158,24 @@ module Protobuf
       def []=(nth, val)
         if @field.acceptable? val
           super
-        else
-          raise TypeError
         end
       end
 
       def <<(val)
         if @field.acceptable? val
           super
-        else
-          raise TypeError
         end
       end
 
       def push(val)
         if @field.acceptable? val
           super
-        else
-          raise TypeError
         end
       end
 
       def unshift(val)
         if @field.acceptable? val
           super
-        else
-          raise TypeError
         end
       end
 
@@ -201,7 +194,8 @@ module Protobuf
       end
 
       def acceptable?(val)
-        val.instance_of? String
+        raise TypeError unless val.instance_of? String
+        true
       end
 
       def set_bytes(method_instance, bytes)
@@ -210,7 +204,7 @@ module Protobuf
 
       def get_bytes(value)
         bytes = value.unpack('U*')
-        string_size = Varint.get_bytes bytes.size
+        string_size = Int.get_bytes bytes.size
         string_size + bytes
       end
     end
@@ -225,7 +219,7 @@ module Protobuf
       end
     end
 
-    class Varint < Base
+    class Int < Base
       def wire_type
         Protobuf::WireType::VARINT
       end
@@ -240,6 +234,7 @@ module Protobuf
 
       def self.get_bytes(value)
         # TODO should refactor using unpack('w*')
+        #return [value].pack('w*').unpack('C*')
         bytes = []
         until value == 0
           byte = 0
@@ -259,59 +254,141 @@ module Protobuf
       def get_bytes(value)
         self.class.get_bytes value
       end
+
+      def acceptable?(val)
+        raise TypeError unless val.is_a? Integer
+        raise RangeError if val < min or max < val
+        true
+      end
     end
     
-    class Int32Field < Varint
+    class Int32Field < Int
+      def self.max; 1.0/0.0 end
+      def self.min; -1.0/0.0 end
     end
     
-    class Int64Field < Varint
+    class Int64Field < Int
+      def self.max; 1.0/0.0 end
+      def self.min; -1.0/0.0 end
     end
     
-    class Uint32Field < Varint
+    class Uint32Field < Int
+      def self.max; 1.0/0.0 end
+      def self.min; 0 end
     end
     
-    class Uint64Field < Varint
+    class Uint64Field < Int
+      def self.max; 1.0/0.0 end
+      def self.min; 0 end
     end
     
-    class Sint32Field < Varint
+    class Sint32Field < Int
+      def self.max; 1.0/0.0 end
+      def self.min; -1.0/0.0 end
     end
     
-    class Sint64Field < Varint
+    class Sint64Field < Int
+      def self.max; 1.0/0.0 end
+      def self.min; -1.0/0.0 end
     end
     
-    class DoubleField < Varint
+    class DoubleField < Int
       def wire_type
         Protobuf::WireType::FIXED64
       end
-    end
-    
-    class FloatField < Varint
-      def wire_type
-        Protobuf::WireType::FIXED32
+ 
+      #TODO
+      def self.max
+        0x7fefffffffffffff
+      end
+
+      #TODO
+      def self.min
+        -(2**(64/2) - 1)
+      end
+
+      def acceptable?(val)
+        raise TypeError unless val.is_a? Numeric
+        raise RangeError if val < min or max < val
+        true
       end
     end
     
-    class Fixed32Field < Varint
+    class FloatField < Int
       def wire_type
         Protobuf::WireType::FIXED32
       end
+ 
+      #TODO
+      def self.max
+        0x7fefffffffffffff
+      end
+
+      #TODO
+      def self.min
+        -(2**(64/2) - 1)
+      end
+ 
+      def acceptable?(val)
+        raise TypeError unless val.is_a? Numeric
+        raise RangeError if val < min or max < val
+        true
+      end
+   end
+    
+    class Fixed32Field < Int
+      def wire_type
+        Protobuf::WireType::FIXED32
+      end
+
+      def self.max
+        2**32
+      end
+
+      def self.min
+        0
+      end
     end
     
-    class Fixed64Field < Varint
+    class Fixed64Field < Int
       def wire_type
         Protobuf::WireType::FIXED64
       end
-    end
-    
-    class Sfinxed32Field < Varint
-      def wire_type
-        Protobuf::WireType::FIXED32
+
+      def self.max
+        2**64
+      end
+
+      def self.min
+        0
       end
     end
     
-    class Sfixed64Field < Varint
+    class Sfinxed32Field < Int
+      def wire_type
+        Protobuf::WireType::FIXED32
+      end
+
+      def self.max
+        2**(32/2)
+      end
+
+      def self.min
+        -(2**(32/2) - 1)
+      end
+    end
+    
+    class Sfixed64Field < Int
       def wire_type
         Protobuf::WireType::FIXED64
+      end
+
+      def self.max
+        2**(64/2)
+      end
+
+      def self.min
+        -(2**(64/2) - 1)
       end
     end
     
@@ -321,7 +398,8 @@ module Protobuf
       end
 
       def acceptable?(val)
-        [TrueClass, FalseClass].include? val.class
+        raise TypeError unless [TrueClass, FalseClass].include? val.class
+        true
       end
     end
     
@@ -339,7 +417,8 @@ module Protobuf
       end
 
       def acceptable?(val)
-        val.instance_of? type
+        raise TypeError unless val.instance_of? type
+        true
       end
  
       def set_bytes(method_instance, bytes)
@@ -361,15 +440,16 @@ module Protobuf
         stringio = StringIO.new ''
         value.serialize_to stringio
         bytes = stringio.string.unpack 'C*'
-        string_size = Varint.get_bytes bytes.size
+        string_size = Int.get_bytes bytes.size
         string_size + bytes
         #bytes + string_size
       end
     end
 
-    class Enum < Varint
+    class Enum < Int
       def acceptable?(val)
-        type.valid_tag? val
+        raise TypeError unless type.valid_tag? val
+        true
       end
     end
   end

@@ -3,6 +3,7 @@ require 'test/addressbook'
 
 class SerializeTest < Test::Unit::TestCase
   def test_serialize
+    # serialize to string
     person = Tutorial::Person.new
     person.id = 1234
     person.name = 'John Doe'
@@ -11,15 +12,11 @@ class SerializeTest < Test::Unit::TestCase
     phone.number = '555-4321'
     phone.type = Tutorial::Person::PhoneType::HOME
     person.phone << phone
-    #File.open('test/data/data2.bin', 'w') do |f|
-    #  person.serialize_to f
-    #end
-    string = ''
-    person.serialize_to_string
+    serialized_string = person.serialize_to_string
 
+    # parse the serialized string
     person2 = Tutorial::Person.new
-    #person2.parse_from_file 'test/data/data2.bin'
-    person2.parse_from_string string
+    person2.parse_from_string serialized_string
     assert_equal 1234, person2.id
     assert_equal 'John Doe', person2.name
     assert_equal 'jdoe@example.com', person2.email

@@ -68,8 +68,10 @@ module Protobuf
       Protobuf::Decoder.decode stream, self
     end
 
-    def serialize_to_string(string)
-      serialize_to StringIO.new(string)
+    def serialize_to_string(string='')
+      io = StringIO.new string
+      serialize_to io
+      io.string
     end
 
     def serialize_to_file(filename)

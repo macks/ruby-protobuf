@@ -15,7 +15,7 @@ module Protobuf
     def encode(stream=@stream, message=@message)
       message.each_field do |field, value|
         key = (field.tag << 3) | field.wire_type
-        key_bytes = Protobuf::Field::Varint.get_bytes key
+        key_bytes = Protobuf::Field::Int.get_bytes key
         stream.write key_bytes.pack('C*')
 
         if field.repeated?

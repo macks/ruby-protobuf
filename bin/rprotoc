@@ -1,0 +1,5 @@
+#!/usr/local/bin/ruby
+$: << "#{File.dirname(__FILE__)}/../lib"
+require 'protobuf/compiler'
+print Protobuf::Compiler.compile(ARGV.shift)
+
