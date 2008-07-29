@@ -3,21 +3,6 @@ require 'protobuf/wire_type'
 module Protobuf
   class InvalidWireType < StandardError; end
 
-  module WireFormat
-    def to_varint
-      # TODO should refactor using pack('w*')
-      value = 0
-      each_with_index do |byte, index|
-        value |= byte << (7 * index)
-      end
-      value
-    end
-
-    def to_string
-      pack 'U*'
-    end
-  end
-
   class Decoder
     class <<self
       def decode(stream, message)
@@ -68,7 +53,7 @@ module Protobuf
     end
 
     def read_varint(stream)
-      bytes = [].extend WireFormat
+      bytes = []
       begin
         byte = stream.readchar
         bytes << (byte & 0b01111111)
@@ -77,7 +62,7 @@ module Protobuf
     end
 
     def read_fixed64(stream)
-      bytes = stream.read(2).unpack('c*').extend WireFormat
+      bytes = stream.read(2).unpack('c*')
     end
 
     def read_length_delimited(stream)
@@ -87,7 +72,7 @@ module Protobuf
         value_length |= byte << (7 * index)
       end
       value = stream.read value_length
-      value.unpack('c*').extend WireFormat
+      value.unpack('c*')
     end
 
     def read_start_group(stream)
@@ -99,7 +84,7 @@ module Protobuf
     end
 
     def read_fixed32(stream)
-      [stream.getc].extend WireFormat
+      [stream.getc]
     end
   end
 end

@@ -199,7 +199,7 @@ module Protobuf
       end
 
       def set_bytes(method_instance, bytes)
-        method_instance.send("#{name}=", bytes.to_string)
+        method_instance.send("#{name}=", bytes.pack('U*'))
       end
 
       def get_bytes(value)
@@ -229,7 +229,12 @@ module Protobuf
       end
  
       def set_bytes(method_instance, bytes)
-        method_instance.send("#{name}=", bytes.to_varint)
+        # TODO should refactor using pack('w*')
+        value = 0
+        bytes.each_with_index do |byte, index|
+          value |= byte << (7 * index)
+        end
+        method_instance.send("#{name}=", value)
       end
 
       def self.get_bytes(value)
@@ -424,14 +429,14 @@ module Protobuf
       def set_bytes(method_instance, bytes)
         message = type.new
         #message.parse_from bytes
-        message.parse_from_string bytes.to_string # TODO
+        message.parse_from_string bytes.pack('U*') # TODO
         method_instance.send("#{name}=", message)
       end
  
       def set_array(method_instance, bytes)
         message = type.new
         #message.parse_from bytes
-        message.parse_from_string bytes.to_string
+        message.parse_from_string bytes.pack('U*')
         arr = method_instance.send name
         arr << message
       end
