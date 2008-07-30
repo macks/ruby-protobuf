@@ -1,8 +1,41 @@
 require 'test/unit'
 require 'test/types'
-require 'test/types'
 
 class TypesTest < Test::Unit::TestCase
+  def test_serialize
+    types = Test::Types::TestTypes.new
+    types.type1 = 0.01
+    types.type2 = 0.1 
+    types.type3 = 1
+    types.type4 = 10 
+    types.type5 = 100
+    types.type6 = 1000
+    types.type7 = -1
+    types.type8 = -10
+    types.type9 = 10000
+    types.type10 = 100000
+    types.type11 = false
+    types.type12 = 'hello all types'
+    #types.type13 = 
+    serialized_string = types.serialize_to_string
+
+    types2 = Test::Types::TestTypes.new
+    types2.parse_from_string serialized_string
+    assert_equal 0.01, types2.type1
+    assert_equal 0.1, types2.type2
+    assert_equal 1, types2.type3
+    assert_equal 10, types2.type4
+    assert_equal 100, types2.type5
+    assert_equal 1000, types2.type6
+    assert_equal(-1, types2.type7)
+    assert_equal(-10, types2.type8)
+    assert_equal 10000, types2.type9
+    assert_equal 100000, types2.type10
+    assert_equal false, types2.type11
+    assert_equal 'hello all types', types2.type12
+    #types2.type13
+  end
+
   def test_parse
     types = Test::Types::TestTypes.new
     types.parse_from_file 'test/data/types.bin'
@@ -18,6 +51,7 @@ class TypesTest < Test::Unit::TestCase
     assert_equal 100000, types.type10
     assert_equal false, types.type11
     assert_equal 'hello all types', types.type12
+    # types.type13
   end
 
   def test_double
