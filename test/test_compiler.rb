@@ -4,6 +4,7 @@ require 'protobuf/compiler'
 class CompilerTest < Test::Unit::TestCase
   def test_compile
     assert_equal <<-eos.strip, Protobuf::Compiler.compile('test/addressbook.proto').strip
+require 'protobuf/message'
 module Tutorial
   
   class Person < Protobuf::Message

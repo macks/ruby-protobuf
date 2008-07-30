@@ -299,11 +299,35 @@ module Protobuf
     class Sint32Field < Int
       def self.max; 1.0/0.0 end
       def self.min; -1.0/0.0 end
+ 
+      def set_bytes(method_instance, bytes)
+        # TODO use only bit-operations
+        byte = bytes.first
+        value = 
+          if byte % 2 == 0
+            byte / 2
+          else
+            -(byte + 1) / 2
+          end
+        method_instance.send("#{name}=", value)
+      end
     end
     
     class Sint64Field < Int
       def self.max; 1.0/0.0 end
       def self.min; -1.0/0.0 end
+ 
+      def set_bytes(method_instance, bytes)
+        # TODO use only bit-operations
+        byte = bytes.first
+        value = 
+          if byte % 2 == 0
+            byte / 2
+          else
+            -(byte + 1) / 2
+          end
+        method_instance.send("#{name}=", value)
+      end
     end
     
     class DoubleField < Int

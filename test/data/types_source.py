@@ -14,6 +14,7 @@ types.type9 = 10000
 types.type10 = 100000
 types.type11 = False
 types.type12 = 'hello all types'
+# TODO test type13
 #types.type13 = 
 
 f = open('types.bin', 'wb')

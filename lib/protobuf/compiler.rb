@@ -11,7 +11,7 @@ module Protobuf
 
     def initialize
       @indent_level = 0
-      @ret = ''
+      @ret = "require 'protobuf/message'\n"
     end
 
     def indent
