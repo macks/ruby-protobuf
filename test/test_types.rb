@@ -1,7 +1,25 @@
 require 'test/unit'
 require 'test/types'
+require 'test/types'
 
 class TypesTest < Test::Unit::TestCase
+  def test_parse
+    types = Test::Types::TestTypes.new
+    types.parse_from_file 'test/data/types.bin'
+    assert_in_delta 0.01, types.type1, 0.00001
+    assert_in_delta 0.1, types.type2, 0.00001
+    assert_equal 1, types.type3
+    assert_equal 10, types.type4
+    assert_equal 100, types.type5
+    assert_equal 1000, types.type6
+    #assert_equal(-1, types.type7)
+    #assert_equal(-10, types.type8)
+    assert_equal 10000, types.type9
+    assert_equal 100000, types.type10
+    assert_equal false, types.type11
+    assert_equal 'hello all types', types.type12
+  end
+
   def test_double
     # double fixed 64-bit
     types = Test::Types::TestTypes.new

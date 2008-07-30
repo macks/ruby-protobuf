@@ -215,7 +215,16 @@ module Protobuf
       end
 
       def typed_default_value(default=nil)
-        default or ''
+        default or []
+      end
+
+      def set_bytes(method_instance, bytes)
+        method_instance.send("#{name}=", bytes)
+      end
+
+      def get_bytes(value)
+        string_size = Int.get_bytes value.size
+        string_size + value
       end
     end
 
@@ -261,8 +270,8 @@ module Protobuf
       end
 
       def acceptable?(val)
-        raise TypeError unless val.is_a? Integer
-        raise RangeError if val < min or max < val
+        raise TypeError.new(val.class.name) unless val.is_a? Integer
+        raise RangeError.new(val) if val < min or max < val
         true
       end
     end
@@ -304,17 +313,21 @@ module Protobuf
  
       #TODO
       def self.max
-        '0x7fefffffffffffff'.unpack('f').first
+        '0x7fefffffffffffff'.unpack('d').first
       end
 
       #TODO
       def self.min
         -(2**(64/2) - 1)
       end
+ 
+      def set_bytes(method_instance, bytes)
+        method_instance.send("#{name}=", bytes.unpack('E').first)
+      end
 
       def acceptable?(val)
-        raise TypeError unless val.is_a? Numeric
-        raise RangeError if val < min or max < val
+        raise TypeError.new(val.class.name) unless val.is_a? Numeric
+        raise RangeError.new(val) if val < min or max < val
         true
       end
     end
@@ -331,7 +344,11 @@ module Protobuf
 
       #TODO
       def self.min
-        -(2**(64/2) - 1)
+        -(2**(32/2) - 1)
+      end
+ 
+      def set_bytes(method_instance, bytes)
+        method_instance.send("#{name}=", bytes.unpack('e').first)
       end
  
       def acceptable?(val)
@@ -353,6 +370,10 @@ module Protobuf
       def self.min
         0
       end
+ 
+      def set_bytes(method_instance, bytes)
+        method_instance.send("#{name}=", bytes.unpack('L').first)
+      end
     end
     
     class Fixed64Field < Int
@@ -366,6 +387,10 @@ module Protobuf
 
       def self.min
         0
+      end
+ 
+      def set_bytes(method_instance, bytes)
+        method_instance.send("#{name}=", bytes.unpack('l').first)
       end
     end
     
@@ -405,6 +430,10 @@ module Protobuf
       def acceptable?(val)
         raise TypeError unless [TrueClass, FalseClass].include? val.class
         true
+      end
+ 
+      def set_bytes(method_instance, bytes)
+        method_instance.send("#{name}=", bytes.first == 1)
       end
     end
     

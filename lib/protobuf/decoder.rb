@@ -17,28 +17,24 @@ module Protobuf
     def decode(stream=@stream, message=@message)
       until stream.eof?
         tag, wire_type = read_key stream
-        case wire_type
-        when WireType::VARINT
-          bytes = read_varint stream
-          message.set_field tag, bytes
-        when WireType::FIXED64
-          read_fixed64 stream
-          # TODO
-        when WireType::LENGTH_DELIMITED
-          bytes = read_length_delimited stream
-          message.set_field tag, bytes
-        when WireType::START_GROUP
-          read_start_group stream
-          # TODO
-        when WireType::END_GROUP
-          read_end_group stream
-          # TODO
-        when WireType::FIXED32
-          read_fixed32 stream
-          # TODO
-        else
-          raise InvalidWiretype.new(wire_type)
-        end
+        bytes =
+          case wire_type
+          when WireType::VARINT
+            read_varint stream
+          when WireType::FIXED64
+            read_fixed64 stream
+          when WireType::LENGTH_DELIMITED
+            read_length_delimited stream
+          when WireType::START_GROUP
+            read_start_group stream
+          when WireType::END_GROUP
+            read_end_group stream
+          when WireType::FIXED32
+            read_fixed32 stream
+          else
+            raise InvalidWireType.new(wire_type)
+          end
+        message.set_field tag, bytes
       end
       message
     end
@@ -47,6 +43,7 @@ module Protobuf
 
     def read_key(stream)
       bytes = read_varint stream
+      #TODO 1 < bytes.size のときエラー
       wire_type = bytes[0] & 0b00000111
       tag = bytes[0] >> 3 # TODO
       [tag, wire_type]
@@ -62,7 +59,7 @@ module Protobuf
     end
 
     def read_fixed64(stream)
-      bytes = stream.read(2).unpack('c*')
+      stream.read(8)
     end
 
     def read_length_delimited(stream)
@@ -76,15 +73,15 @@ module Protobuf
     end
 
     def read_start_group(stream)
-      raise 'Have not implemented'
+      raise NotImplementedError.new('Group is duplecated.')
     end
  
     def read_end_group(stream)
-      raise 'Have not implemented'
+      raise NotImplementedError.new('Group is duplecated.')
     end
 
     def read_fixed32(stream)
-      [stream.getc]
+      stream.read(4)
     end
   end
 end

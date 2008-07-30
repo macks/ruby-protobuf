@@ -1,3 +1,5 @@
+require 'protobuf/message'
+
 module Test
   module Types
     
