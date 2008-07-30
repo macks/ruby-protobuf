@@ -12,8 +12,8 @@ class TypesTest < Test::Unit::TestCase
     assert_equal 10, types.type4
     assert_equal 100, types.type5
     assert_equal 1000, types.type6
-    #assert_equal(-1, types.type7)
-    #assert_equal(-10, types.type8)
+    assert_equal(-1, types.type7)
+    assert_equal(-10, types.type8)
     assert_equal 10000, types.type9
     assert_equal 100000, types.type10
     assert_equal false, types.type11
