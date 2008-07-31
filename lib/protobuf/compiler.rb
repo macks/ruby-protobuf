@@ -51,6 +51,21 @@ module Protobuf
             @indent_level += 1
           when /^(\w+)\s*=\s*(\w+)\s*;$/
             putswi "#{$1} = #{$2}"
+          when /^extensions\s+(\w+)\s+to\s+(\w+)\s*;/
+            low, high = $1, $2
+            low = 'Protobuf::Extend.MIN' if low == 'min'
+            high = 'Protobuf::Extend.MAX' if high == 'max'
+            putswi "extensions #{min}..#{max}"
+          when /^extend\s+(\w+)\s*\{/
+            putswi "class #{$1} < Protobuf::Extend"
+            @indent_level += 1
+          when /^service\s+(\w+)\s*\{/
+            putswi "class #{$1} < Protobuf::Service"
+            @indent_level += 1
+          when /^rpc\s+(\w+)\s+\(\s*(\w+)\s*\)\s+returns\s+\(\s*(\w+)\s*\)\s*;/
+            putswi "rpc :#{$1} => :#{$2}, :#{$3} => :#{$4}"
+          when /^option\s+(\w+)\s*=\s*(.+)\s*;/
+            putswi "Protobuf::OPTIONS[:#{$1}] = :#{$2}"
           when /^\}$/
             @indent_level -= 1
             putswi "end"

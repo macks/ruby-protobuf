@@ -4,9 +4,15 @@ require 'protobuf/encoder'
 require 'protobuf/field'
 
 module Protobuf
+  OPTIONS = {}
+
   class Message
     class <<self
       attr_reader :fields
+
+      def extensions(range)
+        raise NotImplementedError('TODO')
+      end
 
       def required(type, name, tag, opts={})
         define_field :required, type, name, tag, opts
