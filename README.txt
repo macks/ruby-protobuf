@@ -22,7 +22,7 @@ Protocol Buffers for Ruby.
 
 == INSTALL:
 
-* sudo gem install ruby-protobuf
+* sudo gem install ruby_protobuf
 
 == LICENSE:
 

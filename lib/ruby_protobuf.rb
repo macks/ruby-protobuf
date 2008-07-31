@@ -11,7 +11,7 @@ class RubyProtobuf
         raise ArgumentError.new("#{proto_file} does not exist.")
       end
     end
-    rb_filename = File.basename proto_file
+    rb_filename = File.basename proto_file.dup
     rb_filename += '.rb' unless rb_filename.sub!(/.\w+$/, '.rb')
     rb_filepath = "#{options[:out] || '.'}/#{rb_filename}"
     puts "#{rb_filepath} writting..."
