@@ -11,7 +11,13 @@ module Protobuf
 
     def initialize
       @indent_level = 0
-      @ret = "require 'protobuf/message'\n"
+      @ret = <<-eos
+require 'protobuf/message'
+require 'protobuf/enum'
+require 'protobuf/service'
+require 'protobuf/extend'
+
+      eos
     end
 
     def indent
