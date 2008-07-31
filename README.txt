@@ -1,26 +1,28 @@
 = RubyProtobuf
 
-* FIX (url)
+* http://code.google.com/p/ruby-protobuf
 
 == DESCRIPTION:
 
-FIX (describe your package)
+Protocol Buffers for Ruby.
 
 == FEATURES/PROBLEMS:
 
-* FIX (list of features or problems)
+* Compile .proto file to ruby script
+* Parse the binary wire format for protocol buffer
+* Serialize data to the binary wire format for protocol buffer
 
 == SYNOPSIS:
 
-  FIX (code sample of usage)
+  bin/rprotoc -I lib test/addressbook.proto
 
 == REQUIREMENTS:
 
-* FIX (list of requirements)
+* All you need are included.
 
 == INSTALL:
 
-* FIX (sudo gem install, anything else)
+* sudo gem install ruby-protobuf
 
 == LICENSE:
 
