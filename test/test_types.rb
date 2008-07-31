@@ -21,8 +21,8 @@ class TypesTest < Test::Unit::TestCase
 
     types2 = Test::Types::TestTypes.new
     types2.parse_from_string serialized_string
-    assert_equal 0.01, types2.type1
-    assert_equal 0.1, types2.type2
+    assert_in_delta 0.01, types2.type1, 0.00001
+    assert_in_delta 0.1, types2.type2, 0.00001
     assert_equal 1, types2.type3
     assert_equal 10, types2.type4
     assert_equal 100, types2.type5

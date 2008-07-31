@@ -205,7 +205,8 @@ module Protobuf
       def get_bytes(value)
         bytes = value.unpack('U*')
         string_size = Int.get_bytes bytes.size
-        string_size + bytes
+        #(string_size + bytes).pack('C*')
+        string_size + bytes.pack('C*')
       end
     end
     
@@ -224,7 +225,7 @@ module Protobuf
 
       def get_bytes(value)
         string_size = Int.get_bytes value.size
-        string_size + value
+        string_size + value.pack('C*')
       end
     end
 
@@ -249,6 +250,7 @@ module Protobuf
       def self.get_bytes(value)
         # TODO should refactor using unpack('w*')
         #return [value].pack('w*').unpack('C*')
+        return [0].pack('C') if value == 0
         bytes = []
         until value == 0
           byte = 0
@@ -262,7 +264,7 @@ module Protobuf
         #bytes[0] &= 0b01111111
         #bytes
         bytes[bytes.size - 1] &= 0b01111111
-        bytes
+        bytes.pack('C*')
       end
 
       def get_bytes(value)
@@ -311,6 +313,11 @@ module Protobuf
           end
         method_instance.send("#{name}=", value)
       end
+
+      def get_bytes(value)
+        #(value << 1) ^ (value >> 31)
+        [(value << 1) ^ (value >> 31)].pack('C*')
+      end
     end
     
     class Sint64Field < Int
@@ -327,6 +334,11 @@ module Protobuf
             -(byte + 1) / 2
           end
         method_instance.send("#{name}=", value)
+      end
+
+      def get_bytes(value)
+        #(value << 1) ^ (value >> 63)
+        [(value << 1) ^ (value >> 63)].pack('C*')
       end
     end
     
@@ -349,6 +361,10 @@ module Protobuf
         method_instance.send("#{name}=", bytes.unpack('E').first)
       end
 
+      def get_bytes(value)
+        [value].pack('E')
+      end
+
       def acceptable?(val)
         raise TypeError.new(val.class.name) unless val.is_a? Numeric
         raise RangeError.new(val) if val < min or max < val
@@ -363,7 +379,7 @@ module Protobuf
  
       #TODO
       def self.max
-        '0x7fefffffffffffff'.unpack('f').first
+        '0x7fefffffffffffff'.unpack('e').first
       end
 
       #TODO
@@ -373,6 +389,10 @@ module Protobuf
  
       def set_bytes(method_instance, bytes)
         method_instance.send("#{name}=", bytes.unpack('e').first)
+      end
+
+      def get_bytes(value)
+        [value].pack('e')
       end
  
       def acceptable?(val)
@@ -398,6 +418,10 @@ module Protobuf
       def set_bytes(method_instance, bytes)
         method_instance.send("#{name}=", bytes.unpack('L').first)
       end
+
+      def get_bytes(value)
+        [value].pack('L')
+      end
     end
     
     class Fixed64Field < Int
@@ -415,6 +439,10 @@ module Protobuf
  
       def set_bytes(method_instance, bytes)
         method_instance.send("#{name}=", bytes.unpack('l').first)
+      end
+
+      def get_bytes(value)
+        [value].pack('Q')
       end
     end
     
@@ -446,7 +474,7 @@ module Protobuf
       end
     end
     
-    class BoolField < Base
+    class BoolField < Int
       def typed_default_value(default=nil)
         default or false
       end
@@ -458,6 +486,10 @@ module Protobuf
  
       def set_bytes(method_instance, bytes)
         method_instance.send("#{name}=", bytes.first == 1)
+      end
+
+      def get_bytes(value)
+        [value ? 1 : 0].pack('C')
       end
     end
     
@@ -499,8 +531,9 @@ module Protobuf
         value.serialize_to stringio
         bytes = stringio.string.unpack 'C*'
         string_size = Int.get_bytes bytes.size
-        string_size + bytes
+        #(string_size + bytes).pack('C*')
         #bytes + string_size
+        string_size + bytes.pack('C*')
       end
     end
 

@@ -16,17 +16,19 @@ module Protobuf
       message.each_field do |field, value|
         key = (field.tag << 3) | field.wire_type
         key_bytes = Protobuf::Field::Int.get_bytes key
-        stream.write key_bytes.pack('C*')
+        #stream.write key_bytes.pack('C*')
+        stream.write key_bytes
 
         if field.repeated?
           value.each do |val|
             bytes = field.get val
-            #puts bytes.pack('C*').unpack('H*')
-            stream.write bytes.pack('C*')
+            #stream.write bytes.pack('C*')
+            stream.write bytes
           end
         else
           bytes = field.get value
-          stream.write bytes.pack('C*')
+          #stream.write bytes.pack('C*')
+          stream.write bytes
         end
       end
     end
