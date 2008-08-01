@@ -72,7 +72,7 @@ require 'protobuf/extend'
             putswi "rpc :#{$1} => :#{$2}, :#{$3} => :#{$4}"
           when /^option\s+(\w+)\s*=\s*(.+)\s*;/
             putswi "Protobuf::OPTIONS[:#{$1}] = :#{$2}"
-          when /^\}$/
+          when /^\}\s*;?$/
             @indent_level -= 1
             putswi "end"
           when ''
