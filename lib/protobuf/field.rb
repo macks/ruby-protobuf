@@ -1,14 +1,15 @@
+require 'protobuf/descriptor'
 require 'protobuf/wire_type'
 
 module Protobuf
   module Field
     def self.build(message_class, rule, type, name, tag, opts={})
-      Base.build message_class, rule, type, name, tag, opts
+      BaseField.build message_class, rule, type, name, tag, opts
     end
 
     class InvalidRuleError < StandardError; end
 
-    class Base
+    class BaseField < Descriptor
       class <<self
         def build(message_class, rule, type, name, tag, opts={})
           field_class = nil
@@ -186,7 +187,7 @@ module Protobuf
       end
     end
 
-    class StringField < Base
+    class StringField < BaseField
       def wire_type
         Protobuf::WireType::LENGTH_DELIMITED
       end
@@ -212,7 +213,7 @@ module Protobuf
       end
     end
     
-    class BytesField < Base
+    class BytesField < BaseField
       def wire_type
         Protobuf::WireType::VARINT
       end
@@ -231,7 +232,7 @@ module Protobuf
       end
     end
 
-    class VarintField < Base
+    class VarintField < BaseField
       def wire_type
         Protobuf::WireType::VARINT
       end
@@ -495,7 +496,7 @@ module Protobuf
       end
     end
     
-    class MessageField < Base
+    class MessageField < BaseField
       def wire_type
         Protobuf::WireType::LENGTH_DELIMITED
       end

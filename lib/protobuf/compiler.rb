@@ -33,7 +33,7 @@ require 'protobuf/extend'
     def compile(filename)
       File.open filename, 'r' do |file|
         file.each_line do |line|
-          line.sub! /^(.*)\/\/.*/, '\1'
+          line.sub!(/^(.*)\/\/.*/, '\1')
           line.strip!
           case line
           when /^package\s+(\w+(\.\w+)?)\s*;$/
@@ -42,7 +42,7 @@ require 'protobuf/extend'
               @indent_level += 1
             end
           when /^message\s+(\w+)\s*\{$/
-            putswi "class #{$1} < Protobuf::Message"
+            putswi "class #{$1} < ::Protobuf::Message"
             @indent_level += 1
           when /^(required|optional|repeated)\s+(\w+(\.\w+)?)\s+(\w+)\s*=\s*(\d+)\s*(\[\s*default\s*=\s*(\w+)\s*\])?\s*;$/
             rule, type, name, tag, default = $1, $2, $4, $5, $7
@@ -53,25 +53,25 @@ require 'protobuf/extend'
             end
             putswi "#{rule} :#{type}, :#{name}, #{tag}#{default}"
           when /^enum\s+(\w+)\s*\{$/
-            putswi "class #{$1} < Protobuf::Enum"
+            putswi "class #{$1} < ::Protobuf::Enum"
             @indent_level += 1
           when /^(\w+)\s*=\s*(\w+)\s*;$/
             putswi "#{$1} = #{$2}"
           when /^extensions\s+(\w+)\s+to\s+(\w+)\s*;/
             low, high = $1, $2
-            low = 'Protobuf::Extend.MIN' if low == 'min'
-            high = 'Protobuf::Extend.MAX' if high == 'max'
+            low = '::Protobuf::Extend.MIN' if low == 'min'
+            high = '::Protobuf::Extend.MAX' if high == 'max'
             putswi "extensions #{min}..#{max}"
           when /^extend\s+(\w+)\s*\{/
-            putswi "class #{$1} < Protobuf::Extend"
+            putswi "class #{$1} < ::Protobuf::Extend"
             @indent_level += 1
           when /^service\s+(\w+)\s*\{/
-            putswi "class #{$1} < Protobuf::Service"
+            putswi "class #{$1} < ::Protobuf::Service"
             @indent_level += 1
           when /^rpc\s+(\w+)\s+\(\s*(\w+)\s*\)\s+returns\s+\(\s*(\w+)\s*\)\s*;/
             putswi "rpc :#{$1} => :#{$2}, :#{$3} => :#{$4}"
           when /^option\s+(\w+)\s*=\s*(.+)\s*;/
-            putswi "Protobuf::OPTIONS[:#{$1}] = :#{$2}"
+            putswi "::Protobuf::OPTIONS[:#{$1}] = :#{$2}"
           when /^\}\s*;?$/
             @indent_level -= 1
             putswi "end"

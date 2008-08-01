@@ -1,12 +1,13 @@
 require 'stringio'
 require 'protobuf/decoder'
+require 'protobuf/descriptor'
 require 'protobuf/encoder'
 require 'protobuf/field'
 
 module Protobuf
   OPTIONS = {}
 
-  class Message
+  class Message < Descriptor
     class <<self
       attr_reader :fields
 

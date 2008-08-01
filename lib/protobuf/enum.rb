@@ -1,5 +1,7 @@
+require 'protobuf/descriptor'
+
 module Protobuf
-  class Enum
+  class Enum < Descriptor
     def self.get_name_by_tag(tag)
       constants.find do |name|
         class_eval(name) == tag
