@@ -12,15 +12,17 @@ module Protobuf
       class <<self
         def build(message_class, rule, type, name, tag, opts={})
           field_class = nil
-          begin
+          if [:double, :float, :int32, :int64, :uint32, :uint64, 
+            :sint32, :sint64, :fixed32, :fixed64, :sfixed32, :sfixed64, 
+            :bool, :string, :bytes].include? type
             field_class = eval "Protobuf::Field::#{type.to_s.capitalize}Field"
-          rescue NameError
+          else
             type = typename_to_class message_class, type
             field_class =
               if type.superclass == Protobuf::Enum
-                Protobuf::Field::Enum
+                Protobuf::Field::EnumField
               elsif type.superclass == Protobuf::Message
-                Protobuf::Field::Message
+                Protobuf::Field::MessageField
               else
                 raise $!
               end
@@ -204,7 +206,7 @@ module Protobuf
 
       def get_bytes(value)
         bytes = value.unpack('U*')
-        string_size = Int.get_bytes bytes.size
+        string_size = VarintField.get_bytes bytes.size
         #(string_size + bytes).pack('C*')
         string_size + bytes.pack('C*')
       end
@@ -224,12 +226,12 @@ module Protobuf
       end
 
       def get_bytes(value)
-        string_size = Int.get_bytes value.size
+        string_size = VarintField.get_bytes value.size
         string_size + value.pack('C*')
       end
     end
 
-    class Int < Base
+    class VarintField < Base
       def wire_type
         Protobuf::WireType::VARINT
       end
@@ -278,27 +280,27 @@ module Protobuf
       end
     end
     
-    class Int32Field < Int
+    class Int32Field < VarintField
       def self.max; 1.0/0.0 end
       def self.min; -1.0/0.0 end
     end
     
-    class Int64Field < Int
+    class Int64Field < VarintField
       def self.max; 1.0/0.0 end
       def self.min; -1.0/0.0 end
     end
     
-    class Uint32Field < Int
+    class Uint32Field < VarintField
       def self.max; 1.0/0.0 end
       def self.min; 0 end
     end
     
-    class Uint64Field < Int
+    class Uint64Field < VarintField
       def self.max; 1.0/0.0 end
       def self.min; 0 end
     end
     
-    class Sint32Field < Int
+    class Sint32Field < VarintField
       def self.max; 1.0/0.0 end
       def self.min; -1.0/0.0 end
  
@@ -320,7 +322,7 @@ module Protobuf
       end
     end
     
-    class Sint64Field < Int
+    class Sint64Field < VarintField
       def self.max; 1.0/0.0 end
       def self.min; -1.0/0.0 end
  
@@ -342,7 +344,7 @@ module Protobuf
       end
     end
     
-    class DoubleField < Int
+    class DoubleField < VarintField
       def wire_type
         Protobuf::WireType::FIXED64
       end
@@ -372,7 +374,7 @@ module Protobuf
       end
     end
     
-    class FloatField < Int
+    class FloatField < VarintField
       def wire_type
         Protobuf::WireType::FIXED32
       end
@@ -402,7 +404,7 @@ module Protobuf
       end
    end
     
-    class Fixed32Field < Int
+    class Fixed32Field < VarintField
       def wire_type
         Protobuf::WireType::FIXED32
       end
@@ -424,7 +426,7 @@ module Protobuf
       end
     end
     
-    class Fixed64Field < Int
+    class Fixed64Field < VarintField
       def wire_type
         Protobuf::WireType::FIXED64
       end
@@ -446,7 +448,7 @@ module Protobuf
       end
     end
     
-    class Sfinxed32Field < Int
+    class Sfinxed32Field < VarintField
       def wire_type
         Protobuf::WireType::FIXED32
       end
@@ -460,7 +462,7 @@ module Protobuf
       end
     end
     
-    class Sfixed64Field < Int
+    class Sfixed64Field < VarintField
       def wire_type
         Protobuf::WireType::FIXED64
       end
@@ -474,7 +476,7 @@ module Protobuf
       end
     end
     
-    class BoolField < Int
+    class BoolField < VarintField
       def typed_default_value(default=nil)
         default or false
       end
@@ -493,7 +495,7 @@ module Protobuf
       end
     end
     
-    class Message < Base
+    class MessageField < Base
       def wire_type
         Protobuf::WireType::LENGTH_DELIMITED
       end
@@ -530,14 +532,14 @@ module Protobuf
         stringio = StringIO.new ''
         value.serialize_to stringio
         bytes = stringio.string.unpack 'C*'
-        string_size = Int.get_bytes bytes.size
+        string_size = VarintField.get_bytes bytes.size
         #(string_size + bytes).pack('C*')
         #bytes + string_size
         string_size + bytes.pack('C*')
       end
     end
 
-    class Enum < Int
+    class EnumField < VarintField
       def acceptable?(val)
         raise TypeError unless type.valid_tag? val
         true
