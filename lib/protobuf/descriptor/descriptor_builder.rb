@@ -72,19 +72,13 @@ module Protobuf
         end
 
         def acceptable_descriptor(proto)
-          Protobuf::Descriptor.constants do |cls|
-            puts cls
-          end
-          #TODO
-          Protobuf::Descriptor::FileDescriptor
-=begin
-          ObjectSpace.each_object(Class) do |cls|
-            if cls.superclass == Protobuf::Descriptor and cls.proto_type == proto.class.name
-              return cls
+          Protobuf::Descriptor.constants.each do |class_name|
+            descriptor_class = Protobuf::Descriptor.const_get class_name
+            if descriptor_class.respond_to?(:proto_type) and 
+              descriptor_class.proto_type == proto.class.name
+              return descriptor_class
             end
           end
-          raise TypeError.new(proto.class.name)
-=end
         end
       end
     end
