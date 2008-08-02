@@ -14,10 +14,15 @@ module Protobuf
       end
 
       def proto_type
-        Google::Protobuf::EnumDescriptorProto
+        'Google::Protobuf::EnumDescriptorProto'
       end
 
       def build(proto, opt)
+        mod = opt[:module]
+        cls = mod.const_set proto.name, Class.new(Protobuf::Enum)
+        proto.value.each do |value_proto|
+          cls.const_set value_proto.name, value_proto.number
+        end
       end
     end
   end

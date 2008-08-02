@@ -1,10 +1,11 @@
 require 'test/unit'
+require 'test/addressbook'
 require 'protobuf/descriptor'
 require 'protobuf/descriptor_proto'
 
 class DescriptorTest < Test::Unit::TestCase
   include Google::Protobuf
-  def test_descriptor
+  def test_build
     tutorial_proto = FileDescriptorProto.new
     tutorial_proto.package = 'Desc::Tutorial'
 
@@ -122,5 +123,9 @@ class DescriptorTest < Test::Unit::TestCase
     assert_nothing_raised do
       Desc::Tutorial::AddressBook
     end
+  end
+
+  def test_unbuild
+    proto = Protobuf::FileDescriptor.unbuild Tutorial::Person
   end
 end
