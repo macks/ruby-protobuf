@@ -67,6 +67,7 @@ class DescriptorTest < Test::Unit::TestCase
     person_phone_number_proto.field << person_phone_number_type_proto
     person_phone_number_type_proto.label = FieldDescriptorProto::Label::LABEL_OPTIONAL
     person_phone_number_type_proto.type = FieldDescriptorProto::Type::TYPE_ENUM
+    person_phone_number_type_proto.type_name = 'PhoneType'
     person_phone_number_type_proto.name = 'type'
     person_phone_number_type_proto.number = 2
     person_phone_number_type_proto.default_value = 'HOME'
@@ -101,6 +102,22 @@ class DescriptorTest < Test::Unit::TestCase
     end
     assert_equal ['email', 'id', 'name', 'phone'], 
       Desc::Tutorial::Person.fields.map{|tag, field| field.name}.sort
+
+    assert_nothing_raised do
+      Desc::Tutorial::Person::PhoneNumber
+    end
+    assert_nothing_raised do
+      Desc::Tutorial::Person::PhoneNumber.new
+    end
+    assert_equal ['number', 'type'], 
+      Desc::Tutorial::Person::PhoneNumber.fields.map{|tag, field| field.name}.sort
+
+    assert_nothing_raised do
+      Desc::Tutorial::Person::PhoneType
+    end
+    assert_equal 0, Desc::Tutorial::Person::PhoneType::MOBILE
+    assert_equal 1, Desc::Tutorial::Person::PhoneType::HOME
+    assert_equal 2, Desc::Tutorial::Person::PhoneType::WORK
 
     assert_nothing_raised do
       Desc::Tutorial::AddressBook
