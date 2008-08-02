@@ -21,7 +21,7 @@ module Protobuf
     class BaseField
       class <<self
         def descriptor
-          @descriptor ||= Protobuf::FieldDescriptor.new self
+          @descriptor ||= Protobuf::Descriptor::FieldDescriptor.new self
         end
 
         def proto_type

@@ -126,6 +126,6 @@ class DescriptorTest < Test::Unit::TestCase
   end
 
   def test_unbuild
-    proto = Protobuf::FileDescriptor.unbuild Tutorial::Person
+    proto = Protobuf::Descriptor::FileDescriptor.unbuild Tutorial::Person
   end
 end
