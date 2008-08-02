@@ -12,10 +12,10 @@ module Protobuf
     def initialize
       @indent_level = 0
       @ret = <<-eos
-require 'protobuf/message'
-require 'protobuf/enum'
-require 'protobuf/service'
-require 'protobuf/extend'
+require 'protobuf/message/message'
+require 'protobuf/message/enum'
+require 'protobuf/message/service'
+require 'protobuf/message/extend'
 
       eos
     end

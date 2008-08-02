@@ -1,13 +1,13 @@
 require 'test/unit'
-require 'protobuf/compiler'
+require 'protobuf/compiler/compiler'
 
 class CompilerTest < Test::Unit::TestCase
   def test_compile
     assert_equal <<-eos.strip, Protobuf::Compiler.compile('test/addressbook.proto').strip
-require 'protobuf/message'
-require 'protobuf/enum'
-require 'protobuf/service'
-require 'protobuf/extend'
+require 'protobuf/message/message'
+require 'protobuf/message/enum'
+require 'protobuf/message/service'
+require 'protobuf/message/extend'
 
 module Tutorial
   
