@@ -1,9 +1,11 @@
 require 'protobuf/descriptor'
 
 module Protobuf
-  class Service < Descriptor
-    def self.rpc(hash)
-      raise NotImplementedError('TODO')
+  class Service
+    class <<self
+      def rpc(hash)
+        raise NotImplementedError('TODO')
+      end
     end
   end
 end

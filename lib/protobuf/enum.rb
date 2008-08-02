@@ -1,7 +1,8 @@
 require 'protobuf/descriptor'
+require 'protobuf/descriptor/enum_descriptor'
 
 module Protobuf
-  class Enum < Descriptor
+  class Enum
     class <<self
       def get_name_by_tag(tag)
         constants.find do |name|
@@ -13,16 +14,16 @@ module Protobuf
         not get_name_by_tag(tag).nil?
       end
 
+      def descriptor
+        @descriptor ||= Protobuf::EnumDescriptor.new(self)
+      end
+
       def proto_type
-        'Google::Protobuf::EnumDescriptorProto'
+        descriptor.proto_type
       end
 
       def build(proto, opt)
-        mod = opt[:module]
-        cls = mod.const_set proto.name, Class.new(Protobuf::Enum)
-        proto.value.each do |value_proto|
-          cls.const_set value_proto.name, value_proto.number
-        end
+        descriptor.build proto, opt
       end
     end
   end

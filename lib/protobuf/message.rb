@@ -3,11 +3,12 @@ require 'protobuf/decoder'
 require 'protobuf/descriptor'
 require 'protobuf/encoder'
 require 'protobuf/field'
+require 'protobuf/descriptor/message_descriptor'
 
 module Protobuf
   OPTIONS = {}
 
-  class Message < Descriptor
+  class Message
     class <<self
       attr_reader :fields
 
@@ -50,11 +51,19 @@ module Protobuf
         end
       end
 
+      def descriptor
+        #TODO MessageDescriptoro should be Descriptor.
+        @descriptor ||= Protobuf::MessageDescriptor.new(self)
+      end
+
       def proto_type
-        'Google::Protobuf::DescriptorProto'
+        descriptor.proto_type
+        #'Google::Protobuf::DescriptorProto'
       end
 
       def build(proto, opt={})
+        descriptor.build proto, opt
+=begin
         mod = opt[:module]
         cls = mod.const_set proto.name, Class.new(self)
         proto.nested_type.each do |message_proto|
@@ -66,6 +75,7 @@ module Protobuf
         proto.field.each do |field_proto|
           Protobuf::Field::BaseField.build field_proto, :class => cls
         end
+=end
       end
     end
 

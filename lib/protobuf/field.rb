@@ -1,5 +1,6 @@
 require 'protobuf/descriptor'
 require 'protobuf/wire_type'
+require 'protobuf/descriptor/field_descriptor'
 
 module Protobuf
   module Field
@@ -17,13 +18,20 @@ module Protobuf
 
     class InvalidRuleError < StandardError; end
 
-    class BaseField < Descriptor
+    class BaseField
       class <<self
+        def descriptor
+          @descriptor ||= Protobuf::FieldDescriptor.new self
+        end
+
         def proto_type
-          'Google::Protobuf::FieldDescriptorProto'
+          descriptor.proto_type
+          #'Google::Protobuf::FieldDescriptorProto'
         end
 
         def build(proto, opt={})
+          descriptor.build proto, opt
+=begin
           cls = opt[:class]
           rule = Protobuf::Descriptor.id2label proto.label
           type = Protobuf::Descriptor.id2type proto.type
@@ -31,6 +39,7 @@ module Protobuf
           opts = {}
           opts[:default] = proto.default_value if proto.default_value
           cls.define_field rule, type, proto.name, proto.number, opts
+=end
         end
       end
 
