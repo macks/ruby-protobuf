@@ -2,7 +2,7 @@ require 'stringio'
 require 'protobuf/decoder'
 require 'protobuf/encoder'
 require 'protobuf/field'
-require 'protobuf/descriptor/message_descriptor'
+require 'protobuf/descriptor/descriptor'
 
 module Protobuf
   OPTIONS = {}
