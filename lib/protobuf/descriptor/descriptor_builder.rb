@@ -72,6 +72,9 @@ module Protobuf
         end
 
         def acceptable_descriptor(proto)
+          Protobuf::Descriptor.constants do |cls|
+            puts cls
+          end
           #TODO
           Protobuf::Descriptor::FileDescriptor
 =begin
