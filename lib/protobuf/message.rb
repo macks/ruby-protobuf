@@ -51,30 +51,7 @@ module Protobuf
       end
 
       def descriptor
-        #TODO MessageDescriptoro should be Descriptor.
         @descriptor ||= Protobuf::Descriptor::Descriptor.new(self)
-      end
-
-      def proto_type
-        descriptor.proto_type
-        #'Google::Protobuf::DescriptorProto'
-      end
-
-      def build(proto, opt={})
-        descriptor.build proto, opt
-=begin
-        mod = opt[:module]
-        cls = mod.const_set proto.name, Class.new(self)
-        proto.nested_type.each do |message_proto|
-          Protobuf::Message.build message_proto, :module => cls
-        end
-        proto.enum_type.each do |enum_proto|
-          Protobuf::Enum.build enum_proto, :module => cls
-        end
-        proto.field.each do |field_proto|
-          Protobuf::Field::BaseField.build field_proto, :class => cls
-        end
-=end
       end
     end
 

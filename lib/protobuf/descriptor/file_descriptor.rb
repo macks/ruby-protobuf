@@ -15,10 +15,10 @@ module Protobuf
             end
           end
           proto.message_type.each do |message_proto|
-            Protobuf::Message.build message_proto, :module => mod
+            Protobuf::Message.descriptor.build message_proto, :module => mod
           end
           proto.enum_type.each do |enum_proto|
-            Protobuf::Enum.build enum_proto, :module => mod
+            Protobuf::Enum.descriptor.build enum_proto, :module => mod
           end
         end
 

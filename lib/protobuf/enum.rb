@@ -16,14 +16,6 @@ module Protobuf
       def descriptor
         @descriptor ||= Protobuf::Descriptor::EnumDescriptor.new(self)
       end
-
-      def proto_type
-        descriptor.proto_type
-      end
-
-      def build(proto, opt)
-        descriptor.build proto, opt
-      end
     end
   end
 end
