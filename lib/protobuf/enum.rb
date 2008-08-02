@@ -1,4 +1,3 @@
-require 'protobuf/descriptor'
 require 'protobuf/descriptor/enum_descriptor'
 
 module Protobuf

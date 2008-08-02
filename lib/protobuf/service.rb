@@ -1,5 +1,3 @@
-require 'protobuf/descriptor'
-
 module Protobuf
   class Service
     class <<self

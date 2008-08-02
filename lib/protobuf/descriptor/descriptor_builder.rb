@@ -3,7 +3,7 @@ require 'protobuf/descriptor/file_descriptor'
 module Protobuf
   module Descriptor
     def self.id2type(type_id)
-      require 'protobuf/descriptor_proto'
+      require 'protobuf/descriptor/descriptor_proto'
       case type_id
       when Google::Protobuf::FieldDescriptorProto::Type::TYPE_DOUBLE
         :double
@@ -47,7 +47,7 @@ module Protobuf
     end
 
     def self.id2label(label_id)
-      require 'protobuf/descriptor_proto'
+      require 'protobuf/descriptor/descriptor_proto'
       case label_id
       when Google::Protobuf::FieldDescriptorProto::Label::LABEL_REQUIRED
         :required

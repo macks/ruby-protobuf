@@ -1,7 +1,7 @@
 require 'test/unit'
 require 'test/addressbook'
-require 'protobuf/descriptor'
-require 'protobuf/descriptor_proto'
+require 'protobuf/descriptor/descriptor_builder'
+require 'protobuf/descriptor/descriptor_proto'
 
 class DescriptorTest < Test::Unit::TestCase
   include Google::Protobuf

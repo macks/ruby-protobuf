@@ -1,4 +1,3 @@
-require 'protobuf/descriptor'
 require 'protobuf/wire_type'
 require 'protobuf/descriptor/field_descriptor'
 
