@@ -53,6 +53,10 @@ module Protobuf
 
     def initialize
       fields.each do |tag, field|
+        unless field.ready?
+          field = field.setup
+          self.class.class_eval {@fields[tag] = field}
+        end
         field.define_accessor self
       end
     end

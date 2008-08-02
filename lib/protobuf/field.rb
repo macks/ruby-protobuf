@@ -12,36 +12,15 @@ module Protobuf
     class BaseField < Descriptor
       class <<self
         def build(message_class, rule, type, name, tag, opts={})
-          field_class = nil
-          if [:double, :float, :int32, :int64, :uint32, :uint64, 
-            :sint32, :sint64, :fixed32, :fixed64, :sfixed32, :sfixed64, 
-            :bool, :string, :bytes].include? type
-            field_class = eval "Protobuf::Field::#{type.to_s.capitalize}Field"
-          else
-            type = typename_to_class message_class, type
-            field_class =
-              if type.superclass == Protobuf::Enum
-                Protobuf::Field::EnumField
-              elsif type.superclass == Protobuf::Message
-                Protobuf::Field::MessageField
-              else
-                raise $!
-              end
-          end
-          field_class.new message_class, rule, type, name, tag, opts
-        end
-
-        def typename_to_class(message_class, type)
-          modules = message_class.to_s.split('::')
-          while
-            begin
-              type = eval((modules | [type.to_s]).join('::'))
-              break
-            rescue NameError
-              modules.empty? ? raise($!) : modules.pop
+          field_class = 
+            if [:double, :float, :int32, :int64, :uint32, :uint64, 
+              :sint32, :sint64, :fixed32, :fixed64, :sfixed32, :sfixed64, 
+              :bool, :string, :bytes].include? type
+              eval "Protobuf::Field::#{type.to_s.capitalize}Field"
+            else
+              Protobuf::Field::FieldProxy
             end
-          end
-          type
+          field_class.new message_class, rule, type, name, tag, opts
         end
       end
 
@@ -52,6 +31,8 @@ module Protobuf
           message_class, rule, type, name, tag, opts[:default]
         @error_message = 'Type invalid'
       end
+
+      def ready?; true end
 
       def default_value
         case rule
@@ -150,6 +131,41 @@ module Protobuf
 
       def to_s
         "#{rule} #{type} #{name} = #{tag} #{default ? "[default=#{default}]" : ''}"
+      end
+    end
+
+    class FieldProxy
+      def initialize(message_class, rule, type, name, tag, opts={})
+        @message_class, @rule, @type, @name, @tag, @opts =
+          message_class, rule, type, name, tag, opts
+      end
+
+      def ready?; false end
+
+      def setup
+        type = typename_to_class @message_class, @type
+        field_class =
+          if type.superclass == Protobuf::Enum
+            Protobuf::Field::EnumField
+          elsif type.superclass == Protobuf::Message
+            Protobuf::Field::MessageField
+          else
+            raise $!
+          end
+        field_class.new @message_class, @rule, type, @name, @tag, @opts
+      end
+
+      def typename_to_class(message_class, type)
+        modules = message_class.to_s.split('::')
+        while
+          begin
+            type = eval((modules | [type.to_s]).join('::'))
+            break
+          rescue NameError
+            modules.empty? ? raise($!) : modules.pop
+          end
+        end
+        type
       end
     end
 
