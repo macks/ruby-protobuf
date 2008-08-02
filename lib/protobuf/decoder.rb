@@ -1,4 +1,4 @@
-require 'protobuf/wire_type'
+require 'protobuf/common/wire_type'
 
 module Protobuf
   class InvalidWireType < StandardError; end
