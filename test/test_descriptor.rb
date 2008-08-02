@@ -6,7 +6,7 @@ class DescriptorTest < Test::Unit::TestCase
   include Google::Protobuf
   def test_descriptor
     tutorial_proto = FileDescriptorProto.new
-    tutorial_proto.package = 'TutorialDesc'
+    tutorial_proto.package = 'Desc::Tutorial'
 
     person_proto = DescriptorProto.new
     tutorial_proto.message_type << person_proto
@@ -75,6 +75,7 @@ class DescriptorTest < Test::Unit::TestCase
     person_proto.field << person_phone_phone_number_proto
     person_phone_phone_number_proto.label = FieldDescriptorProto::Label::LABEL_REPEATED
     person_phone_phone_number_proto.type = FieldDescriptorProto::Type::TYPE_MESSAGE
+    person_phone_phone_number_proto.type_name = 'PhoneNumber'
     person_phone_phone_number_proto.name = 'phone'
     person_phone_phone_number_proto.number = 4
 
@@ -86,15 +87,23 @@ class DescriptorTest < Test::Unit::TestCase
     address_book_proto.field << address_book_person_proto
     address_book_person_proto.label = FieldDescriptorProto::Label::LABEL_REPEATED
     address_book_person_proto.type = FieldDescriptorProto::Type::TYPE_MESSAGE
+    address_book_person_proto.type_name = 'Person'
     address_book_person_proto.name = 'person'
     address_book_person_proto.number = 1
 
     proto = Protobuf::Descriptor.build tutorial_proto
+
     assert_nothing_raised do
-      TutorialDesc::Person
+      Desc::Tutorial::Person
     end
     assert_nothing_raised do
-      TutorialDesc::AddressBook
+      Desc::Tutorial::Person.new
+    end
+    assert_equal ['email', 'id', 'name', 'phone'], 
+      Desc::Tutorial::Person.fields.map{|tag, field| field.name}.sort
+
+    assert_nothing_raised do
+      Desc::Tutorial::AddressBook
     end
   end
 end
