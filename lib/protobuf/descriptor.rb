@@ -60,7 +60,7 @@ module Protobuf
       end
     end
 
-    class Descriptor
+    class DescriptorBuilder
       class <<self
 
         def proto_type

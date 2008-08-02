@@ -93,7 +93,7 @@ class DescriptorTest < Test::Unit::TestCase
     address_book_person_proto.name = 'person'
     address_book_person_proto.number = 1
 
-    proto = Protobuf::Descriptor::Descriptor.build tutorial_proto
+    proto = Protobuf::Descriptor::DescriptorBuilder.build tutorial_proto
 
     assert_nothing_raised do
       Desc::Tutorial::Person
