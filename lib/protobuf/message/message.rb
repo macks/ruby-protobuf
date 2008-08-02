@@ -1,7 +1,7 @@
 require 'stringio'
 require 'protobuf/decoder'
 require 'protobuf/encoder'
-require 'protobuf/field'
+require 'protobuf/message/field'
 require 'protobuf/descriptor/descriptor'
 
 module Protobuf

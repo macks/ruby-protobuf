@@ -1,6 +1,6 @@
-require 'test/unit'
-require 'protobuf/message'
+require 'protobuf/message/message'
 require 'test/addressbook'
+require 'test/unit'
 
 class MessageTest < Test::Unit::TestCase
   def test_bracketed_access

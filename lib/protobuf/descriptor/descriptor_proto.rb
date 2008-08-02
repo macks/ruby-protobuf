@@ -1,7 +1,7 @@
-require 'protobuf/message'
-require 'protobuf/enum'
-require 'protobuf/service'
-require 'protobuf/extend'
+require 'protobuf/message/message'
+require 'protobuf/message/enum'
+require 'protobuf/message/service'
+require 'protobuf/message/extend'
 module Google
   module Protobuf
     ::Protobuf::OPTIONS[:java_package] = :"com.google.protobuf"
