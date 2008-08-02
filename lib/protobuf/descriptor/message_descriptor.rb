@@ -1,6 +1,6 @@
 module Protobuf
   module Descriptor
-    class MessageDescriptor
+    class Descriptor
       def initialize(message_class)
         @message_class = message_class
       end

@@ -52,7 +52,7 @@ module Protobuf
 
       def descriptor
         #TODO MessageDescriptoro should be Descriptor.
-        @descriptor ||= Protobuf::Descriptor::MessageDescriptor.new(self)
+        @descriptor ||= Protobuf::Descriptor::Descriptor.new(self)
       end
 
       def proto_type
