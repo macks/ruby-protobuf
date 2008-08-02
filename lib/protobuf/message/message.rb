@@ -1,6 +1,6 @@
 require 'stringio'
-require 'protobuf/decoder'
-require 'protobuf/encoder'
+require 'protobuf/message/decoder'
+require 'protobuf/message/encoder'
 require 'protobuf/message/field'
 require 'protobuf/descriptor/descriptor'
 
