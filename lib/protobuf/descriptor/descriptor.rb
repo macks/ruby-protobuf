@@ -22,6 +22,31 @@ module Protobuf
           Protobuf::Field::BaseField.descriptor.build field_proto, :class => cls
         end
       end
+
+      def unbuild(parent_proto)
+        message_proto = Google::Protobuf::DescriptorProto.new
+        message_proto.fields.each do |tag, field|
+          field.descriptor.unbuild message_proto
+        end
+        ObjectSpace.each_object(Class) do |cls|
+          if innerclass? @message_class, cls
+            cls.descriptor.unbuild message_proto
+          end
+        end
+
+        case parent_proto
+        when Google::Protobuf::FileDescriptorProto
+          parent_proto.message_type << message_proto
+        when Google::Protobuf::DescriptorProto
+          parent_proto.nested_type << message_proto
+        else
+          raise TypeError.new(parent_proto.class.name)
+        end
+      end
+
+      def innerclass?(parent, child)
+        child.name =~ /::/ and child.name.split('::')[0..-2].join('::') == parent.name
+      end
     end
   end
 end

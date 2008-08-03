@@ -46,6 +46,50 @@ module Protobuf
       end
     end
 
+    def self.type2id(type)
+      require 'protobuf/descriptor/descriptor_proto'
+      case type
+      when :double
+        Google::Protobuf::FieldDescriptorProto::Type::TYPE_DOUBLE
+      when :float
+        Google::Protobuf::FieldDescriptorProto::Type::TYPE_FLOAT
+      when :int64
+        Google::Protobuf::FieldDescriptorProto::Type::TYPE_INT64
+      when :unit64
+        Google::Protobuf::FieldDescriptorProto::Type::TYPE_UINT64
+      when :int64
+        Google::Protobuf::FieldDescriptorProto::Type::TYPE_INT32
+      when :fixed64
+        Google::Protobuf::FieldDescriptorProto::Type::TYPE_FIXED64
+      when :fixed32
+        Google::Protobuf::FieldDescriptorProto::Type::TYPE_FIXED32
+      when Google::Protobuf::FieldDescriptorProto::Type::TYPE_BOOL
+        :bool
+      when :string
+        Google::Protobuf::FieldDescriptorProto::Type::TYPE_STRING
+      when :group
+        Google::Protobuf::FieldDescriptorProto::Type::TYPE_GROUP
+      when :message
+        Google::Protobuf::FieldDescriptorProto::Type::TYPE_MESSAGE
+      when :bytes
+        Google::Protobuf::FieldDescriptorProto::Type::TYPE_BYTES
+      when :uint32
+        Google::Protobuf::FieldDescriptorProto::Type::TYPE_UINT32
+      when :enum
+        Google::Protobuf::FieldDescriptorProto::Type::TYPE_ENUM
+      when :sfixed32
+        Google::Protobuf::FieldDescriptorProto::Type::TYPE_SFIXED32
+      when :sfixed64
+        Google::Protobuf::FieldDescriptorProto::Type::TYPE_SFIXED64
+      when :sint32
+        Google::Protobuf::FieldDescriptorProto::Type::TYPE_SINT32
+      when :sint64
+        Google::Protobuf::FieldDescriptorProto::Type::TYPE_SINT64
+      else
+        Google::Protobuf::FieldDescriptorProto::Type::TYPE_MESSAGE
+      end
+    end
+
     def self.id2label(label_id)
       require 'protobuf/descriptor/descriptor_proto'
       case label_id
@@ -57,6 +101,20 @@ module Protobuf
         :repeated
       else
         raise ArgumentError.new("Invalid label: #{proto.label}")
+      end
+    end
+
+    def self.label2id(label)
+      require 'protobuf/descriptor/descriptor_proto'
+      case label
+      when :required
+        Google::Protobuf::FieldDescriptorProto::Label::LABEL_REQUIRED
+      when :optional
+        Google::Protobuf::FieldDescriptorProto::Label::LABEL_OPTIONAL
+      when :repeated
+        Google::Protobuf::FieldDescriptorProto::Label::LABEL_REPEATED
+      else
+        raise ArgumentError.new("Invalid label: #{label}")
       end
     end
 

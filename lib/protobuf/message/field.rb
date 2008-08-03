@@ -20,11 +20,15 @@ module Protobuf
     class BaseField
       class <<self
         def descriptor
-          @descriptor ||= Protobuf::Descriptor::FieldDescriptor.new self
+          @descriptor ||= Protobuf::Descriptor::FieldDescriptor.new
         end
       end
 
       attr_accessor :message_class, :rule, :type, :name, :tag, :default
+
+      def descriptor
+        @descriptor ||= Protobuf::Descriptor::FieldDescriptor.new self
+      end
 
       def initialize(message_class, rule, type, name, tag, opts={})
         @message_class, @rule, @type, @name, @tag, @default = 

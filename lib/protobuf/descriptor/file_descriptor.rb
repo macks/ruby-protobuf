@@ -22,12 +22,12 @@ module Protobuf
           end
         end
 
-        def unbuild(descriptors)
-          descriptors = [descriptors] unless descriptors.is_a? Array
+        def unbuild(messages)
+          messages = [messages] unless messages.is_a? Array
           proto = Google::Protobuf::FileDescriptorProto.new
-          proto.package = descriptors.first.to_s.split('::')[0..-2].join('::') if descriptors.first.to_s =~ /::/
-          descriptors.each do |descriptor|
-            #descriptor.unbuild proto
+          proto.package = messages.first.to_s.split('::')[0..-2].join('::') if messages.first.to_s =~ /::/
+          messages.each do |message|
+            message.descriptor.unbuild proto
           end
           proto
         end
