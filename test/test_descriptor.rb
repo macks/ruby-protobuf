@@ -7,7 +7,7 @@ class DescriptorTest < Test::Unit::TestCase
   include Google::Protobuf
   def test_build
     tutorial_proto = FileDescriptorProto.new
-    tutorial_proto.package = 'Desc::Tutorial'
+    tutorial_proto.package = 'Build::Tutorial'
 
     person_proto = DescriptorProto.new
     tutorial_proto.message_type << person_proto
@@ -93,39 +93,45 @@ class DescriptorTest < Test::Unit::TestCase
     address_book_person_proto.name = 'person'
     address_book_person_proto.number = 1
 
-    proto = Protobuf::Descriptor::DescriptorBuilder.build tutorial_proto
+    Protobuf::Descriptor::DescriptorBuilder.build tutorial_proto
 
-    assert_nothing_raised do
-      Desc::Tutorial::Person
-    end
-    assert_nothing_raised do
-      Desc::Tutorial::Person.new
-    end
+    assert_nothing_raised {Build::Tutorial::Person}
+    assert_nothing_raised {Build::Tutorial::Person.new}
     assert_equal ['email', 'id', 'name', 'phone'], 
-      Desc::Tutorial::Person.fields.map{|tag, field| field.name}.sort
+      Build::Tutorial::Person.fields.map{|tag, field| field.name}.sort
 
-    assert_nothing_raised do
-      Desc::Tutorial::Person::PhoneNumber
-    end
-    assert_nothing_raised do
-      Desc::Tutorial::Person::PhoneNumber.new
-    end
+    assert_nothing_raised {Build::Tutorial::Person::PhoneNumber}
+    assert_nothing_raised {Build::Tutorial::Person::PhoneNumber.new}
     assert_equal ['number', 'type'], 
-      Desc::Tutorial::Person::PhoneNumber.fields.map{|tag, field| field.name}.sort
+      Build::Tutorial::Person::PhoneNumber.fields.map{|tag, field| field.name}.sort
 
-    assert_nothing_raised do
-      Desc::Tutorial::Person::PhoneType
-    end
-    assert_equal 0, Desc::Tutorial::Person::PhoneType::MOBILE
-    assert_equal 1, Desc::Tutorial::Person::PhoneType::HOME
-    assert_equal 2, Desc::Tutorial::Person::PhoneType::WORK
+    assert_nothing_raised {Build::Tutorial::Person::PhoneType}
+    assert_equal 0, Build::Tutorial::Person::PhoneType::MOBILE
+    assert_equal 1, Build::Tutorial::Person::PhoneType::HOME
+    assert_equal 2, Build::Tutorial::Person::PhoneType::WORK
 
-    assert_nothing_raised do
-      Desc::Tutorial::AddressBook
-    end
+    assert_nothing_raised {Build::Tutorial::AddressBook}
   end
 
   def test_unbuild
     proto = Protobuf::Descriptor::FileDescriptor.unbuild Tutorial::Person
+    proto.package = 'Unbuild::Tutorial'
+
+    Protobuf::Descriptor::DescriptorBuilder.build proto
+
+    assert_nothing_raised {Unbuild::Tutorial::Person}
+    assert_nothing_raised {Unbuild::Tutorial::Person.new}
+    assert_equal ['email', 'id', 'name', 'phone'], 
+      Unbuild::Tutorial::Person.fields.map{|tag, field| field.name}.sort
+
+    assert_nothing_raised {Unbuild::Tutorial::Person::PhoneNumber}
+    assert_nothing_raised {Unbuild::Tutorial::Person::PhoneNumber.new}
+    assert_equal ['number', 'type'], 
+      Unbuild::Tutorial::Person::PhoneNumber.fields.map{|tag, field| field.name}.sort
+
+    assert_nothing_raised {Unbuild::Tutorial::Person::PhoneType}
+    assert_equal 0, Unbuild::Tutorial::Person::PhoneType::MOBILE
+    assert_equal 1, Unbuild::Tutorial::Person::PhoneType::HOME
+    assert_equal 2, Unbuild::Tutorial::Person::PhoneType::WORK
   end
 end
