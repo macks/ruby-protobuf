@@ -17,7 +17,7 @@ class ExtensionTest < Test::Unit::TestCase
     # serialize to string
     person = TutorialExt::Person.new
     person.id = 1234
-    #person.age = 70
+    person.age = 70
     person.name = 'John Doe'
     person.email = 'jdoe@example.com'
     phone = TutorialExt::Person::PhoneNumber.new
@@ -30,7 +30,7 @@ class ExtensionTest < Test::Unit::TestCase
     person2 = TutorialExt::Person.new
     person2.parse_from_string serialized_string
     assert_equal 1234, person2.id
-    #assert_equal 70, person2.age
+    assert_equal 70, person2.age
     assert_equal 'John Doe', person2.name
     assert_equal 'jdoe@example.com', person2.email
     assert_equal 1, person2.phone.size
