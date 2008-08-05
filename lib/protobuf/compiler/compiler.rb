@@ -43,6 +43,7 @@ require 'protobuf/message/extend'
             end
           when /^message\s+(\w+)\s*\{$/
             putswi "class #{$1} < ::Protobuf::Message"
+            @extension = false
             @indent_level += 1
           when /^(required|optional|repeated)\s+(\w+(\.\w+)?)\s+(\w+)\s*=\s*(\d+)\s*(\[\s*default\s*=\s*(\w+)\s*\])?\s*;$/
             rule, type, name, tag, default = $1, $2, $4, $5, $7
@@ -51,7 +52,8 @@ require 'protobuf/message/extend'
                 ? ", {:default => #{default}}" \
                 : ", {:default => :#{default}}"
             end
-            putswi "#{rule} :#{type}, :#{name}, #{tag}#{default}"
+            extension = @extension ? ', :extension => true' : ''
+            putswi "#{rule} :#{type}, :#{name}, #{tag}#{default}#{extension}"
           when /^enum\s+(\w+)\s*\{$/
             putswi "class #{$1} < ::Protobuf::Enum"
             @indent_level += 1
@@ -61,9 +63,10 @@ require 'protobuf/message/extend'
             low, high = $1, $2
             low = '::Protobuf::Extend.MIN' if low == 'min'
             high = '::Protobuf::Extend.MAX' if high == 'max'
-            putswi "extensions #{min}..#{max}"
+            putswi "extensions #{low}..#{high}"
           when /^extend\s+(\w+)\s*\{/
-            putswi "class #{$1} < ::Protobuf::Extend"
+            putswi "class #{$1} < ::Protobuf::Message"
+            @extension = true
             @indent_level += 1
           when /^service\s+(\w+)\s*\{/
             putswi "class #{$1} < ::Protobuf::Service"

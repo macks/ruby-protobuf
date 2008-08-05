@@ -28,6 +28,12 @@ module Tutorial
     end
     
     repeated :PhoneNumber, :phone, 4
+    
+    extensions 100..200
+  end
+  
+  class Person < ::Protobuf::Message
+    optional :int32, :age, 100, :extension => true
   end
   
   class AddressBook < ::Protobuf::Message

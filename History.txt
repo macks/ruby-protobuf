@@ -1,6 +1,6 @@
 === 0.2.0 / 2008-08-05
 
-* 0.2.0 introduce descriptor
+* 0.2.0 introduce descriptor (rev.75)
   * Message structures can be restored from encoded data by means a descriptor object
 * 0.1.0 fixed a small bug
 * 0.0.1 major enhancement

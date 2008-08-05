@@ -7,12 +7,24 @@ require 'protobuf/descriptor/descriptor'
 module Protobuf
   OPTIONS = {}
 
+
   class Message
+    class ExtensionFields < Hash
+      def initialize(key_range)
+        @key_range = key_range
+      end
+
+      def []=(key, value)
+        raise RangeError.new("#{key} is not in #{@key_range}") unless @key_range.include? key
+        super
+      end
+    end
+
     class <<self
-      attr_reader :fields
+      attr_reader :fields, :extension_fields
 
       def extensions(range)
-        raise NotImplementedError('TODO')
+        @extension_fields = ExtensionFields.new range
       end
 
       def required(type, name, tag, opts={})
@@ -28,7 +40,9 @@ module Protobuf
       end
 
       def define_field(rule, type, name, tag, opts={})
-        (@fields ||= {})[tag] = Protobuf::Field.build self, rule, type, name, tag, opts
+        field_hash = opts[:extension] ? @extension_fields : (@fields ||= {})
+        field_hash[tag] = Protobuf::Field.build self, rule, type, name, tag, opts
+        #(@fields ||= {})[tag] = Protobuf::Field.build self, rule, type, name, tag, opts
       end
 
       def get_field_by_name(name)
