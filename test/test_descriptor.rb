@@ -115,23 +115,8 @@ class DescriptorTest < Test::Unit::TestCase
 
   def test_unbuild
     proto = Protobuf::Descriptor::FileDescriptor.unbuild Tutorial::Person
-    proto.package = 'Unbuild::Tutorial'
-
-    Protobuf::Descriptor::DescriptorBuilder.build proto
-
-    assert_nothing_raised {Unbuild::Tutorial::Person}
-    assert_nothing_raised {Unbuild::Tutorial::Person.new}
-    assert_equal ['email', 'id', 'name', 'phone'], 
-      Unbuild::Tutorial::Person.fields.map{|tag, field| field.name}.sort
-
-    assert_nothing_raised {Unbuild::Tutorial::Person::PhoneNumber}
-    assert_nothing_raised {Unbuild::Tutorial::Person::PhoneNumber.new}
-    assert_equal ['number', 'type'], 
-      Unbuild::Tutorial::Person::PhoneNumber.fields.map{|tag, field| field.name}.sort
-
-    assert_nothing_raised {Unbuild::Tutorial::Person::PhoneType}
-    assert_equal 0, Unbuild::Tutorial::Person::PhoneType::MOBILE
-    assert_equal 1, Unbuild::Tutorial::Person::PhoneType::HOME
-    assert_equal 2, Unbuild::Tutorial::Person::PhoneType::WORK
+    proto.serialize_to_file 'person.bin'
+    puts
+    puts "run `test/check_unbuild.rb'"
   end
 end

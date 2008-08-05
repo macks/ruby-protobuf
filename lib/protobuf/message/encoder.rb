@@ -14,23 +14,24 @@ module Protobuf
 
     def encode(stream=@stream, message=@message)
       message.each_field do |field, value|
-        key = (field.tag << 3) | field.wire_type
-        key_bytes = Protobuf::Field::VarintField.get_bytes key
-        #stream.write key_bytes.pack('C*')
-        stream.write key_bytes
+        next unless value # TODO
 
         if field.repeated?
           value.each do |val|
-            bytes = field.get val
-            #stream.write bytes.pack('C*')
-            stream.write bytes
+            write_one_value field, val, stream
           end
         else
-          bytes = field.get value
-          #stream.write bytes.pack('C*')
-          stream.write bytes
+          write_one_value field, value, stream
         end
       end
+    end
+
+    def write_one_value(field, value, stream)
+      key = (field.tag << 3) | field.wire_type
+      key_bytes = Protobuf::Field::VarintField.get_bytes key
+      stream.write key_bytes
+      bytes = field.get value
+      stream.write bytes
     end
   end
 end

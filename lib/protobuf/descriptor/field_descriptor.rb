@@ -25,7 +25,10 @@ module Protobuf
         field_proto.number = @field_instance.tag
         field_proto.label = Protobuf::Descriptor.label2id @field_instance.rule
         field_proto.type = Protobuf::Descriptor.type2id @field_instance.type
-        field_proto.type_name = @field_instance.type.to_s if field_proto.type == Google::Protobuf::FieldDescriptorProto::Type::TYPE_MESSAGE
+        if [Google::Protobuf::FieldDescriptorProto::Type::TYPE_MESSAGE,
+          Google::Protobuf::FieldDescriptorProto::Type::TYPE_ENUM].include? field_proto.type
+          field_proto.type_name = @field_instance.type.to_s.split('::').last 
+        end
         field_proto.default_value = @field_instance.default.to_s if @field_instance.default
 
         case parent_proto

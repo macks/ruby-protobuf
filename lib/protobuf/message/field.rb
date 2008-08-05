@@ -224,6 +224,12 @@ module Protobuf
       def set_bytes(method_instance, bytes)
         method_instance.send("#{name}=", bytes.pack('U*'))
       end
+ 
+      def set_array(method_instance, bytes)
+        message = bytes.pack('U*')
+        arr = method_instance.send name
+        arr << message
+      end
 
       def get_bytes(value)
         bytes = value.unpack('U*')
