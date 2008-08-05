@@ -18,15 +18,15 @@ module Protobuf
 
         if field.repeated?
           value.each do |val|
-            write_one_value field, val, stream
+            write_pair field, val, stream
           end
         else
-          write_one_value field, value, stream
+          write_pair field, value, stream
         end
       end
     end
 
-    def write_one_value(field, value, stream)
+    def write_pair(field, value, stream)
       key = (field.tag << 3) | field.wire_type
       key_bytes = Protobuf::Field::VarintField.get_bytes key
       stream.write key_bytes
