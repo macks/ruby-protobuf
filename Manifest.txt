@@ -3,7 +3,6 @@ Manifest.txt
 README.txt
 Rakefile
 bin/rprotoc
-bin/ruby_protobuf
 lib/protobuf/common/wire_type.rb
 lib/protobuf/compiler/compiler.rb
 lib/protobuf/compiler/parser.y
@@ -24,6 +23,7 @@ lib/protobuf/message/service.rb
 lib/ruby_protobuf.rb
 test/addressbook.proto
 test/addressbook.rb
+test/check_unbuild.rb
 test/data/data.bin
 test/data/data2.bin
 test/data/data_source.py

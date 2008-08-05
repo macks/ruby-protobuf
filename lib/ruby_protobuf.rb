@@ -1,7 +1,7 @@
 require 'protobuf/compiler'
 
 class RubyProtobuf
-  VERSION = '0.1.0'
+  VERSION = '0.2.0'
 
   def start(proto_file, options)
     unless File.exist?(proto_file)

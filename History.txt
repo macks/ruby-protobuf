@@ -1,6 +1,8 @@
-=== 0.1.0 / 2008-08-01
+=== 0.2.0 / 2008-08-05
 
-* 2 fixed a small bug
-* 1 major enhancement
+* 0.2.0 introduce descriptor
+  * Message structures can be restored from encoded data by means a descriptor object
+* 0.1.0 fixed a small bug
+* 0.0.1 major enhancement
   * Birthday!
 
