@@ -31,8 +31,8 @@ module Protobuf
       end
 
       def initialize(message_class, rule, type, name, tag, opts={})
-        @message_class, @rule, @type, @name, @tag, @default = 
-          message_class, rule, type, name, tag, opts[:default]
+        @message_class, @rule, @type, @name, @tag, @default, @extension = 
+          message_class, rule, type, name, tag, opts[:default], opts[:extension]
         @error_message = 'Type invalid'
       end
 
@@ -68,9 +68,10 @@ module Protobuf
       end
 
       def define_setter(message_instance)
+        extension = @extension
         message_instance.instance_eval %Q{
           def #{name}=(val)
-            field = get_field_by_name #{name.inspect}
+            field = get_#{extension ? 'ext_' : ''}field_by_name #{name.inspect}
             if field.acceptable? val
               @#{name} = val
             end

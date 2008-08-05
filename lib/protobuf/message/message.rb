@@ -10,13 +10,17 @@ module Protobuf
 
   class Message
     class ExtensionFields < Hash
-      def initialize(key_range)
+      def initialize(key_range=0..-1)
         @key_range = key_range
       end
 
       def []=(key, value)
         raise RangeError.new("#{key} is not in #{@key_range}") unless @key_range.include? key
         super
+      end
+
+      def include_tag?(tag)
+        @key_range.include? tag
       end
     end
 
@@ -40,27 +44,51 @@ module Protobuf
       end
 
       def define_field(rule, type, name, tag, opts={})
-        field_hash = opts[:extension] ? @extension_fields : (@fields ||= {})
+        field_hash = opts[:extension] ? extension_fields : (@fields ||= {})
         field_hash[tag] = Protobuf::Field.build self, rule, type, name, tag, opts
         #(@fields ||= {})[tag] = Protobuf::Field.build self, rule, type, name, tag, opts
       end
 
+      def extension_tag?(tag)
+        extension_fields.include_tag? tag
+      end
+
+      def extension_fields
+        @extension_fields ||= ExtensionFields.new
+      end
+
       def get_field_by_name(name)
-        @fields.values.find {|field| field.name == name.to_sym}
+        fields.values.find {|field| field.name == name.to_sym}
       end
 
       def get_field_by_tag(tag)
-        @fields[tag]
+        fields[tag]
       end
 
       def get_field(tag_or_name)
         case tag_or_name
-        when Integer
-          get_field_by_tag tag_or_name
-        when String, Symbol
-          get_field_by_name tag_or_name
-        else
-          raise TypeError
+        when Integer; get_field_by_tag tag_or_name
+        when String, Symbol; get_field_by_name tag_or_name
+        else; raise TypeError
+        end
+      end
+
+      #TODO merge to get_field_by_name
+      def get_ext_field_by_name(name)
+        extension_fields.values.find {|field| field.name == name.to_sym}
+      end
+
+      #TODO merge to get_field_by_tag
+      def get_ext_field_by_tag(tag)
+        extension_fields[tag]
+      end
+
+      #TODO merge to get_field
+      def get_ext_field(tag_or_name)
+        case tag_or_name
+        when Integer; get_ext_field_by_tag tag_or_name
+        when String, Symbol; get_ext_field_by_name tag_or_name
+        else; raise TypeError
         end
       end
 
@@ -74,6 +102,15 @@ module Protobuf
         unless field.ready?
           field = field.setup
           self.class.class_eval {@fields[tag] = field}
+        end
+        field.define_accessor self
+      end
+
+      # TODO
+      self.class.extension_fields.each do |tag, field|
+        unless field.ready?
+          field = field.setup
+          self.class.class_eval {@extension_fields[tag] = field}
         end
         field.define_accessor self
       end
@@ -152,5 +189,10 @@ module Protobuf
         block.call field, self[tag]
       end
     end
+
+    def extension_fields; self.class.extension_fields end
+    def get_ext_field_by_name(name); self.class.get_ext_field_by_name(name) end
+    def get_ext_field_by_tag(tag); self.class.get_ext_field_by_tag(tag) end
+    def get_ext_field(tag_or_name); self.class.get_ext_field(tag_or_name) end
   end
 end

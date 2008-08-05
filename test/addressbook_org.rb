@@ -3,7 +3,7 @@ require 'protobuf/message/enum'
 require 'protobuf/message/service'
 require 'protobuf/message/extend'
 
-module Tutorial
+module TutorialExt
   
   class Person < ::Protobuf::Message
     required :string, :name, 1
