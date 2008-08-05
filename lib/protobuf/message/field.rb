@@ -42,8 +42,10 @@ module Protobuf
         case rule
         when :repeated
           FieldArray.new self
-        when :required, :optional
+        when :required
           typed_default_value default
+        when :optional
+          nil
         else
           raise InvalidRuleError
         end
