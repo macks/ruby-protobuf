@@ -125,6 +125,23 @@ module Protobuf
       end
     end
 
+    def clear!
+      fields.each do |tag, field|
+        if field.repeated?
+          self[field.name].clear
+        else
+          self[field.name] = field.default_value
+        end
+      end
+      extension_fields.each do |tag, field|
+        if field.repeated?
+          self[field.name].clear
+        else
+          self[field.name] = field.default_value
+        end
+      end
+    end
+
     def parse_from_string(string)
       parse_from StringIO.new(string)
     end

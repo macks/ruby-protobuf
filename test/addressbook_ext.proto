@@ -1,0 +1,6 @@
+import "test/addressbook_base.proto";
+package tutorial;
+
+extend Person {
+  optional int32 age = 100;
+}

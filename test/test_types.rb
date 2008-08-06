@@ -152,7 +152,7 @@ class TypesTest < Test::Unit::TestCase
     types = Test::Types::TestTypes.new
     assert_nothing_raised do types.type11 = true end
     assert_nothing_raised do types.type11 = false end
-    assert_raise TypeError do types.type11 = nil end
+    assert_nothing_raised do types.type11 = nil end
     assert_raise TypeError do types.type11 = 0 end
     assert_raise TypeError do types.type11 = '' end
   end
@@ -161,7 +161,7 @@ class TypesTest < Test::Unit::TestCase
     types = Test::Types::TestTypes.new
     assert_nothing_raised do types.type12 = '' end
     assert_nothing_raised do types.type12 = 'hello' end
-    assert_raise TypeError do types.type12 = nil end
+    assert_nothing_raised do types.type12 = nil end
     assert_raise TypeError do types.type12 = 0 end
     assert_raise TypeError do types.type12 = true end
   end

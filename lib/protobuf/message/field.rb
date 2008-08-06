@@ -74,7 +74,9 @@ module Protobuf
         message_instance.instance_eval %Q{
           def #{name}=(val)
             field = get_#{extension ? 'ext_' : ''}field_by_name #{name.inspect}
-            if field.acceptable? val
+            if val.nil?
+              @#{name} = field.default_value
+            elsif field.acceptable? val
               @#{name} = val
             end
           end
