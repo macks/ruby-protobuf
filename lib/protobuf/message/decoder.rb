@@ -42,10 +42,15 @@ module Protobuf
     protected
 
     def read_key(stream)
+      # TODO is there more clear way to do this?
+      bits = 0
       bytes = read_varint stream
-      #TODO 1 < bytes.size のときエラー
-      wire_type = bytes[0] & 0b00000111
-      tag = bytes[0] >> 3 # TODO
+      bytes.each_with_index do |byte, index|
+        byte &= 0b01111111
+        bits |= byte << (7 * index)
+      end
+      wire_type = bits & 0b00000111
+      tag = bits >> 3
       [tag, wire_type]
     end
 

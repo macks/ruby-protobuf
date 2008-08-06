@@ -155,7 +155,8 @@ module Protobuf
     end
 
     def set_field(tag, bytes)
-      get_field_by_tag(tag).set self, bytes
+      #get_field_by_tag(tag).set self, bytes
+      (get_field_by_tag(tag) or get_ext_field_by_tag(tag)).set self, bytes
     end
     
     def merge_field(tag, value)

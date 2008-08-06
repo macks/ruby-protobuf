@@ -3,7 +3,7 @@ require 'protobuf/message/enum'
 require 'protobuf/message/service'
 require 'protobuf/message/extend'
 
-require 'addressbook_org'
+require 'addressbook_base'
 
 module TutorialExt
   class Person < ::Protobuf::Message
