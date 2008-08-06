@@ -23,6 +23,10 @@ lib/protobuf/message/service.rb
 lib/ruby_protobuf.rb
 test/addressbook.proto
 test/addressbook.rb
+test/addressbook_base.proto
+test/addressbook_base.rb
+test/addressbook_ext.proto
+test/addressbook_ext.rb
 test/check_unbuild.rb
 test/data/data.bin
 test/data/data2.bin
@@ -32,6 +36,7 @@ test/data/types_source.py
 test/test_addressbook.rb
 test/test_compiler.rb
 test/test_descriptor.rb
+test/test_extension.rb
 test/test_message.rb
 test/test_parse.rb
 test/test_ruby_protobuf.rb
