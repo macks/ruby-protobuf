@@ -19,9 +19,10 @@ class AddressbookTest < Test::Unit::TestCase
 
   def test_initial_value
     person = Tutorial::Person.new
-    assert_equal '', person.name
-    assert_equal 0, person.id
+    assert_nil person.name
+    assert_nil person.id
     assert_equal [], person.phone
+    assert_equal '', person.email
   end
 
   def test_repeatable

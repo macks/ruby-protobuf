@@ -116,6 +116,15 @@ module Protobuf
       end
     end
 
+    def initialized?
+      fields.to_a.inject(true) do |result, (tag, field)| 
+        result and not (field.required? and self[field.name].nil?) 
+      end and
+      extension_fields.to_a.inject(true) do |result, (tag, field)| 
+        result and not (field.required? and self[field.name].nil?)
+      end
+    end
+
     def parse_from_string(string)
       parse_from StringIO.new(string)
     end
@@ -188,14 +197,6 @@ module Protobuf
     def get_field_by_name(name); self.class.get_field_by_name(name) end
     def get_field_by_tag(tag); self.class.get_field_by_tag(tag) end
     def get_field(tag_or_name); self.class.get_field(tag_or_name) end
-
-=begin
-    def each_field(&block)
-      fields.to_a.sort{|(t1, f1), (t2, f2)| t1 <=> t2}.each do |tag, field|
-        block.call field, self[tag]
-      end
-    end
-=end
 
     def extension_fields; self.class.extension_fields end
     def get_ext_field_by_name(name); self.class.get_ext_field_by_name(name) end

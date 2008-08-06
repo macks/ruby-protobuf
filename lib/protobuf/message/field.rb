@@ -43,9 +43,9 @@ module Protobuf
         when :repeated
           FieldArray.new self
         when :required
-          typed_default_value default
-        when :optional
           nil
+        when :optional
+          typed_default_value default
         else
           raise InvalidRuleError
         end

@@ -7,7 +7,7 @@ module Protobuf
   class Compiler
     INDENT_UNIT = '  '
 
-    def self.compile(proto_file, proto_dir='.', out_dir='.', file_create=false)
+    def self.compile(proto_file, proto_dir='.', out_dir='.', file_create=true)
       self.new.compile proto_file, proto_dir, out_dir, file_create
     end
 
@@ -32,7 +32,7 @@ require 'protobuf/message/extend'
     end
     alias putswi puts_with_indent
 
-    def compile(proto_file, proto_dir='.', out_dir='.', file_create=false)
+    def compile(proto_file, proto_dir='.', out_dir='.', file_create=true)
       rb_file = "#{out_dir}/#{proto_file.sub(/\.proto$/, '.rb')}"
       proto_path = validate_existence proto_file, proto_dir
       File.open proto_path, 'r' do |file|

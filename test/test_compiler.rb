@@ -3,7 +3,7 @@ require 'protobuf/compiler/compiler'
 
 class CompilerTest < Test::Unit::TestCase
   def test_compile
-    assert_equal <<-eos.strip, Protobuf::Compiler.compile('test/addressbook.proto').strip
+    assert_equal <<-eos.strip, Protobuf::Compiler.compile('test/addressbook.proto', '.', '.', false).strip
 require 'protobuf/message/message'
 require 'protobuf/message/enum'
 require 'protobuf/message/service'

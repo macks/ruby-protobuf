@@ -31,7 +31,7 @@ class TypesTest < Test::Unit::TestCase
     assert_equal(-10, types2.type8)
     assert_equal 10000, types2.type9
     assert_equal 100000, types2.type10
-    assert_equal false, types2.type11
+    assert !types2.type11
     assert_equal 'hello all types', types2.type12
     #types2.type13
   end
