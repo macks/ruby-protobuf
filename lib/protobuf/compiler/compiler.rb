@@ -1,12 +1,14 @@
 # This is a quite temporary implementation.
 # I'll create a compiler class using Racc.
 
+require 'fileutils'
+
 module Protobuf
   class Compiler
     INDENT_UNIT = '  '
 
-    def self.compile(filename)
-      self.new.compile filename
+    def self.compile(proto_file, proto_dir='.', out_dir='.', file_create=false)
+      self.new.compile proto_file, proto_dir, out_dir, file_create
     end
 
     def initialize
@@ -30,8 +32,10 @@ require 'protobuf/message/extend'
     end
     alias putswi puts_with_indent
 
-    def compile(filename)
-      File.open filename, 'r' do |file|
+    def compile(proto_file, proto_dir='.', out_dir='.', file_create=false)
+      rb_file = "#{out_dir}/#{proto_file.sub(/\.proto$/, '.rb')}"
+      proto_path = validate_existence proto_file, proto_dir
+      File.open proto_path, 'r' do |file|
         file.each_line do |line|
           line.sub!(/^(.*)\/\/.*/, '\1')
           line.strip!
@@ -41,6 +45,8 @@ require 'protobuf/message/extend'
               putswi "module #{path.capitalize}"
               @indent_level += 1
             end
+          when /^import\s+"((?:[^"\\]+|\\.)*)"\s*;$/
+            putswi "require '#{required_message_from_proto $1, proto_dir, out_dir}'"
           when /^message\s+(\w+)\s*\{$/
             putswi "class #{$1} < ::Protobuf::Message"
             @extension = false
@@ -87,7 +93,31 @@ require 'protobuf/message/extend'
           putswi "end"
         end
       end
+      if file_create
+        puts "#{rb_file} writing..."
+        FileUtils.mkpath File.dirname(rb_file)
+        File.open(rb_file, 'w') {|f| f.write @ret}
+      end
       @ret
+    end
+
+    def validate_existence(path, base_dir)
+      if File.exist? path
+      elsif File.exist?(path = "#{base_dir or '.'}/#{path}")
+      else
+        raise ArgumentError.new("File does not exist: #{path}")
+      end
+      path
+    end
+
+    def required_message_from_proto(proto_file, proto_dir, out_dir)
+      rb_path = proto_file.sub(/\.proto$/, '.rb')
+      proto_dir ||= '.'
+      out_dir ||= '.'
+      unless File.exist?("#{out_dir}/#{rb_path}")
+        Compiler.compile proto_file, proto_dir, out_dir
+      end
+      rb_path
     end
   end
 end

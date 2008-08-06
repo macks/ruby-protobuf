@@ -7,7 +7,7 @@ require 'ruby_protobuf'
 COMMAND_LINE = "#{$0} #{ARGV.join(' ')} PROTO_FILE"
 OPT = {}
 opts = OptionParser.new
-#opts.on('-p', '--proto_path <PATH>', 'Specify the directory in which to search for imports. The current directory is default.'){|v| OPT[:proto_path] = v}
+opts.on('-p', '--proto_path <PATH>', 'Specify the directory in which to search for imports. The current directory is default.'){|v| OPT[:proto_path] = v}
 opts.on('-o', '--out <OUT_DIR>', 'Specify the directory in which Ruby source file is generated. The current directory is default.'){|v| OPT[:out] = v}
 opts.on_tail('-v', '--version', 'Show version.'){puts(opts.ver); exit}
 opts.on_tail('-h', '--help', 'Show this message.'){puts(opts.help); exit}
@@ -17,5 +17,4 @@ opts.order! ARGV
 PROTO_FILE = ARGV.shift
 
 RubyProtobuf.new.start PROTO_FILE, OPT
-
 

@@ -1,22 +1,9 @@
-require 'protobuf/compiler'
+require 'protobuf/compiler/compiler'
 
 class RubyProtobuf
-  VERSION = '0.2.0'
+  VERSION = '0.2.1'
 
   def start(proto_file, options)
-    unless File.exist?(proto_file)
-      if File.exist? "#{proto_file}.proto"
-        proto_file = "#{proto_file}.proto"
-      else
-        raise ArgumentError.new("#{proto_file} does not exist.")
-      end
-    end
-    rb_filename = File.basename proto_file.dup
-    rb_filename += '.rb' unless rb_filename.sub!(/.\w+$/, '.rb')
-    rb_filepath = "#{options[:out] || '.'}/#{rb_filename}"
-    puts "#{rb_filepath} writting..."
-    File.open(rb_filepath, 'w') do |f|
-      f.write Protobuf::Compiler.compile(proto_file)
-    end
+    Protobuf::Compiler.compile(proto_file, (options[:proto_path] or '.'), (options[:out] or '.'))
   end
 end

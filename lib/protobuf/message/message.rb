@@ -25,7 +25,7 @@ module Protobuf
     end
 
     class <<self
-      attr_reader :fields, :extension_fields
+      attr_reader :fields
 
       def extensions(range)
         @extension_fields = ExtensionFields.new range
