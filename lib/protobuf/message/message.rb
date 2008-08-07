@@ -127,12 +127,35 @@ module Protobuf
     end
 
     def clear!
-      fields.each do |tag, field|
+      each_field do |field, value|
         field.clear self
       end
-      extension_fields.each do |tag, field|
-        field.clear self
+    end
+
+    def to_s(indent=0)
+      ret = ''
+      i = '  ' * indent
+      field_value_to_string = lambda do |field, value|
+        if field.is_a? Protobuf::Field::MessageField
+          ret += "#{i}#{field.name} {\n"
+          ret += value.to_s(indent + 1)
+          ret += "#{i}}\n"
+        elsif field.is_a? Protobuf::Field::EnumField
+          ret += "#{i}#{field.name}: #{field.type.name_by_value(value)}\n"
+        else
+          ret += "#{i}#{field.name}: #{value.inspect}\n"
+        end
       end
+      each_field do |field, value|
+        if field.repeated?
+          value.each do |v| 
+            field_value_to_string.call field, v
+          end
+        else 
+          field_value_to_string.call field, value
+        end
+      end
+      ret
     end
 
     def parse_from_string(string)

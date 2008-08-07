@@ -13,6 +13,10 @@ module Protobuf
         not get_name_by_tag(tag).nil?
       end
 
+      def name_by_value(value)
+        constants.find {|c| const_get(c) == value}
+      end
+
       def descriptor
         @descriptor ||= Protobuf::Descriptor::EnumDescriptor.new(self)
       end

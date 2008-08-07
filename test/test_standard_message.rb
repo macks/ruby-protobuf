@@ -26,5 +26,32 @@ class StandardMessageTest < Test::Unit::TestCase
     assert_equal '', person.email
     assert_equal 0, person.phone.size
   end
+
+  def test_to_s
+    person = Tutorial::Person.new
+    person.name = 'name'
+    person.id = 1234
+    person.email = 'abc@cde.fgh'
+    person.phone << Tutorial::Person::PhoneNumber.new
+    person.phone.last.number = '123-456'
+    person.phone.last.type = Tutorial::Person::PhoneType::MOBILE
+    person.phone << Tutorial::Person::PhoneNumber.new
+    person.phone.last.number = '456-123'
+    person.phone.last.type = Tutorial::Person::PhoneType::WORK
+
+    assert_equal <<-eos, person.to_s
+name: "name"
+id: 1234
+email: "abc@cde.fgh"
+phone {
+  number: "123-456"
+  type: MOBILE
+}
+phone {
+  number: "456-123"
+  type: WORK
+}
+    eos
+  end
 end
 
