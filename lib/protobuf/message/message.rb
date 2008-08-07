@@ -1,3 +1,4 @@
+require 'pp'
 require 'stringio'
 require 'protobuf/message/decoder'
 require 'protobuf/message/encoder'
@@ -117,28 +118,20 @@ module Protobuf
     end
 
     def initialized?
-      fields.to_a.inject(true) do |result, (tag, field)| 
-        result and not (field.required? and self[field.name].nil?) 
+      fields.to_a.inject(true) do |result, (tag, field)|
+        result and field.initialized?(self)
       end and
-      extension_fields.to_a.inject(true) do |result, (tag, field)| 
-        result and not (field.required? and self[field.name].nil?)
+      extension_fields.to_a.inject(true) do |result, (tag, field)|
+        result and field.initialized?(self)
       end
     end
 
     def clear!
       fields.each do |tag, field|
-        if field.repeated?
-          self[field.name].clear
-        else
-          self[field.name] = field.default_value
-        end
+        field.clear self
       end
       extension_fields.each do |tag, field|
-        if field.repeated?
-          self[field.name].clear
-        else
-          self[field.name] = field.default_value
-        end
+        field.clear self
       end
     end
 

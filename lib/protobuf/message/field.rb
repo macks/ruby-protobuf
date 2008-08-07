@@ -38,6 +38,29 @@ module Protobuf
 
       def ready?; true end
 
+      def clear(message)
+        if repeated?
+          message[name].clear
+        else
+          message[name] = default_value
+        end
+      end
+
+      def initialized?(message)
+        case rule
+        when :required
+          return false if message[name].nil?
+          return false if is_a?(Protobuf::Field::MessageField) and not message[name].initialized?
+          true
+        when :repeated
+          message[name].inject(true) do |result, msg|
+            result and msg.initialized?
+          end
+        else
+          true
+        end
+      end
+
       def default_value
         case rule
         when :repeated
