@@ -132,19 +132,32 @@ module Protobuf
       end
     end
 
+    def dup
+      ret = self.class.new
+      each_field do |field, value|
+        if field.repeated?
+          value.each do |v|
+            ret[field.name] << (v.is_a?(Numeric) ? v : v.dup)
+          end
+        else
+          ret[field.name] = value.is_a?(Numeric) ? value : value.dup
+        end
+      end
+      ret
+    end
+
     def to_s(indent=0)
       ret = ''
       i = '  ' * indent
       field_value_to_string = lambda do |field, value|
-        if field.is_a? Protobuf::Field::MessageField
-          ret += "#{i}#{field.name} {\n"
-          ret += value.to_s(indent + 1)
-          ret += "#{i}}\n"
-        elsif field.is_a? Protobuf::Field::EnumField
-          ret += "#{i}#{field.name}: #{field.type.name_by_value(value)}\n"
-        else
-          ret += "#{i}#{field.name}: #{value.inspect}\n"
-        end
+        ret +=
+          if field.is_a? Protobuf::Field::MessageField
+            "#{i}#{field.name} {\n#{value.to_s(indent + 1)}#{i}}\n"
+          elsif field.is_a? Protobuf::Field::EnumField
+            "#{i}#{field.name}: #{field.type.name_by_value(value)}\n"
+          else
+            "#{i}#{field.name}: #{value.inspect}\n"
+          end
       end
       each_field do |field, value|
         if field.repeated?

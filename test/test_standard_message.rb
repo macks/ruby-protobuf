@@ -27,6 +27,32 @@ class StandardMessageTest < Test::Unit::TestCase
     assert_equal 0, person.phone.size
   end
 
+  def test_dup
+    person = Tutorial::Person.new
+    person.name = 'name'
+    person.id = 1234
+    person.email = 'abc@cde.fgh'
+    person.phone << Tutorial::Person::PhoneNumber.new
+    person.phone.last.number = '123-456'
+    person.phone.last.type = Tutorial::Person::PhoneType::MOBILE
+    person.phone << Tutorial::Person::PhoneNumber.new
+    person.phone.last.number = '456-123'
+    person.phone.last.type = Tutorial::Person::PhoneType::WORK
+
+    person2 = person.dup
+    assert_not_equal person, person2
+    assert_equal person.name, person2.name
+    assert_equal person.id, person2.id
+    assert_equal person.email, person2.email
+    assert_equal person.phone.size, person2.phone.size
+    assert_not_equal person.phone.first, person2.phone.first
+    assert_equal person.phone.first.number, person2.phone.first.number
+    assert_equal person.phone.first.type, person2.phone.first.type
+    assert_not_equal person.phone.last, person2.phone.last
+    assert_equal person.phone.last.number, person2.phone.last.number
+    assert_equal person.phone.last.type, person2.phone.last.type
+  end
+
   def test_to_s
     person = Tutorial::Person.new
     person.name = 'name'
