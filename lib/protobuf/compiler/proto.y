@@ -1,9 +1,10 @@
 class Protobuf::ProtoParser
+  #options no_result_var
 rule
   proto : proto_item
-          { result = val }
+          { result = Protobuf::Node::ProtoNode.new val }
         | proto proto_item
-          { result << val[1] }
+          { result.children << val[1] }
 
   proto_item : message
              | extend
@@ -16,10 +17,10 @@ rule
                { }
 
   import : 'import' string_literal ';'
-           { result = [:import, val[1]] }
+           { result = Protobuf::Node::ImportNode.new val[1] }
 
   package : 'package' IDENT dot_ident_list ';'
-            { result = [:package, val[2].unshift(val[1])] }
+            { result = Protobuf::Node::PackageNode.new val[2].unshift(val[1]) }
 
   dot_ident_list :
                    { result = [] }
@@ -27,16 +28,16 @@ rule
                    { result << val[2] }
 
   option : 'option' option_body ';'
-           { result = [:option, val[1]] }
+           { result = Protobuf::Node::OptionNode.new *val[1] }
 
   option_body : IDENT dot_ident_list '=' constant
                 { result = [val[1].unshift(val[0]), val[3]] }
 
   message : 'message' IDENT message_body
-            { result = [:message, val[1], val[2]] }
+            { result = Protobuf::Node::MessageNode.new val[1], val[2] }
 
   extend : 'extend' user_type '{' extend_body_list '}'
-           { result = [:extend, val[1], val[3]] }
+           { result = Protobuf::Node::ExtendNode.new val[1], val[3] }
 
   extend_body_list : 
                      { result = [] }
@@ -49,7 +50,7 @@ rule
                 { }
 
   enum : 'enum' IDENT '{' enum_body_list '}'
-         { result = [:enum, val[1], val[3]] }
+         { result = Protobuf::Node::EnumNode.new val[1], val[3] }
 
   enum_body_list :
                    { result = [] }
@@ -62,10 +63,10 @@ rule
               { }
 
   enum_field : IDENT '=' integer_literal ';'
-               { result = [val[0], val[2]] }
+               { result = Protobuf::Node::EnumFieldNode.new val[0], val[2] }
 
   service : 'service' IDENT '{' service_body_list '}'
-            { result = [:service, val[1], val[3]] }
+            { result = Protobuf::Node::ServiceNode.new val[1], val[3] }
 
   service_body_list :
                       { result = [] }
@@ -78,7 +79,7 @@ rule
                  { }
 
   rpc : 'rpc' IDENT '(' user_type ')' 'returns' '(' user_type ')' ';'
-        { result = [:rpc, val[1], val[3], val[7]] }
+        { result = Protobuf::Node::RpcNode.new val[1], val[3], val[7] }
 
   message_body : '{' message_body_body_list '}'
                  { result = val[1] }
@@ -99,12 +100,12 @@ rule
                       { }
 
   group : label 'group' CAMEL_IDENT '=' integer_literal message_body
-          { result = [:group, val[0], val[2], val[4], val[5]] }
+          { result = Protobuf::Node::GroupNode.new val[0], val[2], val[4], val[5] }
 
   field : label type IDENT '=' integer_literal ';'
-          { result = [:field, val[0], val[1], val[2], val[4]] }
+          { result = Protobuf::Node::FieldNode.new val[0], val[1], val[2], val[4] }
         | label type IDENT '=' integer_literal '[' field_option_list ']' ';'
-          { result = [:field, val[0], val[1], val[2], val[4], val[6]] }
+          { result = Protobuf::Node::FieldNode.new val[0], val[1], val[2], val[4], val[6] }
 
   field_option_list : field_option
                       { result = val }
@@ -116,7 +117,7 @@ rule
                  { result = [:default, val[2]] }
 
   extensions : 'extensions' extension comma_extension_list ';'
-               { result = [:extensions, val[2].unshift(val[1])] }
+               { result = Protobuf::Node::ExtensionsNode.new val[2].unshift(val[1]) }
 
   comma_extension_list : 
                          { result = [] }
@@ -124,10 +125,11 @@ rule
                          { result << val[1] }
 
   extension : integer_literal
+              { result = Protobuf::Node::ExtensionRangeNode.new val[0] }
             | integer_literal 'to' integer_literal
-              { result = [val[0], val[2]] }
+              { result = Protobuf::Node::ExtensionRangeNode.new val[0], val[2] }
             | integer_literal 'to' 'max'
-              { result = [val[0], :max] }
+              { result = Protobuf::Node::ExtensionRangeNode.new val[0], :max }
 
   label : 'required'
         | 'optional'
@@ -154,6 +156,7 @@ rule
 end
 
 ---- inner
+  #include Protobuf::Node
 
   def parse(f)
     @q = []
@@ -163,7 +166,7 @@ end
         when /\A\s+/, /\A\/\/.*/
           ;
         when /\A(required|optional|repeated|import|package|option|message|extend|enum|service|rpc|returns|group|default|extensions|to|max|double|float|int32|int64|uint32|uint64|sint32|sint64|fixed32|fixed64|sfixed32|sfixed64|bool|string|bytes)/
-          @q.push [$&, $&]
+          @q.push [$&, $&.to_sym]
         when /\A[1-9]\d*/, /\A0(?![.xX0-9])/
           @q.push [:DEC_INTEGER, $&.to_i]
         when /\A0[xX]([A-Fa-f0-9])+/
@@ -197,14 +200,13 @@ end
 
 ---- footer
 
+require 'protobuf/compiler/nodes'
+
 parser = Protobuf::ProtoParser.new
-if ARGV[0]
-  File.open ARGV[0], 'r' do |f|
-    result = parser.parse(f)
-    require 'pp'
-    PP.pp result
-  end
-else
-  parser.parse $stdin
+File.open ARGV[0], 'r' do |f|
+  result = parser.parse(f)
+  #require 'pp'
+  #PP.pp result
+  puts result.to_rb
 end
 
