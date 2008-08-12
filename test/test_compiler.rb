@@ -1,5 +1,5 @@
 require 'test/unit'
-require 'protobuf/compiler/compiler'
+require 'protobuf/compiler/compiler_old'
 
 class CompilerTest < Test::Unit::TestCase
   def test_compile

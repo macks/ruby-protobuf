@@ -35,6 +35,11 @@ module Protobuf
       def to_s
         @ruby.join("\n")
       end
+
+      def visit(node)
+        node.to_rb self 
+        self
+      end
     end
 
     class Base
@@ -47,8 +52,7 @@ module Protobuf
         @children = children
       end
 
-      def to_rb
-        visitor = ToRubyVisitor.new
+      def to_rb(visitor)
         visitor.write <<-eos
 require 'protobuf/message/message'
 require 'protobuf/message/enum'
@@ -57,7 +61,6 @@ require 'protobuf/message/extend'
         eos
         @children.map{|child| child.to_rb visitor}
         visitor.close_ruby
-        puts visitor.to_s
       end
     end
   

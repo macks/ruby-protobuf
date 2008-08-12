@@ -2,7 +2,7 @@
 $: << "#{File.dirname(__FILE__)}/../lib"
 require 'optparse'
 require 'ruby_protobuf'
-require 'protobuf/compiler/compiler'
+require 'protobuf/compiler/compiler_old'
 
 
 COMMAND_LINE = "#{$0} #{ARGV.join(' ')} PROTO_FILE"

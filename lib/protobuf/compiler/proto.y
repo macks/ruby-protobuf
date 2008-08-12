@@ -156,7 +156,6 @@ rule
 end
 
 ---- inner
-  #include Protobuf::Node
 
   def parse(f)
     @q = []
@@ -197,16 +196,3 @@ end
   def next_token
     @q.shift
   end
-
----- footer
-
-require 'protobuf/compiler/nodes'
-
-parser = Protobuf::ProtoParser.new
-File.open ARGV[0], 'r' do |f|
-  result = parser.parse(f)
-  #require 'pp'
-  #PP.pp result
-  puts result.to_rb
-end
-
