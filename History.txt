@@ -1,5 +1,9 @@
-=== 0.2.1 / 2008-08-06
+=== 0.3.0 / 2008-08-19
 
+* 0.3.0 RPC is available (rev.124)
+  * RPC is available
+  * New compiler using racc (ruby version of yacc)
+  * Rename `sample' directory to `example'
 * 0.2.1 extensions and import are available (rev.82)
 * 0.2.0 introduce descriptor (rev.75)
   * Message structures can be restored from encoded data by means a descriptor object
