@@ -11,13 +11,13 @@ class <%= module_name %>::<%= name %>Handler < Protobuf::Rpc::Handler
     # TODO: edit this method
   end
 end
-<%- end -%>
 
+<%- end -%>
 class <%= module_name %>::<%= service_name %> < Protobuf::Rpc::Server
   def setup_handlers
     @handlers = {
       <%- rpcs.each do |name, | -%>
-      :<%= underscore name %> => <%= module_name %>::<%= name %>Handler
+      :<%= underscore name %> => <%= module_name %>::<%= name %>Handler,
       <%- end -%>
     } 
   end

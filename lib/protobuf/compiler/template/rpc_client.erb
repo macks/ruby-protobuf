@@ -3,16 +3,16 @@ require 'protobuf/rpc/client'
 require '<%= required_file %>'
 
 # build request
-<%= underscore request %> = <%= message_module %>::<%= request %>.new
+request = <%= message_module %>::<%= request %>.new
 # TODO: setup a request
 raise StandardError.new('setup a request')
 
 # create blunk response
-<%= underscore response %> = <%= message_module %>::<%= response %>.new
+response = <%= message_module %>::<%= response %>.new
 
 # execute rpc
-Protobuf::Rpc::Client.new('localhost', <%= default_port %>).call :<%= underscore name %>, <%= underscore request %>, <%= underscore response %>
+Protobuf::Rpc::Client.new('localhost', <%= default_port %>).call :<%= underscore name %>, request, response
 
 # show response
-puts <%= underscore response %>
+puts response
 

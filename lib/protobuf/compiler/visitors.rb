@@ -61,10 +61,12 @@ module Protobuf
     end
 
     class CreateRpcVisitor
-      attr_accessor :package, :services, :current_service
+      attr_accessor :package, :services, :current_service, :file_contents
 
       def initialize
         @services = {}
+        @create_file = true
+        @file_contents = {}
       end
 
       def visit(node)
@@ -76,7 +78,9 @@ module Protobuf
         (@services[@current_service] ||= []) << [name, request.first, response.first]
       end
 
-      def create_files(message_file, out_dir)
+      #def create_files(message_file, out_dir, create_file=true)
+      def create_files(message_file, out_dir, create_file=false)
+        @create_file = create_file
         default_port = 9999
         @services.each do |service_name, rpcs|
           underscored_name = underscore service_name.to_s
@@ -84,65 +88,34 @@ module Protobuf
           required_file = message_file.sub(/^\.\//, '').sub(/\.rb$/, '')
 
           create_bin out_dir, underscored_name, message_module, service_name, default_port
-# TODO shold handle more than one rpc
           create_service message_file, out_dir, underscored_name, message_module, 
             service_name, default_port, rpcs, required_file
           rpcs.each do |name, request, response|
             create_client out_dir, underscored_name, default_port, name, request, response, message_module, required_file
           end
         end
+        @file_contents
       end
 
       def create_bin(out_dir, underscored_name, module_name, service_name, default_port)
         bin_filename = "#{out_dir}/start_#{underscored_name}"
         bin_contents = template_erb('rpc_bin').result binding
-puts
-puts '------------------'
-puts bin_filename
-puts bin_contents
+        File.open(bin_filename, 'w') {|f| f.write bin_contents} if @create_file
+        @file_contents[bin_filename] = bin_contents
       end
 
       def create_service(message_file, out_dir, underscored_name, module_name, service_name, default_port, rpcs, required_file)
-        #name, request, response = rpcs.first
         service_filename = "#{out_dir}/#{underscored_name}.rb"
         service_contents = template_erb('rpc_service').result binding
-=begin
-        service_contents = <<-eos
-require 'protobuf/rpc/server'
-require 'protobuf/rpc/handler'
-require '#{required_file}'
-
-class #{module_name}::#{name}Handler < Protobuf::Rpc::Handler
-  request #{module_name}::#{request}
-  response #{module_name}::#{response}
-  
-  def self.process_request(request, response)
-    # TODO: edit this method
-  end
-end
-
-class #{module_name}::#{service_name} < Protobuf::Rpc::Server
-  def setup_handlers
-    @handlers = {
-      :#{underscore name} => #{module_name}::#{name}Handler
-    }
-  end
-end
-        eos
-=end
-puts
-puts '------------------'
-puts service_filename
-puts service_contents
+        File.open(service_filename, 'w') {|f| f.write service_contents} if @create_file
+        @file_contents[service_filename] = service_contents
       end
 
       def create_client(out_dir, underscored_name, default_port, name, request, response, message_module, required_file)
         client_filename = "#{out_dir}/client_#{underscore name}.rb"
         client_contents = template_erb('rpc_client').result binding
-puts
-puts '------------------'
-puts client_filename
-puts client_contents
+        File.open(client_filename, 'w') {|f| f.write client_contents} if @create_file
+        @file_contents[client_filename] = client_contents
       end
 
       private

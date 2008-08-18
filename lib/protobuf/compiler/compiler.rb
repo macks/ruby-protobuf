@@ -10,8 +10,8 @@ module Protobuf
     end
 
     def compile(proto_file, proto_dir='.', out_dir='.', file_create=true)
-      #create_message proto_file, proto_dir, out_dir, file_create
-create_rpc proto_file, proto_dir, out_dir, file_create
+      create_message proto_file, proto_dir, out_dir, file_create
+      create_rpc proto_file, proto_dir, out_dir, file_create
     end
 
     def create_message(proto_file, proto_dir='.', out_dir='.', file_create=true)
@@ -39,13 +39,7 @@ create_rpc proto_file, proto_dir, out_dir, file_create
       File.open proto_path, 'r' do |file|
         rpc_visitor.visit Protobuf::ProtoParser.new.parse(file)
       end
-      #if file_create
-      #  puts "#{rb_file} writing..."
-      #  FileUtils.mkpath File.dirname(rb_file)
-      #  File.open(rb_file, 'w') {|f| f.write rpc_visitor.to_s}
-      #else
-        rpc_visitor.create_files rb_file, out_dir
-      #end
+      rpc_visitor.create_files rb_file, out_dir, file_create
     end
 
     def validate_existence(path, base_dir)
