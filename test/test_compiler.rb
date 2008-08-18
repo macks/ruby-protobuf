@@ -1,9 +1,10 @@
 require 'test/unit'
-require 'protobuf/compiler/compiler_old'
+#require 'protobuf/compiler/compiler_old'
+require 'protobuf/compiler/compiler'
 
 class CompilerTest < Test::Unit::TestCase
   def test_compile
-    assert_equal <<-eos.strip, Protobuf::Compiler.compile('test/addressbook.proto', '.', '.', false).strip
+    assert_equal <<-eos.gsub(/^\s*\n/, '').strip, Protobuf::Compiler.compile('test/addressbook.proto', '.', '.', false).gsub(/^\s*\n/, '').strip
 require 'protobuf/message/message'
 require 'protobuf/message/enum'
 require 'protobuf/message/service'
@@ -24,7 +25,7 @@ module Tutorial
     
     class PhoneNumber < ::Protobuf::Message
       required :string, :number, 1
-      optional :PhoneType, :type, 2, {:default => :HOME}
+      optional :PhoneType, :type, 2, :default => :HOME
     end
     
     repeated :PhoneNumber, :phone, 4

@@ -23,7 +23,7 @@ module Tutorial
     
     repeated :PhoneNumber, :phone, 4
     
-    extensions 100..200
+    #extensions 100..200
   end
   
   # see: addressbool_ext.rb
@@ -36,7 +36,7 @@ module Tutorial
   end
 
   #class SearchService < Protobuf::Service
-  #  rpc :Search => :SearchRequest, :returns => :SearchResponse
+  #  rpc :Search, :request => :SearchRequest, :response => :SearchResponse
   #end
 
   #Protobuf::OPTIONS[:optimize_for] = :SPEED

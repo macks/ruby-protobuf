@@ -1,8 +1,9 @@
-#!/usr/local/bin/ruby
+#!/usr/bin/ruby
 $: << "#{File.dirname(__FILE__)}/../lib"
 require 'optparse'
 require 'ruby_protobuf'
-require 'protobuf/compiler/compiler_old'
+#require 'protobuf/compiler/compiler_old'
+require 'protobuf/compiler/compiler'
 
 
 COMMAND_LINE = "#{$0} #{ARGV.join(' ')} PROTO_FILE"
@@ -18,4 +19,3 @@ opts.order! ARGV
 PROTO_FILE = ARGV.shift
 
 Protobuf::Compiler.compile(PROTO_FILE, (OPT[:proto_path] or '.'), (OPT[:out] or '.'))
-

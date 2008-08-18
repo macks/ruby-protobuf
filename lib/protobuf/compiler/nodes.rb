@@ -1,48 +1,8 @@
 module Protobuf
   module Node
-    # TODO: should be refactored
-    class ToRubyVisitor
-      attr_accessor :indent, :context
-
-      def initialize
-        @indent = 0
-        @context = []
-      end
-
-      def write(str)
-        ruby << "#{'  ' * @indent}#{str}"
-      end
-
-      def increment
-        @indent += 1
-      end
-
-      def decrement
-        @indent -= 1
-      end
-
-      def close_ruby
-        while 0 < indent
-          decrement
-          write 'end'
-        end
-      end
-
-      def ruby
-        @ruby ||= []
-      end
-
-      def to_s
-        @ruby.join("\n")
-      end
-
-      def visit(node)
-        node.to_rb self 
-        self
-      end
-    end
-
     class Base
+      def accept_rpc_creator(vistor)
+      end
     end
   
     class ProtoNode < Base
@@ -52,15 +12,19 @@ module Protobuf
         @children = children
       end
 
-      def to_rb(visitor)
+      def accept_message_creator(visitor)
         visitor.write <<-eos
 require 'protobuf/message/message'
 require 'protobuf/message/enum'
 require 'protobuf/message/service'
 require 'protobuf/message/extend'
         eos
-        @children.map{|child| child.to_rb visitor}
+        @children.map{|child| child.accept_message_creator visitor}
         visitor.close_ruby
+      end
+
+      def accept_rpc_creator(visitor)
+        @children.map{|child| child.accept_rpc_creator visitor}
       end
     end
   
@@ -69,8 +33,8 @@ require 'protobuf/message/extend'
         @path = path
       end
 
-      def to_rb(visitor)
-        visitor.write "require #{path.inspect}"
+      def accept_message_creator(visitor)
+        visitor.write "require '#{visitor.required_message_from_proto @path}'"
       end
     end
 
@@ -79,11 +43,15 @@ require 'protobuf/message/extend'
         @path_list = path_list
       end
 
-      def to_rb(visitor)
+      def accept_message_creator(visitor)
         @path_list.each do |path|
           visitor.write "module #{path.to_s.capitalize}"
           visitor.increment
         end
+      end
+
+      def accept_rpc_creator(visitor)
+        visitor.package = @path_list.dup
       end
     end
 
@@ -92,7 +60,7 @@ require 'protobuf/message/extend'
         @name_list, @value = name_list, value
       end
 
-      def to_rb(visitor)
+      def accept_message_creator(visitor)
         visitor.write "::Protobuf::OPTIONS[:#{@name_list.join('.').inspect}] = #{@value.inspect}"
       end
     end
@@ -102,13 +70,11 @@ require 'protobuf/message/extend'
         @name, @children = name, children
       end
 
-      def to_rb(visitor)
+      def accept_message_creator(visitor)
         visitor.write "class #{@name} < ::Protobuf::Message"
-        visitor.increment
-        visitor.context.push self.class
-        @children.each {|child| child.to_rb visitor}
-        visitor.context.pop
-        visitor.decrement
+        visitor.in_context self.class do 
+          @children.each {|child| child.accept_message_creator visitor}
+        end
         visitor.write "end"
       end
     end
@@ -118,13 +84,11 @@ require 'protobuf/message/extend'
         @name, @children = name, children
       end
 
-      def to_rb(visitor)
+      def accept_message_creator(visitor)
         visitor.write "class #{@name} < ::Protobuf::Message"
-        visitor.increment
-        visitor.context.push self.class
-        @children.each {|child| child.to_rb visitor}
-        visitor.context.pop
-        visitor.decrement
+        visitor.in_context self.class do 
+          @children.each {|child| child.accept_message_creator visitor}
+        end
         visitor.write "end"
       end
     end
@@ -134,13 +98,11 @@ require 'protobuf/message/extend'
         @name, @children = name, children
       end
 
-      def to_rb(visitor)
+      def accept_message_creator(visitor)
         visitor.write "class #{@name} < ::Protobuf::Enum"
-        visitor.increment
-        visitor.context.push self.class
-        @children.each {|child| child.to_rb visitor}
-        visitor.context.pop
-        visitor.decrement
+        visitor.in_context self.class do 
+          @children.each {|child| child.accept_message_creator visitor}
+        end
         visitor.write "end"
       end
     end
@@ -150,7 +112,7 @@ require 'protobuf/message/extend'
         @name, @value = name, value
       end
 
-      def to_rb(visitor)
+      def accept_message_creator(visitor)
         visitor.write "#{@name} = #{@value}"
       end
     end
@@ -160,8 +122,18 @@ require 'protobuf/message/extend'
         @name, @children = name, children
       end
 
-      def to_rb(visitor)
-        raise ArgumentError.new('have not implement')
+      def accept_message_creator(visitor)
+        # do nothing
+        #visitor.write "class #{@name} < ::Protobuf::Service"
+        #visitor.in_context self.class do 
+        #  @children.each {|child| child.accept_message_creator visitor}
+        #end
+        #visitor.write "end"
+      end
+
+      def accept_rpc_creator(visitor)
+        visitor.current_service = @name
+        @children.each {|child| child.accept_rpc_creator visitor}
       end
     end
 
@@ -170,8 +142,13 @@ require 'protobuf/message/extend'
         @name, @request, @response = name, request, response
       end
 
-      def to_rb(visitor)
-        raise ArgumentError.new('have not implement')
+      def accept_message_creator(visitor)
+        # do nothing
+        #visitor.write "rpc :#{@name}, :request => :#{@request}, :response => :#{@response}"
+      end
+
+      def accept_rpc_creator(visitor)
+        visitor.add_rpc @name, @request, @response
       end
     end
 
@@ -180,7 +157,7 @@ require 'protobuf/message/extend'
         @label, @name, @value, @children = label, name, value, children
       end
 
-      def to_rb(visitor)
+      def accept_message_creator(visitor)
         raise ArgumentError.new('have not implement')
       end
     end
@@ -190,8 +167,8 @@ require 'protobuf/message/extend'
         @label, @type, @name, @value, @opts = label, type, name, value, opts
       end
 
-      def to_rb(visitor)
-        opts = @opts.empty? ? '' : ", #{@opts.map{|k, v| ":#{k} = :#{v}"}.join(', ')}"
+      def accept_message_creator(visitor)
+        opts = @opts.empty? ? '' : ", #{@opts.map{|k, v| ":#{k} => :#{v}"}.join(', ')}"
         if visitor.context.first == Protobuf::Node::ExtendNode
           opts += ', :extension => true'
         end
@@ -204,7 +181,7 @@ require 'protobuf/message/extend'
         @range = range
       end
 
-      def to_rb(visitor)
+      def accept_message_creator(visitor)
         visitor.write "extensions #{@range.to_s}"
       end
     end
@@ -214,7 +191,7 @@ require 'protobuf/message/extend'
         @low, @high = low, high
       end
 
-      #def to_rb(visitor)
+      #def accept_message_creator(visitor)
       #end
       
       def to_s

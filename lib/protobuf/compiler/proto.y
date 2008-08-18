@@ -16,7 +16,7 @@ rule
              | ';'
                { }
 
-  import : 'import' string_literal ';'
+  import : 'import' STRING_LITERAL ';'
            { result = Protobuf::Node::ImportNode.new val[1] }
 
   package : 'package' IDENT dot_ident_list ';'
