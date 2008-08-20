@@ -28,7 +28,7 @@ rule
                    { result << val[2] }
 
   option : 'option' option_body ';'
-           { result = Protobuf::Node::OptionNode.new *val[1] }
+           { result = Protobuf::Node::OptionNode.new(*val[1]) }
 
   option_body : IDENT dot_ident_list '=' constant
                 { result = [val[1].unshift(val[0]), val[3]] }
@@ -78,8 +78,11 @@ rule
                | ';'
                  { }
 
-  rpc : 'rpc' IDENT '(' user_type ')' 'returns' '(' user_type ')' ';'
+  rpc : 'rpc' IDENT '(' rpc_arg ')' 'returns' '(' rpc_arg ')' ';'
         { result = Protobuf::Node::RpcNode.new val[1], val[3], val[7] }
+
+  rpc_arg :
+          | user_type
 
   message_body : '{' message_body_body_list '}'
                  { result = val[1] }

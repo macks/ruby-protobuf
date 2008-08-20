@@ -22,20 +22,14 @@ module Protobuf
       File.open proto_path, 'r' do |file|
         message_visitor.visit Protobuf::ProtoParser.new.parse(file)
       end
-      if file_create
-        puts "#{rb_file} writing..."
-        FileUtils.mkpath File.dirname(rb_file)
-        File.open(rb_file, 'w') {|f| f.write message_visitor.to_s}
-      else
-        message_visitor.to_s
-      end
+      message_visitor.create_files rb_file, out_dir, file_create
     end
 
     def create_rpc(proto_file, proto_dir='.', out_dir='.', file_create=true)
       rb_file = "#{out_dir}/#{proto_file.sub(/\.proto$/, '.rb')}"
       proto_path = validate_existence proto_file, proto_dir
 
-      rpc_visitor = Protobuf::Visitor::CreateRpcVisitor.new# proto_dir, out_dir
+      rpc_visitor = Protobuf::Visitor::CreateRpcVisitor.new
       File.open proto_path, 'r' do |file|
         rpc_visitor.visit Protobuf::ProtoParser.new.parse(file)
       end

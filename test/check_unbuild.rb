@@ -1,4 +1,4 @@
-#!/usr/local/bin/ruby
+#!/usr/bin/ruby
 
 $:.push "#{File.dirname(__FILE__)}/../lib"
 
