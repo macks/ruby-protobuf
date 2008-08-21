@@ -1,5 +1,6 @@
-=== 0.3.0 / 2008-08-19
+=== 0.3.1 / 2008-08-22
 
+* 0.3.1 fixed bugs concerning RPC (rev.146)
 * 0.3.0 RPC is available (rev.124)
   * RPC is available
   * New compiler using racc (ruby version of yacc)
