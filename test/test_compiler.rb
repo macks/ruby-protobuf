@@ -47,7 +47,7 @@ end
   def test_create_rpc
     file_contents = Protobuf::Compiler.new.create_rpc('test/rpc.proto', '.', '.', false)
 
-    assert_source <<-eos, file_contents['./address_book_service.rb']
+    assert_source <<-eos, file_contents['./test/address_book_service.rb']
 require 'protobuf/rpc/server'
 require 'protobuf/rpc/handler'
 require 'test/rpc'
@@ -80,14 +80,14 @@ class Tutorial::AddressBookService < Protobuf::Rpc::Server
 end
     eos
 
-    assert_source <<-eos, file_contents['./start_address_book_service']
+    assert_source <<-eos, file_contents['./test/start_address_book_service']
 #!/usr/bin/ruby
 require 'address_book_service'
 
 Tutorial::AddressBookService.new(:port => 9999).start
     eos
 
-    assert_source <<-eos, file_contents['./client_search.rb']
+    assert_source <<-eos, file_contents['./test/client_search.rb']
 #!/usr/bin/ruby
 require 'protobuf/rpc/client'
 require 'test/rpc'
@@ -107,7 +107,7 @@ Protobuf::Rpc::Client.new('localhost', 9999).call :search, request, response
 puts response
     eos
 
-    assert_source <<-eos, file_contents['./client_add.rb']
+    assert_source <<-eos, file_contents['./test/client_add.rb']
 #!/usr/bin/ruby
 require 'protobuf/rpc/client'
 require 'test/rpc'
