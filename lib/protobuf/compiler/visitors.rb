@@ -1,12 +1,33 @@
 require 'erb'
+require 'fileutils'
 
 module Protobuf
   module Visitor
     class Base
       attr_reader :silent
 
-      def log_writing(filename)
-        puts "#{filename} writing..." unless silent
+      def create_file_with_backup(filename, contents, executable=false)
+        if File.exist? filename
+          if File.read(filename) == contents
+            # do nothing
+            return
+          else
+            backup_filename = "#{filename}.#{Time.now.to_i}" 
+            log_writing "#{backup_filename}", "backingup..."
+            FileUtils.copy filename, backup_filename
+          end
+        end
+
+        File.open(filename, 'w') do |file| 
+          log_writing filename
+          FileUtils.mkpath File.dirname(filename)
+          file.write contents
+        end
+       	FileUtils.chmod 0755, filename if executable
+      end
+
+      def log_writing(filename, message="writing...")
+        puts "#{filename} #{message}" unless silent
       end
     end
 
@@ -118,11 +139,7 @@ module Protobuf
       def create_bin(out_dir, underscored_name, module_name, service_name, default_port)
         bin_filename = "#{out_dir}/start_#{underscored_name}"
         bin_contents = template_erb('rpc_bin').result binding
-        File.open(bin_filename, 'w') do |file| 
-          log_writing bin_filename
-          FileUtils.mkpath File.dirname(bin_filename)
-          file.write bin_contents
-        end if @create_file
+        create_file_with_backup bin_filename, bin_contents, true if @create_file
         @file_contents[bin_filename] = bin_contents
       end
 
@@ -130,11 +147,7 @@ module Protobuf
         default_port, rpcs, required_file)
         service_filename = "#{out_dir}/#{underscored_name}.rb"
         service_contents = template_erb('rpc_service').result binding
-        File.open(service_filename, 'w') do |file| 
-          log_writing service_filename
-          FileUtils.mkpath File.dirname(service_filename)
-          file.write service_contents
-        end if @create_file
+        create_file_with_backup service_filename, service_contents if @create_file
         @file_contents[service_filename] = service_contents
       end
 
@@ -142,11 +155,7 @@ module Protobuf
         message_module, required_file)
         client_filename = "#{out_dir}/client_#{underscore name}.rb"
         client_contents = template_erb('rpc_client').result binding
-        File.open(client_filename, 'w') do |file| 
-          log_writing client_filename
-          FileUtils.mkpath File.dirname(client_filename)
-          file.write client_contents
-        end if @create_file
+        create_file_with_backup client_filename, client_contents, true if @create_file
         @file_contents[client_filename] = client_contents
       end
 

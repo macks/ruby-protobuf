@@ -26,14 +26,15 @@ module Protobuf
     end
 
     def create_rpc(proto_file, proto_dir='.', out_dir='.', file_create=true)
-      rb_file = "#{out_dir}/#{proto_file.sub(/\.proto$/, '.rb')}"
+      message_file = "#{out_dir}/#{proto_file.sub(/\.proto$/, '.rb')}"
+      out_dir = "#{out_dir}/#{File.dirname proto_file}"
       proto_path = validate_existence proto_file, proto_dir
 
       rpc_visitor = Protobuf::Visitor::CreateRpcVisitor.new
       File.open proto_path, 'r' do |file|
         rpc_visitor.visit Protobuf::ProtoParser.new.parse(file)
       end
-      rpc_visitor.create_files rb_file, out_dir, file_create
+      rpc_visitor.create_files message_file, out_dir, file_create
     end
 
     def validate_existence(path, base_dir)
