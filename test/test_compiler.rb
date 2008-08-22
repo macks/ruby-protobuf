@@ -81,14 +81,14 @@ end
     eos
 
     assert_source <<-eos, file_contents['./test/start_address_book_service']
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 require 'address_book_service'
 
 Tutorial::AddressBookService.new(:port => 9999).start
     eos
 
     assert_source <<-eos, file_contents['./test/client_search.rb']
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 require 'protobuf/rpc/client'
 require 'test/rpc'
 
@@ -108,7 +108,7 @@ puts response
     eos
 
     assert_source <<-eos, file_contents['./test/client_add.rb']
-#!/usr/bin/ruby
+#!/usr/bin/env ruby
 require 'protobuf/rpc/client'
 require 'test/rpc'
 
