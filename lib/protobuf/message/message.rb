@@ -98,7 +98,7 @@ module Protobuf
       end
     end
 
-    def initialize
+    def initialize(values={})
       fields.each do |tag, field|
         unless field.ready?
           field = field.setup
@@ -115,6 +115,8 @@ module Protobuf
         end
         field.define_accessor self
       end
+
+      values.each {|tag, val| self[tag] = val}
     end
 
     def initialized?

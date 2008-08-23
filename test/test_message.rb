@@ -17,4 +17,11 @@ class MessageTest < Test::Unit::TestCase
     assert_equal 200, person[:id]
     assert_equal 200, person['id']
   end
+
+  def test_initialize_with_hash
+    person = Tutorial::Person.new :name => 'Jiro', :id => 300, :email => 'jiro@ema.il'
+    assert_equal 'Jiro', person.name
+    assert_equal 300, person.id
+    assert_equal 'jiro@ema.il', person.email
+  end
 end

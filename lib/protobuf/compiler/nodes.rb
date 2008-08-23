@@ -1,7 +1,15 @@
+require 'protobuf/descriptor/descriptor_proto'
+
 module Protobuf
   module Node
     class Base
-      def accept_rpc_creator(vistor)
+      def accept_message_visitor(visitor)
+      end
+
+      def accept_rpc_visitor(vistor)
+      end
+
+      def accept_descriptor_visitor(visitor)
       end
     end
   
@@ -12,19 +20,27 @@ module Protobuf
         @children = children
       end
 
-      def accept_message_creator(visitor)
+      def accept_message_visitor(visitor)
         visitor.write <<-eos
 require 'protobuf/message/message'
 require 'protobuf/message/enum'
 require 'protobuf/message/service'
 require 'protobuf/message/extend'
         eos
-        @children.map{|child| child.accept_message_creator visitor}
+        @children.map{|child| child.accept_message_visitor visitor}
         visitor.close_ruby
       end
 
-      def accept_rpc_creator(visitor)
-        @children.map{|child| child.accept_rpc_creator visitor}
+      def accept_rpc_visitor(visitor)
+        @children.map{|child| child.accept_rpc_visitor visitor}
+      end
+
+      def accept_descriptor_visitor(visitor)
+        descriptor = Google::Protobuf::FileDescriptorProto.new :name => visitor.filename
+        visitor.file_descriptor = descriptor
+        visitor.in_context descriptor do
+          @children.map{|child| child.accept_descriptor_visitor visitor}
+        end
       end
     end
   
@@ -33,8 +49,12 @@ require 'protobuf/message/extend'
         @path = path
       end
 
-      def accept_message_creator(visitor)
+      def accept_message_visitor(visitor)
         visitor.write "require '#{visitor.required_message_from_proto @path}'"
+      end
+
+      def accept_descriptor_visitor(visitor)
+        visitor.current_descriptor.dependency << @path
       end
     end
 
@@ -43,15 +63,19 @@ require 'protobuf/message/extend'
         @path_list = path_list
       end
 
-      def accept_message_creator(visitor)
+      def accept_message_visitor(visitor)
         @path_list.each do |path|
           visitor.write "module #{path.to_s.capitalize}"
           visitor.increment
         end
       end
 
-      def accept_rpc_creator(visitor)
+      def accept_rpc_visitor(visitor)
         visitor.package = @path_list.dup
+      end
+
+      def accept_descriptor_visitor(visitor)
+        visitor.current_descriptor.package = @path_list.join '.'
       end
     end
 
@@ -60,8 +84,12 @@ require 'protobuf/message/extend'
         @name_list, @value = name_list, value
       end
 
-      def accept_message_creator(visitor)
+      def accept_message_visitor(visitor)
         visitor.write "::Protobuf::OPTIONS[:#{@name_list.join('.').inspect}] = #{@value.inspect}"
+      end
+
+      def accept_descriptor_visitor(visitor)
+        visitor.add_option @name_list.join('.'), @value
       end
     end
 
@@ -70,12 +98,20 @@ require 'protobuf/message/extend'
         @name, @children = name, children
       end
 
-      def accept_message_creator(visitor)
+      def accept_message_visitor(visitor)
         visitor.write "class #{@name} < ::Protobuf::Message"
         visitor.in_context self.class do 
-          @children.each {|child| child.accept_message_creator visitor}
+          @children.each {|child| child.accept_message_visitor visitor}
         end
         visitor.write "end"
+      end
+
+      def accept_descriptor_visitor(visitor)
+        descriptor = Google::Protobuf::DescriptorProto.new :name => @name
+        visitor.descriptor = descriptor
+        visitor.in_context descriptor do
+          @children.each {|child| child.accept_descriptor_visitor visitor}
+        end
       end
     end
 
@@ -84,12 +120,16 @@ require 'protobuf/message/extend'
         @name, @children = name, children
       end
 
-      def accept_message_creator(visitor)
+      def accept_message_visitor(visitor)
         visitor.write "class #{@name} < ::Protobuf::Message"
         visitor.in_context self.class do 
-          @children.each {|child| child.accept_message_creator visitor}
+          @children.each {|child| child.accept_message_visitor visitor}
         end
         visitor.write "end"
+      end
+
+      def accept_descriptor_visitor(visitor)
+        # TODO: how should i handle this?
       end
     end
 
@@ -98,12 +138,20 @@ require 'protobuf/message/extend'
         @name, @children = name, children
       end
 
-      def accept_message_creator(visitor)
+      def accept_message_visitor(visitor)
         visitor.write "class #{@name} < ::Protobuf::Enum"
         visitor.in_context self.class do 
-          @children.each {|child| child.accept_message_creator visitor}
+          @children.each {|child| child.accept_message_visitor visitor}
         end
         visitor.write "end"
+      end
+
+      def accept_descriptor_visitor(visitor)
+        descriptor = Google::Protobuf::EnumDescriptor.new :name => @name
+        visitor.enum_descriptor = descriptor
+        visitor.in_context descriptor do
+          @children.each {|child| child.accept_descriptor_visitor visitor}
+        end
       end
     end
 
@@ -112,8 +160,13 @@ require 'protobuf/message/extend'
         @name, @value = name, value
       end
 
-      def accept_message_creator(visitor)
+      def accept_message_visitor(visitor)
         visitor.write "#{@name} = #{@value}"
+      end
+
+      def accept_descriptor_visitor(visitor)
+        descriptor = Google::Protobuf::EnumValueDescriptor.new :name => @name, :number => @value
+        visitor.enum_value_descriptor = descriptor
       end
     end
 
@@ -122,18 +175,21 @@ require 'protobuf/message/extend'
         @name, @children = name, children
       end
 
-      def accept_message_creator(visitor)
+      def accept_message_visitor(visitor)
         # do nothing
-        #visitor.write "class #{@name} < ::Protobuf::Service"
-        #visitor.in_context self.class do 
-        #  @children.each {|child| child.accept_message_creator visitor}
-        #end
-        #visitor.write "end"
       end
 
-      def accept_rpc_creator(visitor)
+      def accept_rpc_visitor(visitor)
         visitor.current_service = @name
-        @children.each {|child| child.accept_rpc_creator visitor}
+        @children.each {|child| child.accept_rpc_visitor visitor}
+      end
+
+      def accept_descriptor_visitor(visitor)
+        descriptor = Google::Protobuf::ServiceDescriptorProto.new :name => @name
+        visitor.service_descriptor = descriptor
+        visitor.in_context descriptor do 
+          @children.each {|child| child.accept_descriptor_visitor visitor}
+        end
       end
     end
 
@@ -142,13 +198,17 @@ require 'protobuf/message/extend'
         @name, @request, @response = name, request, response
       end
 
-      def accept_message_creator(visitor)
+      def accept_message_visitor(visitor)
         # do nothing
-        #visitor.write "rpc :#{@name}, :request => :#{@request}, :response => :#{@response}"
       end
 
-      def accept_rpc_creator(visitor)
+      def accept_rpc_visitor(visitor)
         visitor.add_rpc @name, @request, @response
+      end
+
+      def accept_descriptor_visitor(visitor)
+        descriptor = Google::Protobuf::MethodDescriptorProto.new :name => @name, :input_type => @request, :output_type => @response
+        visitor.method_descriptor = descriptor
       end
     end
 
@@ -157,22 +217,40 @@ require 'protobuf/message/extend'
         @label, @name, @value, @children = label, name, value, children
       end
 
-      def accept_message_creator(visitor)
-        raise ArgumentError.new('have not implement')
+      def accept_message_visitor(visitor)
+        raise NotImplementedError.new
+      end
+
+      def accept_descriptor_visitor(visitor)
+        raise NotImplementedError.new
       end
     end
 
     class FieldNode < Base
-      def initialize(label, type, name, value, opts=[])
+      def initialize(label, type, name, value, opts={})
         @label, @type, @name, @value, @opts = label, type, name, value, opts
       end
 
-      def accept_message_creator(visitor)
+      def accept_message_visitor(visitor)
         opts = @opts.empty? ? '' : ", #{@opts.map{|k, v| ":#{k} => :#{v}"}.join(', ')}"
         if visitor.context.first == Protobuf::Node::ExtendNode
           opts += ', :extension => true'
         end
         visitor.write "#{@label} :#{@type}, :#{@name}, #{@value}#{opts}"
+      end
+
+      def accept_descriptor_visitor(visitor)
+        descriptor = Google::Protobuf::FieldDescriptorProto.new :name => @name, :number => @value
+        descriptor.label = Google::Protobuf::FieldDescriptorProto::Label.const_get "LABEL_#{@label.to_s.upcase}"
+        descriptor.type = Google::Protobuf::FieldDescriptorProto::Label.const_get "TYPE_#{@type.to_s.upcase}"
+        descriptor.type_name = @type.to_s
+        opts.each do |key, val|
+          case key.to_sym
+          when :default
+            descriptor.default_value = val.to_s
+          end
+        end
+        visitor.field_descriptor = descriptor
       end
     end
 
@@ -181,17 +259,29 @@ require 'protobuf/message/extend'
         @range = range
       end
 
-      def accept_message_creator(visitor)
+      def accept_message_visitor(visitor)
         visitor.write "extensions #{@range.to_s}"
+      end
+
+      def accept_descriptor_visitor(visitor)
+        descriptor = Google::Protobuf::DescriptorProto::ExtensionRange.new :start => @range.low
+        case @range.high
+        when NilClass; # ignore
+        when :max;     descriptor.end = 1
+        else;          descriptor.end = @range.high
+        end
+        visitor.extension_range_descriptor = descriptor
       end
     end
 
     class ExtensionRangeNode < Base
+      attr_reader :low, :high
+
       def initialize(low, high=nil)
         @low, @high = low, high
       end
 
-      #def accept_message_creator(visitor)
+      #def accept_message_visitor(visitor)
       #end
       
       def to_s

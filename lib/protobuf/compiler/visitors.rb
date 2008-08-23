@@ -1,5 +1,6 @@
 require 'erb'
 require 'fileutils'
+require 'protobuf/descriptor/descriptor_proto'
 
 module Protobuf
   module Visitor
@@ -76,7 +77,7 @@ module Protobuf
       end
 
       def visit(node)
-        node.accept_message_creator self 
+        node.accept_message_visitor self 
         self
       end
 
@@ -109,7 +110,7 @@ module Protobuf
       end
 
       def visit(node)
-        node.accept_rpc_creator self
+        node.accept_rpc_visitor self
         self
       end
 
@@ -167,6 +168,102 @@ module Protobuf
 
       def template_erb(template)
         ERB.new File.read("#{File.dirname(__FILE__)}/template/#{template}.erb"), nil, '-'
+      end
+    end
+
+    class CreateDescriptorVisitor < Base
+      attr_accessor :filename, :file_descriptor
+
+      def initialize(filename=nil)
+        @context = []
+      end
+
+      def visit(node)
+        node.accept_descriptor_visitor self 
+        self
+      end
+
+      def in_context(descriptor, &block)
+        @context.push descriptor
+        block.call
+        @context.pop
+      end
+
+      def current_descriptor
+        @context.last
+      end
+
+      def file_descriptor=(descriptor)
+       @file_descriptor = descriptor
+      end
+
+      def add_option(name, value)
+        options = 
+          case current_descriptor
+          when Google::Protobuf::FileDescriptorProto
+            Google::Protobuf::FileOptions.new
+          when Google::Protobuf::DescriptorProto
+            Google::Protobuf::MessageOptions.new
+          when Google::Protobuf::FieldDescriptorProto
+            Google::Protobuf::FieldOptions.new
+          when Google::Protobuf::EnumDescriptorProto
+            Google::Protobuf::EnumOptions.new
+          when Google::Protobuf::EnumValueDescriptorProto
+            Google::Protobuf::EnumValueOptions.new
+          when Google::Protobuf::ServiceDescriptorProto
+            Google::Protobuf::ServiceOptions.new
+          when Google::Protobuf::MethodDescriptorProto
+            Google::Protobuf::MethodOptions.new
+          else
+            raise ArgumentError.new('Invalid context')
+          end
+        #TODO how should options be handled?
+        #current_descriptor.options << option
+      end
+
+      def descriptor=(descriptor)
+        case current_descriptor
+        when Google::Protobuf::FileDescriptorProto
+          current_context.message_type << descriptor
+        when Google::Protobuf::DescriptorProto
+          current_context.nexted_type << descriptor
+        else
+          raise ArgumentError.new('Invalid context')
+        end
+      end
+      alias message_descriptor= descriptor=
+
+      def enum_descriptor=(descriptor)
+        current_descriptor.enum_type << descriptor
+      end
+
+      def enum_value_descriptor=(descriptor)
+        current_descriptor.value << descriptor
+      end
+
+      def service_descriptor=(descriptor)
+        current_descriptor.service << descriptor
+      end
+
+      def method_descriptor=(descriptor)
+        current_descriptor.method << descriptor
+      end
+
+      def field_descriptor=(descriptor)
+        case current_descriptor
+        when Google::Protobuf::FileDescriptorProto
+          current_context.extension << descriptor
+        when Google::Protobuf::DescriptorProto
+          current_context.field << descriptor
+          #TODO: how should i distiguish between field and extension
+          #current_context.extension << descriptor
+        else
+          raise ArgumentError.new('Invalid context')
+        end
+      end
+
+      def extension_range=(descriptor)
+        current_descriptor.extension_range << descriptor
       end
     end
   end
