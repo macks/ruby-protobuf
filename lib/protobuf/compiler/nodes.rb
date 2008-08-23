@@ -107,7 +107,7 @@ require 'protobuf/message/extend'
       end
 
       def accept_descriptor_visitor(visitor)
-        descriptor = Google::Protobuf::DescriptorProto.new :name => @name
+        descriptor = Google::Protobuf::DescriptorProto.new :name => @name.to_s
         visitor.descriptor = descriptor
         visitor.in_context descriptor do
           @children.each {|child| child.accept_descriptor_visitor visitor}
@@ -147,7 +147,7 @@ require 'protobuf/message/extend'
       end
 
       def accept_descriptor_visitor(visitor)
-        descriptor = Google::Protobuf::EnumDescriptor.new :name => @name
+        descriptor = Google::Protobuf::EnumDescriptorProto.new :name => @name.to_s
         visitor.enum_descriptor = descriptor
         visitor.in_context descriptor do
           @children.each {|child| child.accept_descriptor_visitor visitor}
@@ -165,7 +165,7 @@ require 'protobuf/message/extend'
       end
 
       def accept_descriptor_visitor(visitor)
-        descriptor = Google::Protobuf::EnumValueDescriptor.new :name => @name, :number => @value
+        descriptor = Google::Protobuf::EnumValueDescriptorProto.new :name => @name.to_s, :number => @value
         visitor.enum_value_descriptor = descriptor
       end
     end
@@ -185,7 +185,7 @@ require 'protobuf/message/extend'
       end
 
       def accept_descriptor_visitor(visitor)
-        descriptor = Google::Protobuf::ServiceDescriptorProto.new :name => @name
+        descriptor = Google::Protobuf::ServiceDescriptorProto.new :name => @name.to_s
         visitor.service_descriptor = descriptor
         visitor.in_context descriptor do 
           @children.each {|child| child.accept_descriptor_visitor visitor}
@@ -207,7 +207,7 @@ require 'protobuf/message/extend'
       end
 
       def accept_descriptor_visitor(visitor)
-        descriptor = Google::Protobuf::MethodDescriptorProto.new :name => @name, :input_type => @request, :output_type => @response
+        descriptor = Google::Protobuf::MethodDescriptorProto.new :name => @name.to_s, :input_type => @request.to_s, :output_type => @response.to_s
         visitor.method_descriptor = descriptor
       end
     end
@@ -240,17 +240,21 @@ require 'protobuf/message/extend'
       end
 
       def accept_descriptor_visitor(visitor)
-        descriptor = Google::Protobuf::FieldDescriptorProto.new :name => @name, :number => @value
+        descriptor = Google::Protobuf::FieldDescriptorProto.new :name => @name.to_s, :number => @value
         descriptor.label = Google::Protobuf::FieldDescriptorProto::Label.const_get "LABEL_#{@label.to_s.upcase}"
-        descriptor.type = Google::Protobuf::FieldDescriptorProto::Label.const_get "TYPE_#{@type.to_s.upcase}"
+        descriptor.type = Google::Protobuf::FieldDescriptorProto::Type.const_get "TYPE_#{@type.to_s.upcase}" if predefined_type?
         descriptor.type_name = @type.to_s
-        opts.each do |key, val|
+        @opts.each do |key, val|
           case key.to_sym
           when :default
             descriptor.default_value = val.to_s
           end
         end
         visitor.field_descriptor = descriptor
+      end
+
+      def predefined_type?
+        %w{double float int64 uint64 int32 fixed64 fixed32 bool string group message bytes uint32 enum sfixed32 sfixed64 sint32 sint64}.include? @type.to_s
       end
     end
 
@@ -264,11 +268,11 @@ require 'protobuf/message/extend'
       end
 
       def accept_descriptor_visitor(visitor)
-        descriptor = Google::Protobuf::DescriptorProto::ExtensionRange.new :start => @range.low
-        case @range.high
+        descriptor = Google::Protobuf::DescriptorProto::ExtensionRange.new :start => @range.first.low
+        case @range.first.high
         when NilClass; # ignore
         when :max;     descriptor.end = 1
-        else;          descriptor.end = @range.high
+        else;          descriptor.end = @range.first.high
         end
         visitor.extension_range_descriptor = descriptor
       end

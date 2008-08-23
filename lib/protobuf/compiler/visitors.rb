@@ -176,6 +176,7 @@ module Protobuf
 
       def initialize(filename=nil)
         @context = []
+        @filename = filename
       end
 
       def visit(node)
@@ -195,6 +196,7 @@ module Protobuf
 
       def file_descriptor=(descriptor)
        @file_descriptor = descriptor
+       @file_descriptor.name = @filename
       end
 
       def add_option(name, value)
@@ -224,9 +226,9 @@ module Protobuf
       def descriptor=(descriptor)
         case current_descriptor
         when Google::Protobuf::FileDescriptorProto
-          current_context.message_type << descriptor
+          current_descriptor.message_type << descriptor
         when Google::Protobuf::DescriptorProto
-          current_context.nexted_type << descriptor
+          current_descriptor.nested_type << descriptor
         else
           raise ArgumentError.new('Invalid context')
         end
@@ -252,17 +254,17 @@ module Protobuf
       def field_descriptor=(descriptor)
         case current_descriptor
         when Google::Protobuf::FileDescriptorProto
-          current_context.extension << descriptor
+          current_descriptor.extension << descriptor
         when Google::Protobuf::DescriptorProto
-          current_context.field << descriptor
+          current_descriptor.field << descriptor
           #TODO: how should i distiguish between field and extension
-          #current_context.extension << descriptor
+          #current_descriptor.extension << descriptor
         else
           raise ArgumentError.new('Invalid context')
         end
       end
 
-      def extension_range=(descriptor)
+      def extension_range_descriptor=(descriptor)
         current_descriptor.extension_range << descriptor
       end
     end

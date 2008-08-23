@@ -128,6 +128,52 @@ puts response
     eos
   end
 
+  def test_create_descriptor
+    proto_path = 'test/addressbook.proto'
+    visitor = Protobuf::Visitor::CreateDescriptorVisitor.new proto_path
+    File.open proto_path, 'r' do |file|
+      visitor.visit Protobuf::ProtoParser.new.parse(file)
+    end
+    file_descriptor = visitor.file_descriptor
+    assert_equal proto_path, file_descriptor.name
+    assert_equal 'tutorial', file_descriptor.package
+ 
+    person_descriptor = file_descriptor.message_type[0]
+    assert_equal 'Person', person_descriptor.name
+    assert_equal [:name, :id, :email, :phone].size, person_descriptor.field.size
+
+    name_field_descriptor = person_descriptor.field.find {|d| d.name == 'name'}
+    assert_equal 1, name_field_descriptor.number
+    assert_equal Google::Protobuf::FieldDescriptorProto::Type::TYPE_STRING, name_field_descriptor.type
+    assert_equal Google::Protobuf::FieldDescriptorProto::Label::LABEL_REQUIRED, name_field_descriptor.label
+    assert_equal 'string', name_field_descriptor.type_name
+
+    phone_field_descriptor = person_descriptor.field.find {|d| d.name == 'phone'}
+    assert_equal 4, phone_field_descriptor.number
+    assert_equal 0, phone_field_descriptor.type #TODO: is this right?
+    assert_equal Google::Protobuf::FieldDescriptorProto::Label::LABEL_REPEATED, phone_field_descriptor.label
+    assert_equal 'PhoneNumber', phone_field_descriptor.type_name
+
+    phone_type_descriptor = person_descriptor.enum_type.first
+    assert_equal 'PhoneType', phone_type_descriptor.name
+    assert_equal 3, phone_type_descriptor.value.size
+
+    phone_type_home_descriptor = phone_type_descriptor.value.find {|d| d.name == 'HOME'}
+    assert_equal 'HOME', phone_type_home_descriptor.name
+    assert_equal 1, phone_type_home_descriptor.number
+
+    extensions_descriptor = person_descriptor.extension_range.first
+    assert_equal 100, extensions_descriptor.start
+    assert_equal 200, extensions_descriptor.end
+
+    phone_number_descriptor = person_descriptor.nested_type.first
+    assert_equal 'PhoneNumber', phone_number_descriptor.name
+    assert_equal [:number, :type].size, phone_number_descriptor.field.size
+
+    addressbook_descriptor = file_descriptor.message_type[1]
+    assert_equal 'AddressBook', addressbook_descriptor.name
+  end
+
   def assert_source(ideal, real)
     assert_equal ideal.strip.gsub(/^\s*\n/, '').gsub(/\s+\n/, "\n"), real.strip.gsub(/^\s*\n/, '').gsub(/\s+\n/, "\n")
   end
