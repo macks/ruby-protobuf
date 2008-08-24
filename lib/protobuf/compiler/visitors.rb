@@ -33,12 +33,22 @@ module Protobuf
     end
 
     class CreateMessageVisitor < Base
-      attr_accessor :indent, :context
+      attr_accessor :indent, :context, :attach_proto, :proto_file
 
-      def initialize(proto_dir='.', out_dir='.')
+      def initialize(proto_file=nil, proto_dir='.', out_dir='.')
         @proto_dir, @out_dir = proto_dir, out_dir
         @indent = 0
         @context = []
+        @attach_proto = true
+        @proto_file = proto_file
+      end
+
+      def attach_proto?
+        @attach_proto
+      end
+
+      def commented_proto_contents
+        File.read(proto_file).gsub(/^/, '# ') if proto_file
       end
 
       def write(str)

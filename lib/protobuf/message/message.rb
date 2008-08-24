@@ -32,6 +32,10 @@ module Protobuf
         @extension_fields = ExtensionFields.new range
       end
 
+      def defined_in(filepath)
+        # TODO implement
+      end
+
       def required(type, name, tag, opts={})
         define_field :required, type, name, tag, opts
       end
