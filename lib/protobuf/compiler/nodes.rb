@@ -3,6 +3,10 @@ require 'protobuf/descriptor/descriptor_proto'
 module Protobuf
   module Node
     class Base
+      def define_in_the_file(visitor)
+        visitor.write "defined_in __FILE__" if visitor.attach_proto?
+      end
+
       def accept_message_visitor(visitor)
       end
 
@@ -104,7 +108,7 @@ require 'protobuf/message/extend'
       def accept_message_visitor(visitor)
         visitor.write "class #{@name} < ::Protobuf::Message"
         visitor.in_context self.class do 
-          visitor.write "defined_in File.expand_path(__FILE__)" if visitor.attach_proto?
+          define_in_the_file visitor
           @children.each {|child| child.accept_message_visitor visitor}
         end
         visitor.write "end"
@@ -127,6 +131,7 @@ require 'protobuf/message/extend'
       def accept_message_visitor(visitor)
         visitor.write "class #{@name} < ::Protobuf::Message"
         visitor.in_context self.class do 
+          define_in_the_file visitor
           @children.each {|child| child.accept_message_visitor visitor}
         end
         visitor.write "end"
@@ -145,7 +150,7 @@ require 'protobuf/message/extend'
       def accept_message_visitor(visitor)
         visitor.write "class #{@name} < ::Protobuf::Enum"
         visitor.in_context self.class do 
-          visitor.write "defined_in File.expand_path(__FILE__)" if visitor.attach_proto?
+          define_in_the_file visitor
           @children.each {|child| child.accept_message_visitor visitor}
         end
         visitor.write "end"

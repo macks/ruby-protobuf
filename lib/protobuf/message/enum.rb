@@ -1,8 +1,11 @@
 require 'protobuf/descriptor/enum_descriptor'
+require 'protobuf/message/protoable'
 
 module Protobuf
   class Enum
     class <<self
+      include Protobuf::Protoable
+
       def get_name_by_tag(tag)
         constants.find do |name|
           class_eval(name) == tag

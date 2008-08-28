@@ -19,7 +19,6 @@ module Protobuf
       proto_path = validate_existence proto_file, proto_dir
 
       message_visitor = Protobuf::Visitor::CreateMessageVisitor.new proto_file, proto_dir, out_dir
-      message_visitor.attach_proto = file_create #TODO file_create is temporarily set as an attach_proto flag
       File.open proto_path, 'r' do |file|
         message_visitor.visit Protobuf::ProtoParser.new.parse(file)
       end

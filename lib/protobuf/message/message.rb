@@ -1,13 +1,13 @@
 require 'pp'
 require 'stringio'
+require 'protobuf/descriptor/descriptor'
 require 'protobuf/message/decoder'
 require 'protobuf/message/encoder'
 require 'protobuf/message/field'
-require 'protobuf/descriptor/descriptor'
+require 'protobuf/message/protoable'
 
 module Protobuf
   OPTIONS = {}
-
 
   class Message
     class ExtensionFields < Hash
@@ -26,14 +26,11 @@ module Protobuf
     end
 
     class <<self
+      include Protobuf::Protoable
       attr_reader :fields
 
       def extensions(range)
         @extension_fields = ExtensionFields.new range
-      end
-
-      def defined_in(filepath)
-        # TODO implement
       end
 
       def required(type, name, tag, opts={})
