@@ -53,7 +53,7 @@ class StandardMessageTest < Test::Unit::TestCase
     assert_equal person.phone.last.type, person2.phone.last.type
   end
 
-  def test_to_s
+  def test_inspect
     person = Tutorial::Person.new
     person.name = 'name'
     person.id = 1234
@@ -65,7 +65,7 @@ class StandardMessageTest < Test::Unit::TestCase
     person.phone.last.number = '456-123'
     person.phone.last.type = Tutorial::Person::PhoneType::WORK
 
-    assert_equal <<-eos, person.to_s
+    assert_equal <<-eos, person.inspect
 name: "name"
 id: 1234
 email: "abc@cde.fgh"

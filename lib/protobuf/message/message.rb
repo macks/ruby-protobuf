@@ -149,13 +149,13 @@ module Protobuf
       ret
     end
 
-    def to_s(indent=0)
+    def inspect(indent=0)
       ret = ''
       i = '  ' * indent
       field_value_to_string = lambda do |field, value|
         ret +=
           if field.is_a? Protobuf::Field::MessageField
-            "#{i}#{field.name} {\n#{value.to_s(indent + 1)}#{i}}\n"
+            "#{i}#{field.name} {\n#{value.inspect(indent + 1)}#{i}}\n"
           elsif field.is_a? Protobuf::Field::EnumField
             "#{i}#{field.name}: #{field.type.name_by_value(value)}\n"
           else
@@ -197,6 +197,7 @@ module Protobuf
       serialize_to io
       io.string
     end
+    alias to_s serialize_to_string
 
     def serialize_to_file(filename)
       if filename.is_a? File
