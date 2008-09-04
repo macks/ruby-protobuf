@@ -17,6 +17,7 @@ message Person {
   }
 
   repeated PhoneNumber phone = 4;
+  optional uint32 age = 5 [default = 20];
 
   extensions 100 to 200;
 }

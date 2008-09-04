@@ -26,6 +26,7 @@ class CompilerTest < Test::Unit::TestCase
 #   }
 # 
 #   repeated PhoneNumber phone = 4;
+#   optional uint32 age = 5 [default = 20];
 # 
 #   extensions 100 to 200;
 # }
@@ -64,6 +65,7 @@ module Tutorial
     end
     
     repeated :PhoneNumber, :phone, 4
+    optional :uint32, :age, 5, :default => 20
     
     extensions 100..200
   end
@@ -177,7 +179,7 @@ puts response
  
     person_descriptor = file_descriptor.message_type[0]
     assert_equal 'Person', person_descriptor.name
-    assert_equal [:name, :id, :email, :phone].size, person_descriptor.field.size
+    assert_equal [:name, :id, :email, :phone, :age].size, person_descriptor.field.size
 
     name_field_descriptor = person_descriptor.field.find {|d| d.name == 'name'}
     assert_equal 1, name_field_descriptor.number
@@ -190,6 +192,13 @@ puts response
     assert_equal 0, phone_field_descriptor.type #TODO: is this right?
     assert_equal Google::Protobuf::FieldDescriptorProto::Label::LABEL_REPEATED, phone_field_descriptor.label
     assert_equal 'PhoneNumber', phone_field_descriptor.type_name
+
+    age_field_descriptor = person_descriptor.field.find {|d| d.name == 'age'}
+    assert_equal 5, age_field_descriptor.number
+    assert_equal Google::Protobuf::FieldDescriptorProto::Type::TYPE_UINT32, age_field_descriptor.type
+    assert_equal Google::Protobuf::FieldDescriptorProto::Label::LABEL_OPTIONAL, age_field_descriptor.label
+    assert_equal 'uint32', age_field_descriptor.type_name
+    assert_equal '20', age_field_descriptor.default_value
 
     phone_type_descriptor = person_descriptor.enum_type.first
     assert_equal 'PhoneType', phone_type_descriptor.name

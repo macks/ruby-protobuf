@@ -242,7 +242,7 @@ require 'protobuf/message/extend'
       end
 
       def accept_message_visitor(visitor)
-        opts = @opts.empty? ? '' : ", #{@opts.map{|k, v| ":#{k} => :#{v}"}.join(', ')}"
+        opts = @opts.empty? ? '' : ", #{@opts.map{|k, v| ":#{k} => #{v.inspect}" }.join(', ')}"
         if visitor.context.first == Protobuf::Node::ExtendNode
           opts += ', :extension => true'
         end

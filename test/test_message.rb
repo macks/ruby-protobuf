@@ -71,4 +71,8 @@ message AddressBook {
 }
     eos
   end
+
+  def test_merge_field
+    person = Tutorial::Person.new
+  end
 end

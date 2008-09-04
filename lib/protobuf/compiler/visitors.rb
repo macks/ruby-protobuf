@@ -182,7 +182,8 @@ module Protobuf
     end
 
     class CreateDescriptorVisitor < Base
-      attr_accessor :filename, :file_descriptor
+      attr_reader :file_descriptor
+      attr_accessor :filename
 
       def initialize(filename=nil)
         @context = []
