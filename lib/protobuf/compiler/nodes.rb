@@ -246,7 +246,8 @@ require 'protobuf/message/extend'
         if visitor.context.first == Protobuf::Node::ExtendNode
           opts += ', :extension => true'
         end
-        visitor.write "#{@label} :#{@type}, :#{@name}, #{@value}#{opts}"
+        type = (Array === @type and 1 < @type.size) ?  "'#{@type.join '::'}'" : @type 
+        visitor.write "#{@label} :#{type}, :#{@name}, #{@value}#{opts}"
       end
 
       def accept_descriptor_visitor(visitor)
