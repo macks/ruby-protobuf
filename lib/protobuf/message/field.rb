@@ -128,20 +128,20 @@ module Protobuf
         raise NotImplementedError
       end
 
-      def merge(message_instance, bytes)
+      def merge(message_instance, value)
         if repeated?
-          merge_array method_instance, bytes
+          merge_array message_instance, value
         else
-          merge_value method_instance, bytes
+          merge_value message_instance, value
         end
       end
 
-      def merge_array(message_instance, bytes)
-        raise NotImplementedError
+      def merge_array(message_instance, value)
+        message_instance[tag].concat value 
       end
 
-      def merge_value(message_instance, bytes)
-        raise NotImplementedError
+      def merge_value(message_instance, value)
+        message_instance[tag] = value
       end
 
       def repeated?; rule == :repeated end
@@ -589,6 +589,10 @@ module Protobuf
         #(string_size + bytes).pack('C*')
         #bytes + string_size
         string_size + bytes.pack('C*')
+      end
+
+      def merge_value(message_instance, value)
+        message_instance[tag].merge_from value
       end
     end
 
