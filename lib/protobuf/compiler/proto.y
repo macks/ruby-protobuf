@@ -167,7 +167,7 @@ end
         case line
         when /\A\s+/, /\A\/\/.*/
           ;
-        when /\A(required|optional|repeated|import|package|option|message|extend|enum|service|rpc|returns|group|default|extensions|to|max|double|float|int32|int64|uint32|uint64|sint32|sint64|fixed32|fixed64|sfixed32|sfixed64|bool|string|bytes)/
+        when /\A(required|optional|repeated|import|package|option|message|extend|enum|service|rpc|returns|group|default|extensions|to|max|double|float|int32|int64|uint32|uint64|sint32|sint64|fixed32|fixed64|sfixed32|sfixed64|bool|string|bytes)\b/
           @q.push [$&, $&.to_sym]
         when /\A[1-9]\d*/, /\A0(?![.xX0-9])/
           @q.push [:DEC_INTEGER, $&.to_i]
