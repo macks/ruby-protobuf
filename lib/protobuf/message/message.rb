@@ -213,14 +213,40 @@ module Protobuf
       Protobuf::Encoder.encode stream, self
     end
 
+    def merge_from(message)
+      # TODO
+      #fields.each {|tag, field| merge_field tag, value}
+      #self.class.extension_fields.each {|tag, field| merge_field tag, value}
+
+      # TODO temporary implementation
+      fields.each  do |tag, field| 
+        if field.repeated?
+          self[tag].concat message[tag]
+        elsif field.is_a? Protobuf::Field::MessageField
+          self[tag].merge_from message[tag]
+        else
+          self[tag] = message[tag]
+        end
+      end
+      self.class.extension_fields.each do |tag, field| 
+        if field.repeated?
+          self[tag].concat message[tag]
+        elsif field.is_a? Protobuf::Field::MessageField
+          self[tag].merge_from message[tag]
+        else
+          self[tag] = message[tag]
+        end
+      end
+    end
+
     def set_field(tag, bytes)
       #get_field_by_tag(tag).set self, bytes
       (get_field_by_tag(tag) or get_ext_field_by_tag(tag)).set self, bytes
     end
     
     def merge_field(tag, value)
-      # TODO
       #get_field_by_tag(tag).merge self, bytes
+      (get_field_by_tag(tag) or get_ext_field_by_tag(tag)).merge self, bytes
     end
     
     def [](tag_or_name)

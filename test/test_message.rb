@@ -1,5 +1,6 @@
 require 'protobuf/message/message'
 require 'test/addressbook'
+require 'test/merge'
 require 'test/unit'
 
 class MessageTest < Test::Unit::TestCase
@@ -73,6 +74,24 @@ message AddressBook {
   end
 
   def test_merge_field
-    person = Tutorial::Person.new
+    inner_message1_2 = Test::MergeMessage::InnerMessage2.new(:name => 'name12')
+    inner_message1_2.repeate_message << Test::MergeMessage::InnerMessage1.new(:name => 'name121')
+    message1 = Test::MergeMessage.new :name => 'name1', :require_message => inner_message1_2
+    message1.repeate_message << Test::MergeMessage::InnerMessage1.new(:name => 'name11')
+
+    inner_message2_2 = Test::MergeMessage::InnerMessage2.new(:name => 'name22')
+    inner_message2_2.repeate_message << Test::MergeMessage::InnerMessage1.new(:name => 'name221')
+    message2 = Test::MergeMessage.new :name => 'name2', :require_message => inner_message2_2
+    message2.repeate_message << Test::MergeMessage::InnerMessage1.new(:name => 'name21')
+
+    message1.merge_from message2
+    assert_equal 'name2', message1.name
+    assert_equal 2, message1.repeate_message.size
+    assert_equal 'name11', message1.repeate_message[0].name
+    assert_equal 'name21', message1.repeate_message[1].name
+    assert_equal 'name22', message1.require_message.name
+    assert_equal 2, message1.require_message.repeate_message.size
+    assert_equal 'name121', message1.require_message.repeate_message[0].name
+    assert_equal 'name221', message1.require_message.repeate_message[1].name
   end
 end
