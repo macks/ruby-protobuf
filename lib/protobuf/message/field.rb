@@ -247,13 +247,13 @@ module Protobuf
         true
       end
 
-      def set_bytes(method_instance, bytes)
-        method_instance.send("#{name}=", bytes.pack('U*'))
+      def set_bytes(message_instance, bytes)
+        message_instance.send("#{name}=", bytes.pack('U*'))
       end
  
-      def set_array(method_instance, bytes)
+      def set_array(message_instance, bytes)
         message = bytes.pack('U*')
-        arr = method_instance.send name
+        arr = message_instance.send name
         arr << message
       end
 
@@ -267,15 +267,15 @@ module Protobuf
     
     class BytesField < BaseField
       def wire_type
-        Protobuf::WireType::VARINT
+        Protobuf::WireType::LENGTH_DELIMITED
       end
 
       def typed_default_value(default=nil)
         default or []
       end
 
-      def set_bytes(method_instance, bytes)
-        method_instance.send("#{name}=", bytes)
+      def set_bytes(message_instance, bytes)
+        message_instance.send("#{name}=", bytes)
       end
 
       def get_bytes(value)
@@ -293,13 +293,13 @@ module Protobuf
         default or 0
       end
  
-      def set_bytes(method_instance, bytes)
+      def set_bytes(message_instance, bytes)
         # TODO should refactor using pack('w*')
         value = 0
         bytes.each_with_index do |byte, index|
           value |= byte << (7 * index)
         end
-        method_instance.send("#{name}=", value)
+        message_instance.send("#{name}=", value)
       end
 
       def self.get_bytes(value)
@@ -357,7 +357,7 @@ module Protobuf
       def self.max; 1.0/0.0 end
       def self.min; -1.0/0.0 end
  
-      def set_bytes(method_instance, bytes)
+      def set_bytes(message_instance, bytes)
         # TODO use only bit-operations
         byte = bytes.first
         value = 
@@ -366,7 +366,7 @@ module Protobuf
           else
             -(byte + 1) / 2
           end
-        method_instance.send("#{name}=", value)
+        message_instance.send("#{name}=", value)
       end
 
       def get_bytes(value)
@@ -379,7 +379,7 @@ module Protobuf
       def self.max; 1.0/0.0 end
       def self.min; -1.0/0.0 end
  
-      def set_bytes(method_instance, bytes)
+      def set_bytes(message_instance, bytes)
         # TODO use only bit-operations
         byte = bytes.first
         value = 
@@ -388,7 +388,7 @@ module Protobuf
           else
             -(byte + 1) / 2
           end
-        method_instance.send("#{name}=", value)
+        message_instance.send("#{name}=", value)
       end
 
       def get_bytes(value)
@@ -412,8 +412,8 @@ module Protobuf
         -(2**(64/2) - 1)
       end
  
-      def set_bytes(method_instance, bytes)
-        method_instance.send("#{name}=", bytes.unpack('E').first)
+      def set_bytes(message_instance, bytes)
+        message_instance.send("#{name}=", bytes.unpack('E').first)
       end
 
       def get_bytes(value)
@@ -442,8 +442,8 @@ module Protobuf
         -(2**(32/2) - 1)
       end
  
-      def set_bytes(method_instance, bytes)
-        method_instance.send("#{name}=", bytes.unpack('e').first)
+      def set_bytes(message_instance, bytes)
+        message_instance.send("#{name}=", bytes.unpack('e').first)
       end
 
       def get_bytes(value)
@@ -470,8 +470,8 @@ module Protobuf
         0
       end
  
-      def set_bytes(method_instance, bytes)
-        method_instance.send("#{name}=", bytes.unpack('L').first)
+      def set_bytes(message_instance, bytes)
+        message_instance.send("#{name}=", bytes.unpack('L').first)
       end
 
       def get_bytes(value)
@@ -492,8 +492,8 @@ module Protobuf
         0
       end
  
-      def set_bytes(method_instance, bytes)
-        method_instance.send("#{name}=", bytes.unpack('l').first)
+      def set_bytes(message_instance, bytes)
+        message_instance.send("#{name}=", bytes.unpack('l').first)
       end
 
       def get_bytes(value)
@@ -539,8 +539,8 @@ module Protobuf
         true
       end
  
-      def set_bytes(method_instance, bytes)
-        method_instance.send("#{name}=", bytes.first == 1)
+      def set_bytes(message_instance, bytes)
+        message_instance.send("#{name}=", bytes.first == 1)
       end
 
       def get_bytes(value)
@@ -566,18 +566,18 @@ module Protobuf
         true
       end
  
-      def set_bytes(method_instance, bytes)
+      def set_bytes(message_instance, bytes)
         message = type.new
         #message.parse_from bytes
         message.parse_from_string bytes.pack('U*') # TODO
-        method_instance.send("#{name}=", message)
+        message_instance.send("#{name}=", message)
       end
  
-      def set_array(method_instance, bytes)
+      def set_array(message_instance, bytes)
         message = type.new
         #message.parse_from bytes
         message.parse_from_string bytes.pack('U*')
-        arr = method_instance.send name
+        arr = message_instance.send name
         arr << message
       end
 

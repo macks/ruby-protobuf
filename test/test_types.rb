@@ -16,7 +16,9 @@ class TypesTest < Test::Unit::TestCase
     types.type10 = 100000
     types.type11 = false
     types.type12 = 'hello all types'
-    #types.type13 = 
+    image_bin = File.open('test/unk.png', 'r+b'){|f| f.read}
+    types.type13 = image_bin.unpack 'C*'
+
     serialized_string = types.serialize_to_string
 
     types2 = Test::Types::TestTypes.new
@@ -33,7 +35,8 @@ class TypesTest < Test::Unit::TestCase
     assert_equal 100000, types2.type10
     assert !types2.type11
     assert_equal 'hello all types', types2.type12
-    #types2.type13
+    assert_equal 10938, types2.type13.size
+    assert_equal image_bin, types2.type13.pack('C*')
   end
 
   def test_parse
