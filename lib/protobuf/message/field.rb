@@ -275,12 +275,12 @@ module Protobuf
       end
 
       def set_bytes(message_instance, bytes)
-        message_instance.send("#{name}=", bytes)
+        message_instance.send("#{name}=", bytes.pack('C*'))
       end
 
       def get_bytes(value)
-        string_size = VarintField.get_bytes value.size
-        string_size + value.pack('C*')
+        string_size = VarintField.get_bytes value.unpack('C*').size
+        string_size + value
       end
     end
 
