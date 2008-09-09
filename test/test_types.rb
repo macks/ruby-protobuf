@@ -52,9 +52,9 @@ class TypesTest < Test::Unit::TestCase
     assert_equal(-10, types.type8)
     assert_equal 10000, types.type9
     assert_equal 100000, types.type10
-    assert_equal false, types.type11
+    assert_equal false, !!types.type11
     assert_equal 'hello all types', types.type12
-    # types.type13
+    assert_equal File.open('test/unk.png', 'r+b'){|f| f.read}, types.type13
   end
 
   def test_double
@@ -171,13 +171,11 @@ class TypesTest < Test::Unit::TestCase
 
   def test_bytes
     types = Test::Types::TestTypes.new
-    # TODO
-=begin
     assert_nothing_raised do types.type13 = '' end
     assert_nothing_raised do types.type13 = 'hello' end
-    assert_raise TypeError do types.type13 = nil end
+    assert_nothing_raised do types.type12 = nil end
     assert_raise TypeError do types.type13 = 0 end
     assert_raise TypeError do types.type13 = true end
-=end
+    assert_raise TypeError do types.type13 = [] end
   end
 end

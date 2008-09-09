@@ -271,7 +271,12 @@ module Protobuf
       end
 
       def typed_default_value(default=nil)
-        default or []
+        default or ''
+      end
+
+      def acceptable?(val)
+        raise TypeError unless val.instance_of? String
+        true
       end
 
       def set_bytes(message_instance, bytes)
