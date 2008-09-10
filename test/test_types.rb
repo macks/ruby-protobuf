@@ -16,7 +16,7 @@ class TypesTest < Test::Unit::TestCase
     types.type10 = 100000
     types.type11 = false
     types.type12 = 'hello all types'
-    image_bin = File.open('test/unk.png', 'r+b'){|f| f.read}
+    image_bin = File.open('test/data/unk.png', 'r+b'){|f| f.read}
     types.type13 = image_bin
 
     serialized_string = types.serialize_to_string
@@ -54,7 +54,7 @@ class TypesTest < Test::Unit::TestCase
     assert_equal 100000, types.type10
     assert_equal false, !!types.type11
     assert_equal 'hello all types', types.type12
-    assert_equal File.open('test/unk.png', 'r+b'){|f| f.read}, types.type13
+    assert_equal File.open('test/data/unk.png', 'r+b'){|f| f.read}, types.type13
   end
 
   def test_double

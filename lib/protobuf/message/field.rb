@@ -282,6 +282,12 @@ module Protobuf
       def set_bytes(message_instance, bytes)
         message_instance.send("#{name}=", bytes.pack('C*'))
       end
+ 
+      def set_array(message_instance, bytes)
+        message = bytes.pack('C*')
+        arr = message_instance.send name
+        arr << message
+      end
 
       def get_bytes(value)
         string_size = VarintField.get_bytes value.unpack('C*').size
