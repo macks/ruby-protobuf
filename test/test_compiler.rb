@@ -114,6 +114,7 @@ end
   end
 
   def test_nested_message
+    Protobuf::Visitor::CreateMessageVisitor.instance_eval {remove_const :Baaz}
     file_contents = Protobuf::Compiler.new.create_message('test/proto/nested.proto', '.', '.', false)
     assert_nothing_raised {eval file_contents}
     assert_raise(TypeError) {Baaz.new.x = 1}
@@ -263,14 +264,23 @@ puts response
 
   def test_collision
     assert_raise Protobuf::Message::TagCollisionError do require 'test/collision' end
+    assert_raise Protobuf::Message::TagCollisionError do 
+      Protobuf::Compiler.new.create_message('test/proto/collision.proto', '.', '.', false) 
+    end
   end
 
   def test_ext_collision
     assert_raise Protobuf::Message::TagCollisionError do require 'test/ext_collision' end
+    assert_raise Protobuf::Message::TagCollisionError do 
+      Protobuf::Compiler.new.create_message('test/proto/ext_collision.proto', '.', '.', false) 
+    end
   end
 
   def test_ext_range
     assert_raise RangeError do require 'test/ext_range' end
+    assert_raise RangeError do 
+      Protobuf::Compiler.new.create_message('test/proto/ext_range.proto', '.', '.', false) 
+    end
   end
 
   def assert_compile_proto(ideal, filename)

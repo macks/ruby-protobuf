@@ -100,6 +100,7 @@ module Protobuf
       end
 
       def create_files(filename, out_dir, file_create)
+        eval to_s # check the message
         if file_create
           log_writing filename
           FileUtils.mkpath File.dirname(filename)
