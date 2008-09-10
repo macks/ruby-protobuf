@@ -10,6 +10,8 @@ module Protobuf
   OPTIONS = {}
 
   class Message
+    class TagCollisionError < StandardError; end
+
     class ExtensionFields < Hash
       def initialize(key_range=0..-1)
         @key_range = key_range
@@ -45,10 +47,13 @@ module Protobuf
         define_field :repeated, type, name, tag, opts
       end
 
-      def define_field(rule, type, name, tag, opts={})
+      def define_field(rule, type, fname, tag, opts={})
         field_hash = opts[:extension] ? extension_fields : (@fields ||= {})
-        field_hash[tag] = Protobuf::Field.build self, rule, type, name, tag, opts
-        #(@fields ||= {})[tag] = Protobuf::Field.build self, rule, type, name, tag, opts
+        raise Protobuf::Message::TagCollisionError.new(<<-eos.strip) if field_hash.keys.include? tag
+          Field number #{tag} has already been used in "#{self.name}" by field "#{fname}".
+        eos
+        field_hash[tag] = Protobuf::Field.build self, rule, type, fname, tag, opts
+        #(@fields ||= {})[tag] = Protobuf::Field.build self, rule, type, fname, tag, opts
       end
 
       def extension_tag?(tag)

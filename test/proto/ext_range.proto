@@ -1,0 +1,7 @@
+message ExtCollisionTest {
+  extensions 1 to 10;
+}
+
+extend ExtCollisionTest {
+  optional string a = 11;
+}

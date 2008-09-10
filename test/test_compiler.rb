@@ -261,6 +261,18 @@ puts response
     assert_equal 'AddressBook', addressbook_descriptor.name
   end
 
+  def test_collision
+    assert_raise Protobuf::Message::TagCollisionError do require 'test/collision' end
+  end
+
+  def test_ext_collision
+    assert_raise Protobuf::Message::TagCollisionError do require 'test/ext_collision' end
+  end
+
+  def test_ext_range
+    assert_raise RangeError do require 'test/ext_range' end
+  end
+
   def assert_compile_proto(ideal, filename)
     assert_equal ideal.gsub(/^\s*\n/, '').strip, Protobuf::Compiler.new.create_message(filename, '.', '.', false).gsub(/^\s*\n/, '').strip
   end
