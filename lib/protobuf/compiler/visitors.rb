@@ -92,7 +92,7 @@ module Protobuf
       end
 
       def required_message_from_proto(proto_file)
-        rb_path = proto_file.sub(/\.proto$/, '.rb')
+        rb_path = proto_file.sub(/\.proto$/, '.pb.rb')
         unless File.exist?("#{@out_dir}/#{rb_path}")
           Compiler.compile proto_file, @proto_dir, @out_dir
         end
@@ -101,6 +101,7 @@ module Protobuf
 
       def create_files(filename, out_dir, file_create)
         eval to_s # check the message
+puts filename
         if file_create
           log_writing filename
           FileUtils.mkpath File.dirname(filename)
