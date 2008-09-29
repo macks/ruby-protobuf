@@ -4,6 +4,15 @@ require 'test/merge'
 require 'test/unit'
 
 class MessageTest < Test::Unit::TestCase
+  def test_equality
+    person1 = Tutorial::Person.new :name => 'ando'
+    person2 = Tutorial::Person.new :name => 'ando'
+    person3 = Tutorial::Person.new :name => 'Ando'
+    assert person1 == person2
+    assert person1 != person3
+    assert person1 != 'ando'
+  end
+
   def test_bracketed_access
     person = Tutorial::Person.new
     name_tag = 1

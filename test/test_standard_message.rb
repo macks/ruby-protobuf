@@ -40,15 +40,18 @@ class StandardMessageTest < Test::Unit::TestCase
     person.phone.last.type = Tutorial::Person::PhoneType::WORK
 
     person2 = person.dup
-    assert_not_equal person, person2
+    assert person == person2
+    assert !person.eql?(person2)
     assert_equal person.name, person2.name
     assert_equal person.id, person2.id
     assert_equal person.email, person2.email
     assert_equal person.phone.size, person2.phone.size
-    assert_not_equal person.phone.first, person2.phone.first
+    assert person.phone.first == person2.phone.first
+    assert !person.phone.first.eql?(person2.phone.first)
     assert_equal person.phone.first.number, person2.phone.first.number
     assert_equal person.phone.first.type, person2.phone.first.type
-    assert_not_equal person.phone.last, person2.phone.last
+    assert person.phone.last == person2.phone.last
+    assert !person.phone.last.eql?(person2.phone.last)
     assert_equal person.phone.last.number, person2.phone.last.number
     assert_equal person.phone.last.type, person2.phone.last.type
   end

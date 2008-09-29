@@ -76,7 +76,7 @@ module Protobuf
         case tag_or_name
         when Integer; get_field_by_tag tag_or_name
         when String, Symbol; get_field_by_name tag_or_name
-        else; raise TypeError
+        else; raise TypeError.new(tag_or_name.class)
         end
       end
 
@@ -95,7 +95,7 @@ module Protobuf
         case tag_or_name
         when Integer; get_ext_field_by_tag tag_or_name
         when String, Symbol; get_ext_field_by_name tag_or_name
-        else; raise TypeError
+        else; raise TypeError.new(tag_or_name.class)
         end
       end
 
@@ -132,6 +132,14 @@ module Protobuf
       extension_fields.to_a.inject(true) do |result, (tag, field)|
         result and field.initialized?(self)
       end
+    end
+
+    def ==(obj)
+      return false unless obj.is_a? self.class
+      each_field do |field, value|
+        return false unless value == obj[field.name]
+      end
+      true
     end
 
     def clear!

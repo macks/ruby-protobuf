@@ -127,7 +127,7 @@ end
     assert_source <<-eos, file_contents['./test/proto/address_book_service.rb']
 require 'protobuf/rpc/server'
 require 'protobuf/rpc/handler'
-require 'test/proto/rpc'
+require 'test/proto/rpc.pb'
 
 class Tutorial::SearchHandler < Protobuf::Rpc::Handler
   request Tutorial::Person
@@ -167,7 +167,7 @@ Tutorial::AddressBookService.new(:port => 9999).start
     assert_source <<-eos, file_contents['./test/proto/client_search.rb']
 #!/usr/bin/env ruby
 require 'protobuf/rpc/client'
-require 'test/proto/rpc'
+require 'test/proto/rpc.pb'
 
 # build request
 request = Tutorial::Person.new
@@ -187,7 +187,7 @@ puts response
     assert_source <<-eos, file_contents['./test/proto/client_add.rb']
 #!/usr/bin/env ruby
 require 'protobuf/rpc/client'
-require 'test/proto/rpc'
+require 'test/proto/rpc.pb'
 
 # build request
 request = Tutorial::Person.new
