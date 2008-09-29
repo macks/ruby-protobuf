@@ -169,7 +169,7 @@ end
           ;
         when /\A(required|optional|repeated|import|package|option|message|extend|enum|service|rpc|returns|group|default|extensions|to|max|double|float|int32|int64|uint32|uint64|sint32|sint64|fixed32|fixed64|sfixed32|sfixed64|bool|string|bytes)\b/
           @q.push [$&, $&.to_sym]
-        when /\A[1-9]\d*/, /\A0(?![.xX0-9])/
+        when /\A[1-9]\d*(?!\.)/, /\A0(?![.xX0-9])/
           @q.push [:DEC_INTEGER, $&.to_i]
         when /\A0[xX]([A-Fa-f0-9])+/
           @q.push [:HEX_INTEGER, $&.to_i(0)]

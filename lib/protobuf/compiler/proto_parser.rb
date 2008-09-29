@@ -10,7 +10,7 @@
 unless $".index 'racc/parser.rb'
 $".push 'racc/parser.rb'
 
-self.class.module_eval <<'..end racc/parser.rb modeval..id5d99c3dde7', 'racc/parser.rb', 1
+self.class.module_eval <<'..end racc/parser.rb modeval..id99e3ee3ee1', 'racc/parser.rb', 1
 #
 # $Id: parser.rb,v 1.7 2005/11/20 17:31:32 aamine Exp $
 #
@@ -453,7 +453,7 @@ module Racc
   end
 
 end
-..end racc/parser.rb modeval..id5d99c3dde7
+..end racc/parser.rb modeval..id99e3ee3ee1
 end
 ###### racc/parser.rb end
 
@@ -462,7 +462,7 @@ module Protobuf
 
   class ProtoParser < Racc::Parser
 
-module_eval <<'..end lib/protobuf/compiler/proto.y modeval..id45a3b588b4', 'lib/protobuf/compiler/proto.y', 162
+module_eval <<'..end lib/protobuf/compiler/proto.y modeval..id6c9ee64762', 'lib/protobuf/compiler/proto.y', 162
 
   def parse(f)
     @q = []
@@ -473,7 +473,7 @@ module_eval <<'..end lib/protobuf/compiler/proto.y modeval..id45a3b588b4', 'lib/
           ;
         when /\A(required|optional|repeated|import|package|option|message|extend|enum|service|rpc|returns|group|default|extensions|to|max|double|float|int32|int64|uint32|uint64|sint32|sint64|fixed32|fixed64|sfixed32|sfixed64|bool|string|bytes)\b/
           @q.push [$&, $&.to_sym]
-        when /\A[1-9]\d*/, /\A0(?![.xX0-9])/
+        when /\A[1-9]\d*(?!\.)/, /\A0(?![.xX0-9])/
           @q.push [:DEC_INTEGER, $&.to_i]
         when /\A0[xX]([A-Fa-f0-9])+/
           @q.push [:HEX_INTEGER, $&.to_i(0)]
@@ -503,7 +503,7 @@ module_eval <<'..end lib/protobuf/compiler/proto.y modeval..id45a3b588b4', 'lib/
   def next_token
     @q.shift
   end
-..end lib/protobuf/compiler/proto.y modeval..id45a3b588b4
+..end lib/protobuf/compiler/proto.y modeval..id6c9ee64762
 
 ##### racc 1.4.5 generates ###
 
