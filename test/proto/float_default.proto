@@ -1,0 +1,2 @@
+message M {  optional float f = 1 [default = 4.2];  }
+
