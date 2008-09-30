@@ -15,8 +15,8 @@ module Protobuf
     end
 
     def create_message(proto_file, proto_dir='.', out_dir='.', file_create=true)
-      out_dir = out_dir.sub! %r{/$}, ''
-      proto_dir = proto_dir.sub! %r{/$}, ''
+      out_dir.sub! %r{/$}, ''
+      proto_dir.sub! %r{/$}, ''
       rb_file = 
         if proto_file =~ %r{^/} 
         then "#{out_dir}/#{proto_file.split('/').last.sub(/\.proto$/, '.pb.rb')}"  
