@@ -105,10 +105,12 @@ rule
   group : label 'group' CAMEL_IDENT '=' integer_literal message_body
           { result = Protobuf::Node::GroupNode.new val[0], val[2], val[4], val[5] }
 
-  field : label type IDENT '=' integer_literal ';'
+  field : label type field_name '=' integer_literal ';'
           { result = Protobuf::Node::FieldNode.new val[0], val[1], val[2], val[4] }
-        | label type IDENT '=' integer_literal '[' field_option_list ']' ';'
+        | label type field_name '=' integer_literal '[' field_option_list ']' ';'
           { result = Protobuf::Node::FieldNode.new val[0], val[1], val[2], val[4], val[6] }
+
+  field_name : IDENT | "required" | "optional" | "repeated" | "import" | "package" | "option" | "message" | "extend" | "enum" | "service" | "rpc" | "returns" | "group" | "default" | "extensions" | "to" | "max" | "double" | "float" | "int32" | "int64" | "uint32" | "uint64" | "sint32" | "sint64" | "fixed32" | "fixed64" | "sfixed32" | "sfixed64" | "bool" | "string" | "bytes"
 
   field_option_list : field_option
                       { result = val }
