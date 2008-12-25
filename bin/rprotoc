@@ -1,6 +1,11 @@
 #!/usr/bin/env ruby
-$: << "#{File.dirname(__FILE__)}/../lib"
 require 'optparse'
+if File.exist? "#{File.dirname(__FILE__)}/../lib"
+  $: << "#{File.dirname(__FILE__)}/../lib"
+else
+  require 'rubygems'
+  gem 'ruby_protobuf'
+end
 require 'ruby_protobuf'
 #require 'protobuf/compiler/compiler_old'
 require 'protobuf/compiler/compiler'
