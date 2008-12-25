@@ -580,14 +580,16 @@ module Protobuf
       def set_bytes(message_instance, bytes)
         message = type.new
         #message.parse_from bytes
-        message.parse_from_string bytes.pack('U*') # TODO
+        #message.parse_from_string bytes.pack('U*') # TODO
+        message.parse_from_string bytes.pack('C*') # TODO
         message_instance.send("#{name}=", message)
       end
  
       def set_array(message_instance, bytes)
         message = type.new
         #message.parse_from bytes
-        message.parse_from_string bytes.pack('U*')
+        #message.parse_from_string bytes.pack('U*')
+        message.parse_from_string bytes.pack('C*')
         arr = message_instance.send name
         arr << message
       end

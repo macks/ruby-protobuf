@@ -168,7 +168,11 @@ module Protobuf
       field_value_to_string = lambda do |field, value|
         ret +=
           if field.is_a? Protobuf::Field::MessageField
-            "#{i}#{field.name} {\n#{value.inspect(indent + 1)}#{i}}\n"
+            if value.nil?
+              "#{i}#{field.name} {\n#{'  ' * (indent + 1)}nil\n#{i}}\n"
+            else
+              "#{i}#{field.name} {\n#{value.inspect(indent + 1)}#{i}}\n"
+            end
           elsif field.is_a? Protobuf::Field::EnumField
             "#{i}#{field.name}: #{field.type.name_by_value(value)}\n"
           else
