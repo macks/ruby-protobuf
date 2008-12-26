@@ -22,6 +22,8 @@ module Protobuf
         def descriptor
           @descriptor ||= Protobuf::Descriptor::FieldDescriptor.new
         end
+
+        def default; nil end
       end
 
       attr_accessor :message_class, :rule, :type, :name, :tag, :default
@@ -73,7 +75,7 @@ module Protobuf
       end
 
       def typed_default_value(default=nil)
-        default
+        default or self.class.default
       end
 
       def define_accessor(message_instance)
@@ -234,12 +236,12 @@ module Protobuf
     end
 
     class StringField < BaseField
-      def wire_type
-        Protobuf::WireType::LENGTH_DELIMITED
+      class <<self
+        def default; '' end
       end
 
-      def typed_default_value(default=nil)
-        default or ''
+      def wire_type
+        Protobuf::WireType::LENGTH_DELIMITED
       end
 
       def acceptable?(val)
@@ -266,12 +268,12 @@ module Protobuf
     end
     
     class BytesField < BaseField
-      def wire_type
-        Protobuf::WireType::LENGTH_DELIMITED
+      class <<self
+        def default; '' end
       end
 
-      def typed_default_value(default=nil)
-        default or ''
+      def wire_type
+        Protobuf::WireType::LENGTH_DELIMITED
       end
 
       def acceptable?(val)
@@ -296,12 +298,12 @@ module Protobuf
     end
 
     class VarintField < BaseField
-      def wire_type
-        Protobuf::WireType::VARINT
+      class <<self
+        def default; 0 end
       end
 
-      def typed_default_value(default=nil)
-        default or 0
+      def wire_type
+        Protobuf::WireType::VARINT
       end
  
       def set_bytes(message_instance, bytes)
@@ -541,8 +543,8 @@ module Protobuf
     end
     
     class BoolField < VarintField
-      def typed_default_value(default=nil)
-        default or false
+      class <<self
+        def default; false end
       end
 
       def acceptable?(val)
@@ -560,6 +562,10 @@ module Protobuf
     end
     
     class MessageField < BaseField
+      class <<self
+        def default; nil end
+      end
+
       def wire_type
         Protobuf::WireType::LENGTH_DELIMITED
       end
