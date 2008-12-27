@@ -48,7 +48,16 @@ module Protobuf
       end
 
       def commented_proto_contents
-        File.read(proto_file).gsub(/^/, '# ') if proto_file
+        #File.read(proto_file).gsub(/^/, '# ') if proto_file
+        if proto_file
+          if File.exist? proto_file
+            File.read(proto_file).gsub(/^/, '# ')
+          elsif File.exist? "#{@proto_dir}/#{proto_file}"
+            File.read("#{@proto_dir}/#{proto_file}").gsub(/^/, '# ')
+          else
+            raise Errno::ENOENT.new(proto_file)
+          end
+        end
       end
 
       def write(str)
