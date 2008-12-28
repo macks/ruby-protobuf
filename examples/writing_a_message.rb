@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'addressbook'
+require 'addressbook.pb'
 
 def prompt_for_address(person)
   print 'Enter person ID number: '

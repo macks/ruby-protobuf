@@ -14,7 +14,7 @@ Protocol Buffers for Ruby.
 
 == SYNOPSIS:
 
-  rprotoc test/addressbook.proto
+  rprotoc examples/addressbook.proto
 
 == REQUIREMENTS:
 

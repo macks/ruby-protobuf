@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-require 'addressbook'
+require 'addressbook.pb'
 
 def list_people(address_book)
   address_book.person.each do |person|
