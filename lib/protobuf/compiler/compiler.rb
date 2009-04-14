@@ -19,8 +19,8 @@ module Protobuf
       proto_dir.sub! %r{/$}, ''
       rb_file = 
         if proto_file =~ %r{^/} 
-        then "#{out_dir}/#{proto_file.split('/').last.sub(/\.proto$/, '.pb.rb')}"  
-        else "#{out_dir}/#{proto_file.sub(/\.proto$/, '.pb.rb')}" end
+        then "#{out_dir}/#{proto_file.split('/').last.sub(/\.proto$/, '')}.pb.rb"  
+        else "#{out_dir}/#{proto_file.sub(/\.proto$/, '')}.pb.rb" end
       proto_path = validate_existence proto_file, proto_dir
 
       message_visitor = Protobuf::Visitor::CreateMessageVisitor.new proto_file, proto_dir, out_dir
@@ -31,7 +31,7 @@ module Protobuf
     end
 
     def create_rpc(proto_file, proto_dir='.', out_dir='.', file_create=true)
-      message_file = "#{out_dir}/#{proto_file.sub(/\.proto$/, '.pb.rb')}"
+      message_file = "#{out_dir}/#{proto_file.sub(/\.proto$/, '')}.pb.rb"
       out_dir = "#{out_dir}/#{File.dirname proto_file}"
       proto_path = validate_existence proto_file, proto_dir
 
