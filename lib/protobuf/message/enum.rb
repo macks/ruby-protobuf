@@ -8,7 +8,7 @@ module Protobuf
 
       def get_name_by_tag(tag)
         constants.find do |name|
-          class_eval(name) == tag
+          const_get(name) == tag
         end
       end
 

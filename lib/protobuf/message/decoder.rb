@@ -55,9 +55,10 @@ module Protobuf
     end
 
     def read_varint(stream)
+      read_method = stream.respond_to?(:readbyte) ? :readbyte : :readchar
       bytes = []
       begin
-        byte = stream.readchar
+        byte = stream.send(read_method)
         bytes << (byte & 0b01111111)
       end while byte >> 7 == 1
       bytes

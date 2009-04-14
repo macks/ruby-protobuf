@@ -131,7 +131,8 @@ require 'protobuf/message/extend'
       end
 
       def accept_message_visitor(visitor)
-        visitor.write "class #{@name} < ::Protobuf::Message"
+        name = @name.is_a?(Array) ? @name.join : name.to_s
+        visitor.write "class #{name} < ::Protobuf::Message"
         visitor.in_context self.class do 
           define_in_the_file visitor
           @children.each {|child| child.accept_message_visitor visitor}
@@ -248,7 +249,10 @@ require 'protobuf/message/extend'
         if visitor.context.first == Protobuf::Node::ExtendNode
           opts += ', :extension => true'
         end
-        type = (Array === @type and 1 < @type.size) ?  "'#{@type.join '::'}'" : @type 
+        type = if @type.is_a?(Array)
+               then (@type.size > 1) ? "'#{@type.join '::'}'" : @type[0]
+               else @type
+               end
         visitor.write "#{@label} :#{type}, :#{@name}, #{@value}#{opts}"
       end
 
@@ -256,7 +260,7 @@ require 'protobuf/message/extend'
         descriptor = Google::Protobuf::FieldDescriptorProto.new :name => @name.to_s, :number => @value
         descriptor.label = Google::Protobuf::FieldDescriptorProto::Label.const_get "LABEL_#{@label.to_s.upcase}"
         descriptor.type = Google::Protobuf::FieldDescriptorProto::Type.const_get "TYPE_#{@type.to_s.upcase}" if predefined_type?
-        descriptor.type_name = @type.to_s
+        descriptor.type_name = @type.is_a?(Array) ? @type.join : @type.to_s
         @opts.each do |key, val|
           case key.to_sym
           when :default
@@ -277,7 +281,7 @@ require 'protobuf/message/extend'
       end
 
       def accept_message_visitor(visitor)
-        visitor.write "extensions #{@range.to_s}"
+        visitor.write "extensions #{@range.first.to_s}"
       end
 
       def accept_descriptor_visitor(visitor)
