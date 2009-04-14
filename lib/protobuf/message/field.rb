@@ -49,6 +49,8 @@ module Protobuf
           return message[name].inject(true) do |result, msg|
             result and msg.initialized?
           end
+        when :optional
+          return false if message[name] and is_a?(Protobuf::Field::MessageField) and not message[name].initialized?
         end
         true
       end
