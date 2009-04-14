@@ -29,7 +29,7 @@ module Protobuf
 
     class <<self
       include Protobuf::Protoable
-      def fields; @fields ||= [] end #attr_reader :fields
+      def fields; @fields ||= {} end #attr_reader :fields
 
       def extensions(range)
         @extension_fields = ExtensionFields.new range
