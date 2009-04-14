@@ -75,7 +75,7 @@ module Protobuf
         value_length |= byte << (7 * index)
       end
       value = stream.read value_length
-      value.unpack('c*')
+      value.unpack('C*')
     end
 
     def read_start_group(stream)

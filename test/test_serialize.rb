@@ -1,3 +1,4 @@
+# encoding: utf-8
 require 'test/unit'
 require 'test/addressbook'
 
@@ -23,5 +24,19 @@ class SerializeTest < Test::Unit::TestCase
     assert_equal 1, person2.phone.size
     assert_equal '555-4321', person2.phone[0].number
     assert_equal Tutorial::Person::PhoneType::HOME, person2.phone[0].type
+  end
+
+  def test_serialize_utf8string
+    # serialize to string
+    person = Tutorial::Person.new
+    person.id = 1234
+    person.name = '山田 太郎' # kanji characters
+    serialized_string = person.serialize_to_string
+
+    # parse the serialized string
+    person2 = Tutorial::Person.new
+    person2.parse_from_string serialized_string
+    assert_equal 1234, person2.id
+    assert_equal '山田 太郎', person2.name
   end
 end

@@ -271,17 +271,20 @@ module Protobuf
       end
 
       def set_bytes(message_instance, bytes)
-        message_instance.send("#{name}=", bytes.pack('U*'))
+        message = bytes.pack('C*')
+        message.force_encoding('UTF-8') if message.respond_to?(:force_encoding)
+        message_instance.send("#{name}=", message)
       end
  
       def set_array(message_instance, bytes)
-        message = bytes.pack('U*')
+        message = bytes.pack('C*')
+        message.force_encoding('UTF-8') if message.respond_to?(:force_encoding)
         arr = message_instance.send name
         arr << message
       end
 
       def get_bytes(value)
-        bytes = value.unpack('U*')
+        bytes = value.unpack('C*')
         string_size = VarintField.get_bytes bytes.size
         #(string_size + bytes).pack('C*')
         string_size + bytes.pack('C*')
