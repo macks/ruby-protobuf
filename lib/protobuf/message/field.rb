@@ -199,6 +199,27 @@ module Protobuf
         end
         type
       end
+=begin
+      def typename_to_class(message_class, type)
+        suffix = type.to_s.split('::')
+        modules = message_class.to_s.split('::')
+        while
+          mod = modules.empty? ? Object : eval(modules.join('::'))
+          suffix.each do |s|
+            if mod.const_defined?(s)
+              mod = mod.const_get(s)
+            else
+              mod = nil
+              break
+            end
+          end
+          break if mod
+          raise NameError.new("type not found: #{type}", type) if modules.empty?
+          modules.pop
+        end
+        mod
+      end
+=end
     end
 
     class FieldArray < Array
