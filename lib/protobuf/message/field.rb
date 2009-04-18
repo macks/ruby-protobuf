@@ -59,7 +59,7 @@ module Protobuf
         if repeated?
           message[name].clear
         else
-          message[name] = default_value
+          message.instance_variable_get(:@values).delete(name)
         end
       end
 
@@ -81,31 +81,33 @@ module Protobuf
       end
 
       def define_accessor(message_instance)
-        message_instance.instance_variable_set "@#{name}", default_value
+        message_instance.instance_variable_get(:@values)[name] = default_value if rule == :repeated
         define_getter message_instance
         define_setter message_instance unless rule == :repeated
       end
 
       def define_getter(message_instance)
-        message_instance.instance_eval %Q{
-          def #{name}
-            @#{name}
+        field = self
+        metaclass = (class << message_instance; self; end)
+        metaclass.class_eval do
+          define_method(field.name) do
+	    @values[field.name] or field.default_value
           end
-        }
+        end
       end
 
       def define_setter(message_instance)
-        extension = @extension
-        message_instance.instance_eval %Q{
-          def #{name}=(val)
-            field = get_#{extension ? 'ext_' : ''}field_by_name #{name.inspect}
+        field = self
+        metaclass = (class << message_instance; self; end)
+        metaclass.class_eval do
+          define_method("#{field.name}=") do |val|
             if val.nil?
-              @#{name} = field.default_value
+              @values.delete(field.name)
             elsif field.acceptable? val
-              @#{name} = val
+              @values[field.name] = val
             end
           end
-        }
+        end
       end
 
       def set(message_instance, bytes)

@@ -105,6 +105,8 @@ module Protobuf
     end
 
     def initialize(values={})
+      @values = {}
+
       fields.each do |tag, field|
         unless field.ready?
           field = field.setup
@@ -132,6 +134,12 @@ module Protobuf
       extension_fields.to_a.inject(true) do |result, (tag, field)|
         result and field.initialized?(self)
       end
+    end
+
+    def has_field?(tag_or_name)
+      field = get_field(tag_or_name) || get_ext_field(tag_or_name)
+      raise ArgumentError.new("unknown field: #{tag_or_name.inspect}") unless field
+      @values.has_key?(field.name)
     end
 
     def ==(obj)
@@ -178,12 +186,16 @@ module Protobuf
               "#{i}#{field.name} {\n#{value.inspect(indent + 1)}#{i}}\n"
             end
           elsif field.is_a? Protobuf::Field::EnumField
-            "#{i}#{field.name}: #{field.type.name_by_value(value)}\n"
+	    if field.optional? and not has_field?(field.name)
+	      ''
+	    else
+              "#{i}#{field.name}: #{field.type.name_by_value(value)}\n"
+            end
           else
             if $DEBUG
               "#{i}#{field.name}: #{value.inspect}\n"
             else
-              if field.class.default == value
+              if field.optional? and not has_field?(field.name)
                 ''
               else
                 "#{i}#{field.name}: #{value.inspect}\n"

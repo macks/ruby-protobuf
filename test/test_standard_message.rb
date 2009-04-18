@@ -11,6 +11,12 @@ class StandardMessageTest < Test::Unit::TestCase
     assert !person.initialized?
     person.id = 12
     assert person.initialized?
+
+    # repeated field
+    person.phone << Tutorial::Person::PhoneNumber.new
+    assert !person.initialized?
+    person.phone.last.number = '123-456'
+    assert  person.initialized?
   end
 
   def test_clear
@@ -25,6 +31,10 @@ class StandardMessageTest < Test::Unit::TestCase
     assert_nil person.id
     assert_equal '', person.email
     assert_equal 0, person.phone.size
+
+    assert !person.has_field?(:name)
+    assert !person.has_field?(:id)
+    assert !person.has_field?(:email)
   end
 
   def test_dup

@@ -14,7 +14,7 @@ module Protobuf
 
     def encode(stream=@stream, message=@message)
       message.each_field do |field, value|
-        next unless value # TODO
+        next unless message.has_field?(field.name)
 
         if field.repeated?
           value.each do |val|
