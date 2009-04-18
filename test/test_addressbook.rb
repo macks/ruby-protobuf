@@ -6,6 +6,7 @@ require 'test/addressbook'
 class AddressbookTest < Test::Unit::TestCase
   def test_enum
     phone_number = Tutorial::Person::PhoneNumber.new
+    assert_equal Tutorial::Person::PhoneType::HOME, phone_number.type
     phone_number.type = Tutorial::Person::PhoneType::MOBILE
     assert_equal 0, phone_number.type
     phone_number.type = Tutorial::Person::PhoneType::HOME
