@@ -1,4 +1,3 @@
-(in /home/matuyama/git/ruby-protobuf)
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
