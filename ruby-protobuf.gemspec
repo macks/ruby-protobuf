@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 
+
 Gem::Specification.new do |s|
   s.name = %q{ruby_protobuf}
   s.version = "0.3.2.1"
