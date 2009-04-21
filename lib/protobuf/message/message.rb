@@ -29,7 +29,7 @@ module Protobuf
 
     class <<self
       include Protobuf::Protoable
-      def fields; @fields ||= {} end #attr_reader :fields
+      def fields; @fields ||= {} end
 
       def extensions(range)
         @extension_fields = ExtensionFields.new range
@@ -53,7 +53,6 @@ module Protobuf
           Field number #{tag} has already been used in "#{self.name}" by field "#{fname}".
         eos
         field_hash[tag] = Protobuf::Field.build self, rule, type, fname, tag, opts
-        #(@fields ||= {})[tag] = Protobuf::Field.build self, rule, type, fname, tag, opts
       end
 
       def extension_tag?(tag)
@@ -176,7 +175,7 @@ module Protobuf
       field_value_to_string = lambda do |field, value|
         ret +=
           if field.is_a? Protobuf::Field::MessageField
-            if value.nil? # TODO in what case?
+            if value.nil?
               if $DEBUG
                 "#{i}#{field.name} {\n#{'  ' * (indent + 1)}nil\n#{i}}\n"
               else
