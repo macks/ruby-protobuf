@@ -7,20 +7,30 @@ else
   gem 'ruby_protobuf'
 end
 require 'ruby_protobuf'
-#require 'protobuf/compiler/compiler_old'
 require 'protobuf/compiler/compiler'
 
 
-COMMAND_LINE = "#{$0} #{ARGV.join(' ')} PROTO_FILE"
 OPT = {}
-opts = OptionParser.new
+opts = OptionParser.new("#{$0} [OPTIONS] PROTO_FILE")
 opts.on('-p', '--proto_path <PATH>', 'Specify the directory in which to search for imports. The current directory is default.'){|v| OPT[:proto_path] = v}
 opts.on('-o', '--out <OUT_DIR>', 'Specify the directory in which Ruby source file is generated. The current directory is default.'){|v| OPT[:out] = v}
 opts.on_tail('-v', '--version', 'Show version.'){puts(opts.ver); exit}
 opts.on_tail('-h', '--help', 'Show this message.'){puts(opts.help); exit}
 
 ::Version = RubyProtobuf::VERSION
-opts.order! ARGV
+
+begin
+  opts.order! ARGV
+rescue OptionParser::ParseError
+  $stderr.puts $!.to_s
+  exit 1
+end
+
 PROTO_FILE = ARGV.shift
+
+unless PROTO_FILE
+  puts opts
+  exit
+end
 
 Protobuf::Compiler.compile(PROTO_FILE, (OPT[:proto_path] or '.'), (OPT[:out] or '.'))
