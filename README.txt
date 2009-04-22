@@ -1,7 +1,6 @@
 = RubyProtobuf
 
 * http://github.com/macks/ruby-protobuf
-* http://code.google.com/p/ruby-protobuf
 
 == DESCRIPTION:
 
@@ -32,6 +31,7 @@ MATSUYAMA Kengo <macksx@gmail.com>
 
 Original Author:
  ANDO Yasushi <andyjpn@gmail.com>
+ http://code.google.com/p/ruby-protobuf
 
 == LICENSE:
 
