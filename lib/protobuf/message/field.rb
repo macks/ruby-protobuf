@@ -317,7 +317,6 @@ module Protobuf
       end
  
       def set_bytes(message_instance, bytes)
-        # TODO should refactor using pack('w*')
         value = 0
         bytes.each_with_index do |byte, index|
           value |= byte << (7 * index)
@@ -326,22 +325,13 @@ module Protobuf
       end
 
       def self.get_bytes(value)
-        # TODO should refactor using unpack('w*')
-        #return [value].pack('w*').unpack('C*')
-        return [0].pack('C') if value == 0
+        return [value].pack('C') if value < 128
         bytes = []
         until value == 0
-          byte = 0
-          7.times do |i|
-            byte |= (value & 1) << i
-            value >>= 1
-          end
-          byte |= 0b10000000
-          bytes << byte
+          bytes << (0x80 | (value & 0x7f))
+          value >>= 7
         end
-        #bytes[0] &= 0b01111111
-        #bytes
-        bytes[bytes.size - 1] &= 0b01111111
+        bytes[-1] &= 0x7f
         bytes.pack('C*')
       end
 
