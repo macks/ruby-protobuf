@@ -91,7 +91,7 @@ module Protobuf
         metaclass = (class << message_instance; self; end)
         metaclass.class_eval do
           define_method(field.name) do
-	    @values[field.name] or field.default_value
+            @values[field.name] or field.default_value
           end
         end
       end

@@ -185,9 +185,9 @@ module Protobuf
               "#{i}#{field.name} {\n#{value.inspect(indent + 1)}#{i}}\n"
             end
           elsif field.is_a? Protobuf::Field::EnumField
-	    if field.optional? and not has_field?(field.name)
-	      ''
-	    else
+            if field.optional? and not has_field?(field.name)
+              ''
+            else
               "#{i}#{field.name}: #{field.type.name_by_value(value)}\n"
             end
           else
