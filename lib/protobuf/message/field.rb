@@ -260,40 +260,6 @@ module Protobuf
       end
     end
 
-    class StringField < BaseField
-      class <<self
-        def default; '' end
-      end
-
-      def wire_type
-        Protobuf::WireType::LENGTH_DELIMITED
-      end
-
-      def acceptable?(val)
-        raise TypeError unless val.instance_of? String
-        true
-      end
-
-      def set_bytes(message_instance, bytes)
-        message = bytes.pack('C*')
-        message.force_encoding('UTF-8') if message.respond_to?(:force_encoding)
-        message_instance.send("#{name}=", message)
-      end
- 
-      def set_array(message_instance, bytes)
-        message = bytes.pack('C*')
-        message.force_encoding('UTF-8') if message.respond_to?(:force_encoding)
-        arr = message_instance.send name
-        arr << message
-      end
-
-      def get_bytes(value)
-        bytes = value.unpack('C*')
-        string_size = VarintField.get_bytes bytes.size
-        string_size + bytes.pack('C*')
-      end
-    end
-    
     class BytesField < BaseField
       class <<self
         def default; '' end
@@ -319,8 +285,25 @@ module Protobuf
       end
 
       def get_bytes(value)
-        string_size = VarintField.get_bytes value.unpack('C*').size
-        string_size + value
+        value = value.dup
+        value.force_encoding('ASCII-8BIT') if value.respond_to?(:force_encoding)
+        string_size = VarintField.get_bytes(value.size)
+        string_size << value
+      end
+    end
+
+    class StringField < BytesField
+      def set_bytes(message_instance, bytes)
+        message = bytes.pack('C*')
+        message.force_encoding('UTF-8') if message.respond_to?(:force_encoding)
+        message_instance.send("#{name}=", message)
+      end
+ 
+      def set_array(message_instance, bytes)
+        message = bytes.pack('C*')
+        message.force_encoding('UTF-8') if message.respond_to?(:force_encoding)
+        arr = message_instance.send name
+        arr << message
       end
     end
 
@@ -495,7 +478,7 @@ module Protobuf
         raise RangeError if val < min or max < val
         true
       end
-   end
+    end
     
     class Fixed32Field < VarintField
       def wire_type
