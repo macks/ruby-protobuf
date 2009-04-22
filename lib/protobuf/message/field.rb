@@ -308,6 +308,13 @@ module Protobuf
     end
 
     class VarintField < BaseField
+      INT32_MAX  =  2**31 - 1
+      INT32_MIN  = -2**31
+      INT64_MAX  =  2**63 - 1
+      INT64_MIN  = -2**63 - 1
+      UINT32_MAX =  2**32 - 1
+      UINT64_MAX =  2**64 - 1
+
       class <<self
         def default; 0 end
       end
@@ -325,6 +332,7 @@ module Protobuf
       end
 
       def self.get_bytes(value)
+        raise RangeError.new(value) if value < 0
         return [value].pack('C') if value < 128
         bytes = []
         until value == 0
@@ -347,28 +355,28 @@ module Protobuf
     end
     
     class Int32Field < VarintField
-      def self.max; 1.0/0.0 end
-      def self.min; -1.0/0.0 end
+      def self.max; INT32_MAX; end
+      def self.min; INT32_MIN; end
     end
     
     class Int64Field < VarintField
-      def self.max; 1.0/0.0 end
-      def self.min; -1.0/0.0 end
+      def self.max; INT64_MAX; end
+      def self.min; INT64_MIN; end
     end
     
     class Uint32Field < VarintField
-      def self.max; 1.0/0.0 end
-      def self.min; 0 end
+      def self.max; UINT32_MAX; end
+      def self.min; 0; end
     end
     
     class Uint64Field < VarintField
-      def self.max; 1.0/0.0 end
-      def self.min; 0 end
+      def self.max; UINT64_MAX; end
+      def self.min; 0; end
     end
     
     class Sint32Field < VarintField
-      def self.max; 1.0/0.0 end
-      def self.min; -1.0/0.0 end
+      def self.max; INT32_MAX; end
+      def self.min; INT32_MIN; end
  
       def set_bytes(message_instance, bytes)
         # TODO use only bit-operations
@@ -389,8 +397,8 @@ module Protobuf
     end
     
     class Sint64Field < VarintField
-      def self.max; 1.0/0.0 end
-      def self.min; -1.0/0.0 end
+      def self.max; INT64_MAX; end
+      def self.min; INT64_MIN; end
  
       def set_bytes(message_instance, bytes)
         # TODO use only bit-operations
@@ -415,14 +423,12 @@ module Protobuf
         Protobuf::WireType::FIXED64
       end
  
-      #TODO
       def self.max
-        '0x7fefffffffffffff'.unpack('d').first
+        1.0/0.0
       end
 
-      #TODO
       def self.min
-        -(2**(64/2) - 1)
+        -1.0/0.0
       end
  
       def set_bytes(message_instance, bytes)
@@ -445,14 +451,12 @@ module Protobuf
         Protobuf::WireType::FIXED32
       end
  
-      #TODO
       def self.max
-        '0x7fefffffffffffff'.unpack('e').first
+        1.0/0
       end
 
-      #TODO
       def self.min
-        -(2**(32/2) - 1)
+        -1.0/0
       end
  
       def set_bytes(message_instance, bytes)
@@ -476,7 +480,7 @@ module Protobuf
       end
 
       def self.max
-        2**32
+        UINT32_MAX
       end
 
       def self.min
@@ -498,7 +502,7 @@ module Protobuf
       end
 
       def self.max
-        2**64
+        UINT64_MAX
       end
 
       def self.min
@@ -514,17 +518,17 @@ module Protobuf
       end
     end
     
-    class Sfinxed32Field < VarintField
+    class Sfixed32Field < VarintField
       def wire_type
         Protobuf::WireType::FIXED32
       end
 
       def self.max
-        2**(32/2)
+        INT32_MAX
       end
 
       def self.min
-        -(2**(32/2) - 1)
+        INT32_MIN
       end
     end
     
@@ -534,11 +538,11 @@ module Protobuf
       end
 
       def self.max
-        2**(64/2)
+        INT64_MAX
       end
 
       def self.min
-        -(2**(64/2) - 1)
+        INT64_MIN
       end
     end
     
