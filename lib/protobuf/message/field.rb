@@ -311,7 +311,7 @@ module Protobuf
       INT32_MAX  =  2**31 - 1
       INT32_MIN  = -2**31
       INT64_MAX  =  2**63 - 1
-      INT64_MIN  = -2**63 - 1
+      INT64_MIN  = -2**63
       UINT32_MAX =  2**32 - 1
       UINT64_MAX =  2**64 - 1
 
