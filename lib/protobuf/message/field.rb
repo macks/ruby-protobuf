@@ -91,7 +91,11 @@ module Protobuf
         metaclass = (class << message_instance; self; end)
         metaclass.class_eval do
           define_method(field.name) do
-            @values[field.name] or field.default_value
+            if @values.has_key?(field.name)
+	      @values[field.name]
+	    else
+	      field.default_value
+	    end
           end
         end
       end
