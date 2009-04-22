@@ -2,7 +2,6 @@ History.txt
 Manifest.txt
 README.txt
 Rakefile
-bin/mk_parser
 bin/rprotoc
 examples/addressbook.proto
 examples/addressbook.pb.rb
@@ -37,6 +36,7 @@ lib/protobuf/rpc/client.rb
 lib/protobuf/rpc/handler.rb
 lib/protobuf/rpc/server.rb
 lib/ruby_protobuf.rb
+script/mk_parser
 test/addressbook.rb
 test/addressbook_base.rb
 test/addressbook_ext.rb

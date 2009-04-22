@@ -23,7 +23,8 @@ Protocol Buffers for Ruby.
 
 == INSTALL:
 
-* rake gem; sudo gem install pkg/ruby_protobuf-*.gem
+* gem source -a http://gems.github.com
+* sudo gem install macks-ruby_protobuf
 
 == AUTHOR:
 
