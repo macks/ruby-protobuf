@@ -3,6 +3,9 @@ require 'test/addressbook'
 require 'test/merge'
 require 'test/unit'
 
+# It should not conflict with Test::InnerMessage1 which is included in merge.proto
+class InnerMessage1; end
+
 class MessageTest < Test::Unit::TestCase
   def test_equality
     person1 = Tutorial::Person.new :name => 'ando'
