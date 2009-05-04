@@ -127,12 +127,8 @@ module Protobuf
     end
 
     def initialized?
-      fields.to_a.inject(true) do |result, (tag, field)|
-        result and field.initialized?(self)
-      end and
-      extension_fields.to_a.inject(true) do |result, (tag, field)|
-        result and field.initialized?(self)
-      end
+      fields.all? {|tag, field| field.initialized?(self) } && \
+      extension_fields.all? {|tag, field| field.initialized?(self) }
     end
 
     def has_field?(tag_or_name)

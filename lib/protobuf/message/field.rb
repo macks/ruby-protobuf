@@ -46,9 +46,9 @@ module Protobuf
           return false if message[name].nil?
           return false if is_a?(Protobuf::Field::MessageField) and not message[name].initialized?
         when :repeated
-          return message[name].inject(true) do |result, msg|
-            result and msg.initialized?
-          end
+          return message[name].all? {|msg|
+            (not is_a?(Protobuf::Field::MessageField)) or msg.initialized?
+          }
         when :optional
           return false if message[name] and is_a?(Protobuf::Field::MessageField) and not message[name].initialized?
         end
