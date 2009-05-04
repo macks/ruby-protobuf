@@ -200,10 +200,10 @@ module Protobuf
       end
       each_field do |field, value|
         if field.repeated?
-          value.each do |v| 
+          value.each do |v|
             field_value_to_string.call field, v
           end
-        else 
+        else
           field_value_to_string.call field, value
         end
       end
@@ -259,12 +259,12 @@ module Protobuf
       #get_field_by_tag(tag).set self, bytes # TODO
       (get_field_by_tag(tag) or get_ext_field_by_tag(tag)).set self, bytes
     end
-    
+
     def merge_field(tag, value)
       #get_field_by_tag(tag).merge self, bytes #TODO
       (get_field_by_tag(tag) or get_ext_field_by_tag(tag)).merge self, value
     end
-    
+
     def [](tag_or_name)
       if field = get_field(tag_or_name)
         send field.name

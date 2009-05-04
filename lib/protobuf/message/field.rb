@@ -4,9 +4,9 @@ require 'protobuf/descriptor/field_descriptor'
 module Protobuf
   module Field
     def self.build(message_class, rule, type, name, tag, opts={})
-      field_class = 
-        if [:double, :float, :int32, :int64, :uint32, :uint64, 
-          :sint32, :sint64, :fixed32, :fixed64, :sfixed32, :sfixed64, 
+      field_class =
+        if [:double, :float, :int32, :int64, :uint32, :uint64,
+          :sint32, :sint64, :fixed32, :fixed64, :sfixed32, :sfixed64,
           :bool, :string, :bytes].include? type
           eval "Protobuf::Field::#{type.to_s.capitalize}Field"
         else
@@ -33,7 +33,7 @@ module Protobuf
       end
 
       def initialize(message_class, rule, type, name, tag, opts={})
-        @message_class, @rule, @type, @name, @tag, @default, @extension = 
+        @message_class, @rule, @type, @name, @tag, @default, @extension =
           message_class, rule, type, name, tag, opts[:default], opts[:extension]
         @error_message = 'Type invalid'
       end
@@ -147,7 +147,7 @@ module Protobuf
       end
 
       def merge_array(message_instance, value)
-        message_instance[tag].concat value 
+        message_instance[tag].concat value
       end
 
       def merge_value(message_instance, value)
@@ -262,7 +262,7 @@ module Protobuf
       def set_bytes(message_instance, bytes)
         message_instance.send("#{name}=", bytes.pack('C*'))
       end
- 
+
       def set_array(message_instance, bytes)
         message = bytes.pack('C*')
         arr = message_instance.send name
@@ -283,7 +283,7 @@ module Protobuf
         message.force_encoding('UTF-8') if message.respond_to?(:force_encoding)
         message_instance.send("#{name}=", message)
       end
- 
+
       def set_array(message_instance, bytes)
         message = bytes.pack('C*')
         message.force_encoding('UTF-8') if message.respond_to?(:force_encoding)
@@ -315,7 +315,7 @@ module Protobuf
         end
         value
       end
- 
+
       def set_bytes(message_instance, bytes)
         value = self.class.decode_bytes(bytes)
         message_instance.send("#{name}=", value)
@@ -343,7 +343,7 @@ module Protobuf
         true
       end
     end
-    
+
     class Int32Field < VarintField
       def self.max; INT32_MAX; end
       def self.min; INT32_MIN; end
@@ -352,14 +352,14 @@ module Protobuf
         # original Google's library uses 64bits integer for negative value
         self.class.get_bytes(value & 0xffff_ffff_ffff_ffff)
       end
- 
+
       def set_bytes(message_instance, bytes)
         value  = self.class.decode_bytes(bytes)
         value -= 0x1_0000_0000_0000_0000 if (value & 0x8000_0000_0000_0000).nonzero?
         message_instance.send("#{name}=", value)
       end
     end
-    
+
     class Int64Field < VarintField
       def self.max; INT64_MAX; end
       def self.min; INT64_MIN; end
@@ -367,28 +367,28 @@ module Protobuf
       def get_bytes(value)
         self.class.get_bytes(value & 0xffff_ffff_ffff_ffff)
       end
- 
+
       def set_bytes(message_instance, bytes)
         value  = self.class.decode_bytes(bytes)
         value -= 0x1_0000_0000_0000_0000 if (value & 0x8000_0000_0000_0000).nonzero?
         message_instance.send("#{name}=", value)
       end
     end
-    
+
     class Uint32Field < VarintField
       def self.max; UINT32_MAX; end
       def self.min; 0; end
     end
-    
+
     class Uint64Field < VarintField
       def self.max; UINT64_MAX; end
       def self.min; 0; end
     end
-    
+
     class Sint32Field < VarintField
       def self.max; INT32_MAX; end
       def self.min; INT32_MIN; end
- 
+
       def set_bytes(message_instance, bytes)
         value = self.class.decode_bytes(bytes)
         if (value & 1).zero?
@@ -407,11 +407,11 @@ module Protobuf
         end
       end
     end
-    
+
     class Sint64Field < VarintField
       def self.max; INT64_MAX; end
       def self.min; INT64_MIN; end
- 
+
       def set_bytes(message_instance, bytes)
         value = self.class.decode_bytes(bytes)
         if (value & 1).zero?
@@ -430,12 +430,12 @@ module Protobuf
         end
       end
     end
-    
+
     class DoubleField < VarintField
       def wire_type
         Protobuf::WireType::FIXED64
       end
- 
+
       def self.max
         1.0/0.0
       end
@@ -443,7 +443,7 @@ module Protobuf
       def self.min
         -1.0/0.0
       end
- 
+
       def set_bytes(message_instance, bytes)
         message_instance.send("#{name}=", bytes.unpack('E').first)
       end
@@ -458,12 +458,12 @@ module Protobuf
         true
       end
     end
-    
+
     class FloatField < VarintField
       def wire_type
         Protobuf::WireType::FIXED32
       end
- 
+
       def self.max
         1.0/0
       end
@@ -471,7 +471,7 @@ module Protobuf
       def self.min
         -1.0/0
       end
- 
+
       def set_bytes(message_instance, bytes)
         message_instance.send("#{name}=", bytes.unpack('e').first)
       end
@@ -479,14 +479,14 @@ module Protobuf
       def get_bytes(value)
         [value].pack('e')
       end
- 
+
       def acceptable?(val)
         raise TypeError unless val.is_a? Numeric
         raise RangeError if val < min or max < val
         true
       end
     end
-    
+
     class Fixed32Field < VarintField
       def wire_type
         Protobuf::WireType::FIXED32
@@ -499,7 +499,7 @@ module Protobuf
       def self.min
         0
       end
- 
+
       def set_bytes(message_instance, bytes)
         message_instance.send("#{name}=", bytes.unpack('V').first)
       end
@@ -508,7 +508,7 @@ module Protobuf
         [value].pack('V')
       end
     end
-    
+
     class Fixed64Field < VarintField
       def wire_type
         Protobuf::WireType::FIXED64
@@ -521,7 +521,7 @@ module Protobuf
       def self.min
         0
       end
- 
+
       def set_bytes(message_instance, bytes)
         # we don't use 'Q' for pack/unpack. 'Q' is machine-dependent.
         values = bytes.unpack('VV')
@@ -547,7 +547,7 @@ module Protobuf
       def self.min
         INT32_MIN
       end
- 
+
       def set_bytes(message_instance, bytes)
         value  = bytes.unpack('V').first
         value -= 0x1_0000_0000 if (value & 0x8000_0000).nonzero?
@@ -558,7 +558,7 @@ module Protobuf
         [value].pack('V')
       end
     end
-    
+
     class Sfixed64Field < VarintField
       def wire_type
         Protobuf::WireType::FIXED64
@@ -571,7 +571,7 @@ module Protobuf
       def self.min
         INT64_MIN
       end
- 
+
       def set_bytes(message_instance, bytes)
         # we don't use 'Q' for pack/unpack. 'Q' is machine-dependent.
         values = bytes.unpack('VV')
@@ -585,7 +585,7 @@ module Protobuf
         [value & 0xffff_ffff, value >> 32].pack('VV')
       end
     end
-    
+
     class BoolField < VarintField
       class <<self
         def default; false end
@@ -595,7 +595,7 @@ module Protobuf
         raise TypeError unless [TrueClass, FalseClass].include? val.class
         true
       end
- 
+
       def set_bytes(message_instance, bytes)
         message_instance.send("#{name}=", bytes.first == 1)
       end
@@ -604,7 +604,7 @@ module Protobuf
         [value ? 1 : 0].pack('C')
       end
     end
-    
+
     class MessageField < BaseField
       class <<self
         def default; nil end
@@ -626,13 +626,13 @@ module Protobuf
         raise TypeError unless val.instance_of? type
         true
       end
- 
+
       def set_bytes(message_instance, bytes)
         message = type.new
         message.parse_from_string bytes.pack('C*') # TODO
         message_instance.send("#{name}=", message)
       end
- 
+
       def set_array(message_instance, bytes)
         message = type.new
         message.parse_from_string bytes.pack('C*')

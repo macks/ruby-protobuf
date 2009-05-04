@@ -81,7 +81,7 @@ module Protobuf
     def read_start_group(stream)
       raise NotImplementedError.new('Group is duplecated.')
     end
- 
+
     def read_end_group(stream)
       raise NotImplementedError.new('Group is duplecated.')
     end
