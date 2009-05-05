@@ -198,10 +198,12 @@ module Protobuf
       def typename_to_class(message_class, type)
         suffix = type.to_s.split('::')
         modules = message_class.to_s.split('::')
+        args = (Object.method(:const_defined?).arity == 1) ? [] : [nil, false]
         while
           mod = modules.empty? ? Object : eval(modules.join('::'))
           mod = suffix.inject(mod) {|m, s|
-            m and m.const_defined?(s) and m.const_get(s)
+            args[0] = s
+            m and m.const_defined?(*args) and m.const_get(s)
           }
           break if mod
           raise NameError.new("type not found: #{type}", type) if modules.empty?
