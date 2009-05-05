@@ -42,14 +42,9 @@ module Protobuf
     protected
 
     def read_key(stream)
-      # TODO is there more clear way to do this?
-      bits = 0
       bytes = read_varint stream
-      bytes.each_with_index do |byte, index|
-        byte &= 0b01111111
-        bits |= byte << (7 * index)
-      end
-      wire_type = bits & 0b00000111
+      bits = Protobuf::Field::VarintField.decode bytes
+      wire_type = bits & 0x07
       tag = bits >> 3
       [tag, wire_type]
     end
@@ -59,9 +54,13 @@ module Protobuf
       bytes = []
       begin
         byte = stream.send(read_method)
-        bytes << (byte & 0b01111111)
-      end while byte >> 7 == 1
+        bytes << (byte & 0x7f)
+      end while (byte & 0x80).nonzero?
       bytes
+    end
+
+    def read_fixed32(stream)
+      stream.read(4)
     end
 
     def read_fixed64(stream)
@@ -70,10 +69,7 @@ module Protobuf
 
     def read_length_delimited(stream)
       bytes = read_varint stream
-      value_length = 0
-      bytes.each_with_index do |byte, index|
-        value_length |= byte << (7 * index)
-      end
+      value_length = Protobuf::Field::VarintField.decode bytes
       value = stream.read value_length
       value.unpack('C*')
     end
@@ -84,10 +80,6 @@ module Protobuf
 
     def read_end_group(stream)
       raise NotImplementedError.new('Group is duplecated.')
-    end
-
-    def read_fixed32(stream)
-      stream.read(4)
     end
   end
 end
