@@ -146,7 +146,7 @@ module Protobuf
     def ==(obj)
       return false unless obj.is_a? self.class
       each_field do |field, value|
-        return false unless value == obj[field.name]
+        return false unless value == obj.send(field.name)
       end
       true
     end
@@ -161,11 +161,12 @@ module Protobuf
       ret = self.class.new
       each_field do |field, value|
         if field.repeated?
+          field_array = ret.send(field.name)
           value.each do |v|
-            ret[field.name] << (v.is_a?(Numeric) ? v : v.dup)
+            field_array << (v.is_a?(Numeric) ? v : v.dup)
           end
         else
-          ret[field.name] = value.is_a?(Numeric) ? value : value.dup
+          ret.send("#{field.name}=", value.is_a?(Numeric) ? value : value.dup)
         end
       end
       ret
