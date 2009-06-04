@@ -64,7 +64,8 @@ module Protobuf
       end
 
       def get_field_by_name(name)
-        fields.values.find {|field| field.name == name.to_sym}
+        name = name.to_sym
+        fields.values.find {|field| field.name == name}
       end
 
       def get_field_by_tag(tag)
@@ -81,7 +82,8 @@ module Protobuf
 
       #TODO merge to get_field_by_name
       def get_ext_field_by_name(name)
-        extension_fields.values.find {|field| field.name == name.to_sym}
+        name = name.to_sym
+        extension_fields.values.find {|field| field.name == name}
       end
 
       #TODO merge to get_field_by_tag
@@ -106,12 +108,14 @@ module Protobuf
     def initialize(values={})
       @values = {}
 
-      fields.each do |tag, field|
+      self.class.fields.each do |tag, field|
         unless field.ready?
           field = field.setup
           self.class.class_eval {@fields[tag] = field}
         end
-        field.define_accessor self
+        if field.repeated?
+          @values[field.name] = Protobuf::Field::FieldArray.new(field)
+        end
       end
 
       # TODO
@@ -120,7 +124,9 @@ module Protobuf
           field = field.setup
           self.class.class_eval {@extension_fields[tag] = field}
         end
-        field.define_accessor self
+        if field.repeated?
+          @values[field.name] = Protobuf::Field::FieldArray.new(field)
+        end
       end
 
       values.each {|tag, val| self[tag] = val}
@@ -296,8 +302,11 @@ module Protobuf
     def get_ext_field(tag_or_name); self.class.get_ext_field(tag_or_name) end
 
     def each_field(&block)
-      (fields.merge extension_fields).to_a.sort{|(t1, f1), (t2, f2)| t1 <=> t2}.each do |tag, field|
-        block.call field, self[tag]
+      fields.each do |tag, field|
+        yield field, send(field.name)
+      end
+      extension_fields.each do |tag, field|
+        yield field, send(field.name)
       end
     end
   end
