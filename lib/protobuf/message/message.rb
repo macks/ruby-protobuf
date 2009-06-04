@@ -302,11 +302,8 @@ module Protobuf
     def get_ext_field_by_tag(tag); self.class.get_ext_field_by_tag(tag) end
     def get_ext_field(tag_or_name); self.class.get_ext_field(tag_or_name) end
 
-    def each_field(&block)
-      fields.each do |tag, field|
-        yield field, send(field.name)
-      end
-      extension_fields.each do |tag, field|
+    def each_field
+      (fields.merge extension_fields).sort_by {|tag, field| tag}.each do |tag, field|
         yield field, send(field.name)
       end
     end
