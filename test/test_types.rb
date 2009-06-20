@@ -178,4 +178,8 @@ class TypesTest < Test::Unit::TestCase
     assert_raise TypeError do types.type13 = true end
     assert_raise TypeError do types.type13 = [] end
   end
+
+  def test_varint_getbytes
+    assert_equal "\xac\x02", Protobuf::Field::VarintField.get_bytes(300)
+  end
 end
