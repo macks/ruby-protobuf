@@ -221,6 +221,6 @@ class TypesTest < Test::Unit::TestCase
   end
 
   def test_varint_getbytes
-    assert_equal "\xac\x02", Protobuf::Field::VarintField.get_bytes(300)
+    assert_equal "\xac\x02", Protobuf::Field::VarintField.encode(300)
   end
 end

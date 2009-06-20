@@ -31,7 +31,7 @@ module Protobuf
 
     def write_pair(field, value, stream)
       key = (field.tag << 3) | field.wire_type
-      key_bytes = Protobuf::Field::VarintField.get_bytes key
+      key_bytes = Protobuf::Field::VarintField.encode key
       stream.write key_bytes
       bytes = field.get value
       stream.write bytes
