@@ -36,6 +36,7 @@ module Protobuf
         @message_class, @rule, @type, @name, @tag, @default, @extension =
           message_class, rule, type, name, tag, opts[:default], opts[:extension]
         @error_message = 'Type invalid'
+        define_accessor
       end
 
       def ready?; true end
@@ -80,16 +81,16 @@ module Protobuf
         default or self.class.default
       end
 
-      def define_accessor(message_instance)
-        message_instance.instance_variable_get(:@values)[name] = default_value if rule == :repeated
-        define_getter message_instance
-        define_setter message_instance unless rule == :repeated
+      private
+
+      def define_accessor
+        define_getter
+        define_setter unless rule == :repeated
       end
 
-      def define_getter(message_instance)
+      def define_getter
         field = self
-        metaclass = (class << message_instance; self; end)
-        metaclass.class_eval do
+        @message_class.class_eval do
           define_method(field.name) do
             if @values.has_key?(field.name)
               @values[field.name]
@@ -100,10 +101,9 @@ module Protobuf
         end
       end
 
-      def define_setter(message_instance)
+      def define_setter
         field = self
-        metaclass = (class << message_instance; self; end)
-        metaclass.class_eval do
+        @message_class.class_eval do
           define_method("#{field.name}=") do |val|
             if val.nil?
               @values.delete(field.name)
@@ -113,6 +113,8 @@ module Protobuf
           end
         end
       end
+
+      public
 
       # encoder/decoder related methods
 

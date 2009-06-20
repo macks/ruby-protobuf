@@ -64,7 +64,8 @@ module Protobuf
       end
 
       def get_field_by_name(name)
-        fields.values.find {|field| field.name == name.to_sym}
+        name = name.to_sym
+        fields.values.find {|field| field.name == name}
       end
 
       def get_field_by_tag(tag)
@@ -81,7 +82,8 @@ module Protobuf
 
       #TODO merge to get_field_by_name
       def get_ext_field_by_name(name)
-        extension_fields.values.find {|field| field.name == name.to_sym}
+        name = name.to_sym
+        extension_fields.values.find {|field| field.name == name}
       end
 
       #TODO merge to get_field_by_tag
@@ -106,12 +108,14 @@ module Protobuf
     def initialize(values={})
       @values = {}
 
-      fields.each do |tag, field|
+      self.class.fields.each do |tag, field|
         unless field.ready?
           field = field.setup
           self.class.class_eval {@fields[tag] = field}
         end
-        field.define_accessor self
+        if field.repeated?
+          @values[field.name] = Protobuf::Field::FieldArray.new(field)
+        end
       end
 
       # TODO
@@ -120,7 +124,9 @@ module Protobuf
           field = field.setup
           self.class.class_eval {@extension_fields[tag] = field}
         end
-        field.define_accessor self
+        if field.repeated?
+          @values[field.name] = Protobuf::Field::FieldArray.new(field)
+        end
       end
 
       values.each {|tag, val| self[tag] = val}
@@ -140,7 +146,7 @@ module Protobuf
     def ==(obj)
       return false unless obj.is_a? self.class
       each_field do |field, value|
-        return false unless value == obj[field.name]
+        return false unless value == obj.send(field.name)
       end
       true
     end
@@ -155,11 +161,12 @@ module Protobuf
       ret = self.class.new
       each_field do |field, value|
         if field.repeated?
+          field_array = ret.send(field.name)
           value.each do |v|
-            ret[field.name] << (v.is_a?(Numeric) ? v : v.dup)
+            field_array << (v.is_a?(Numeric) ? v : v.dup)
           end
         else
-          ret[field.name] = value.is_a?(Numeric) ? value : value.dup
+          ret.send("#{field.name}=", value.is_a?(Numeric) ? value : value.dup)
         end
       end
       ret
@@ -295,9 +302,9 @@ module Protobuf
     def get_ext_field_by_tag(tag); self.class.get_ext_field_by_tag(tag) end
     def get_ext_field(tag_or_name); self.class.get_ext_field(tag_or_name) end
 
-    def each_field(&block)
-      (fields.merge extension_fields).to_a.sort{|(t1, f1), (t2, f2)| t1 <=> t2}.each do |tag, field|
-        block.call field, self[tag]
+    def each_field
+      (fields.merge extension_fields).sort_by {|tag, field| tag}.each do |tag, field|
+        yield field, send(field.name)
       end
     end
   end
