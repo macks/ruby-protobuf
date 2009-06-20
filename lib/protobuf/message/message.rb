@@ -225,7 +225,7 @@ module Protobuf
       if filename.is_a? File
         parse_from filename
       else
-        File.open(filename, 'r') do |f|
+        File.open(filename, 'rb') do |f|
           parse_from f
         end
       end
@@ -248,7 +248,7 @@ module Protobuf
       if filename.is_a? File
         serialize_to filename
       else
-        File.open(filename, 'w') do |f|
+        File.open(filename, 'wb') do |f|
           serialize_to f
         end
       end
