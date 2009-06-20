@@ -1,5 +1,4 @@
 class Protobuf::ProtoParser
-  #options no_result_var
 rule
   proto : proto_item
           { result = Protobuf::Node::ProtoNode.new val }
@@ -162,42 +161,61 @@ end
 
 ---- inner
 
+  require 'strscan'
+
   def parse(f)
-    @q = []
-    f.each do |line|
-      until line.empty? do
-        case line
-        when /\A\s+/, /\A\/\/.*/
-          ;
-        when /\A(required|optional|repeated|import|package|option|message|extend|enum|service|rpc|returns|group|default|extensions|to|max|double|float|int32|int64|uint32|uint64|sint32|sint64|fixed32|fixed64|sfixed32|sfixed64|bool|string|bytes)\b/
-          @q.push [$&, $&.to_sym]
-        when /\A[1-9]\d*(?!\.)/, /\A0(?![.xX0-9])/
-          @q.push [:DEC_INTEGER, $&.to_i]
-        when /\A0[xX]([A-Fa-f0-9])+/
-          @q.push [:HEX_INTEGER, $&.to_i(0)]
-        when /\A0[0-7]+/
-          @q.push [:OCT_INTEGER, $&.to_i(0)]
-        when /\A\d+(\.\d+)?([Ee][\+-]?\d+)?/
-          @q.push [:FLOAT_LITERAL, $&.to_f]
-        when /\A(true|false)/
-          @q.push [:BOOLEAN_LITERAL, $& == 'true']
-        when /\A"(?:[^"\\]+|\\.)*"/, /\A'(?:[^'\\]+|\\.)*'/
-          @q.push [:STRING_LITERAL, eval($&)]
-        when /\A[a-zA-Z_][\w_]*/
-          @q.push [:IDENT, $&.to_sym]
-        when /\A[A-Z][\w_]*/
-          @q.push [:CAMEL_IDENT, $&.to_sym]
-        when /\A./
-          @q.push [$&, $&]
-        else
-          raise ArgumentError.new(line) 
-        end
-        line = $'
-      end
-    end
-    do_parse
+    @scanner = StringScanner.new(f.read)
+    yyparse(self, :scan)
   end
 
-  def next_token
-    @q.shift
+  def scan_debug
+    scan do |token, value|
+      p [token, value]
+      yield [token, value]
+    end
+  end
+
+  def scan
+    until @scanner.eos?
+      case
+      when match(/\s+/, /\/\/.*/)
+        # skip
+      when match(/\/\*/)
+        # C-like comment
+        raise 'EOF inside block comment' until @scanner.scan_until(/\*\//)
+      when match(/(?:required|optional|repeated|import|package|option|message|extend|enum|service|rpc|returns|group|default|extensions|to|max|double|float|int32|int64|uint32|uint64|sint32|sint64|fixed32|fixed64|sfixed32|sfixed64|bool|string|bytes)\b/)
+        yield [@token, @token.to_sym]
+      when match(/[1-9]\d*(?!\.)/, /0(?![.xX0-9])/)
+        yield [:DEC_INTEGER, @token.to_i]
+      when match(/0[xX]([A-Fa-f0-9])+/)
+        yield [:HEX_INTEGER, @token.to_i(0)]
+      when match(/0[0-7]+/)
+        yield [:OCT_INTEGER, @token.to_i(0)]
+      when match(/\d+(\.\d+)?([Ee][\+-]?\d+)?/)
+        yield [:FLOAT_LITERAL, @token.to_f]
+      when match(/(true|false)\b/)
+        yield [:BOOLEAN_LITERAL, @token == 'true']
+      when match(/"(?:[^"\\]+|\\.)*"/, /'(?:[^'\\]+|\\.)*'/)
+        yield [:STRING_LITERAL, eval(@token)]
+      when match(/[a-zA-Z_][\w_]*/)
+        yield [:IDENT, @token.to_sym]
+      when match(/[A-Z][\w_]*/)
+        yield [:CAMEL_IDENT, @token.to_sym]
+      when match(/./)
+        yield [@token, @token]
+      else
+        raise "parse error around #{@scanner.string[@scanner.pos, 32].inspect}"
+      end
+    end
+    yield [false, nil]
+  end
+
+  def match(*regular_expressions)
+    regular_expressions.each do |re|
+      if @scanner.scan(re)
+        @token = @scanner[0]
+        return true
+      end
+    end
+    false
   end
