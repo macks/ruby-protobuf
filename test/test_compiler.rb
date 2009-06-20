@@ -136,7 +136,7 @@ end
   def test_nested_message
     Protobuf::Visitor::CreateMessageVisitor.instance_eval {remove_const :Baaz}
     file_contents = Protobuf::Compiler.new.create_message('test/proto/nested.proto', '.', '.', false)
-    assert_nothing_raised {eval file_contents}
+    assert_nothing_raised {Object.class_eval file_contents}
     assert_raise(TypeError) {Baaz.new.x = 1}
     assert_nothing_raised {Baaz.new.x = Foo::Bar.new}
   end

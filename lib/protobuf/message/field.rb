@@ -190,44 +190,27 @@ module Protobuf
           elsif type.superclass == Protobuf::Message
             Protobuf::Field::MessageField
           else
-            raise $!
+            raise TypeError.new(type.inspect)
           end
         field_class.new @message_class, @rule, type, @name, @tag, @opts
       end
 
       def typename_to_class(message_class, type)
-        modules = message_class.to_s.split('::')
-        while
-          begin
-            type = eval((modules | [type.to_s]).join('::'))
-            break
-          rescue NameError
-            modules.empty? ? raise($!) : modules.pop
-          end
-        end
-        type
-      end
-=begin
-      def typename_to_class(message_class, type)
         suffix = type.to_s.split('::')
         modules = message_class.to_s.split('::')
+        args = (Object.method(:const_defined?).arity == 1) ? [] : [nil, false]
         while
           mod = modules.empty? ? Object : eval(modules.join('::'))
-          suffix.each do |s|
-            if mod.const_defined?(s)
-              mod = mod.const_get(s)
-            else
-              mod = nil
-              break
-            end
-          end
+          mod = suffix.inject(mod) {|m, s|
+            args[0] = s
+            m and m.const_defined?(*args) and m.const_get(s)
+          }
           break if mod
           raise NameError.new("type not found: #{type}", type) if modules.empty?
           modules.pop
         end
         mod
       end
-=end
     end
 
     class FieldArray < Array
