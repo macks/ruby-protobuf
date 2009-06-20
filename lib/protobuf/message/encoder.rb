@@ -1,6 +1,8 @@
 require 'protobuf/common/wire_type'
 
 module Protobuf
+  class NotInitializedError < StandardError; end
+
   class Encoder
     class <<self
       def encode(stream, message)
@@ -13,6 +15,7 @@ module Protobuf
     end
 
     def encode(stream=@stream, message=@message)
+      raise NotInitializedError unless message.initialized?
       message.each_field do |field, value|
         next unless message.has_field?(field.name)
 
