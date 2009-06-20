@@ -8,4 +8,5 @@ message Message {
   optional uint32 number = 1 [default = 20];
   optional string text   = 2 [default = "default string"];
   optional Enum   enum   = 3 [default = B];
+  optional int32  signed = 4 [default = -100];
 }

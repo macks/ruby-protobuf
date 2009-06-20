@@ -185,14 +185,14 @@ end
         raise 'EOF inside block comment' until @scanner.scan_until(/\*\//)
       when match(/(?:required|optional|repeated|import|package|option|message|extend|enum|service|rpc|returns|group|default|extensions|to|max|double|float|int32|int64|uint32|uint64|sint32|sint64|fixed32|fixed64|sfixed32|sfixed64|bool|string|bytes)\b/)
         yield [@token, @token.to_sym]
-      when match(/[1-9]\d*(?!\.)/, /0(?![.xX0-9])/)
+      when match(/[+-]?\d*\.\d+([Ee][\+-]?\d+)?/)
+        yield [:FLOAT_LITERAL, @token.to_f]
+      when match(/[+-]?[1-9]\d*(?!\.)/, /0(?![.xX0-9])/)
         yield [:DEC_INTEGER, @token.to_i]
       when match(/0[xX]([A-Fa-f0-9])+/)
         yield [:HEX_INTEGER, @token.to_i(0)]
       when match(/0[0-7]+/)
         yield [:OCT_INTEGER, @token.to_i(0)]
-      when match(/\d+(\.\d+)?([Ee][\+-]?\d+)?/)
-        yield [:FLOAT_LITERAL, @token.to_f]
       when match(/(true|false)\b/)
         yield [:BOOLEAN_LITERAL, @token == 'true']
       when match(/"(?:[^"\\]+|\\.)*"/, /'(?:[^'\\]+|\\.)*'/)

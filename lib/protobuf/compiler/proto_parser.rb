@@ -10,7 +10,7 @@
 unless $".index 'racc/parser.rb'
 $".push 'racc/parser.rb'
 
-self.class.module_eval <<'..end racc/parser.rb modeval..id9f4fc093ed', 'racc/parser.rb', 1
+self.class.module_eval <<'..end racc/parser.rb modeval..id521073ac1f', 'racc/parser.rb', 1
 #
 # $Id: parser.rb,v 1.7 2005/11/20 17:31:32 aamine Exp $
 #
@@ -453,7 +453,7 @@ module Racc
   end
 
 end
-..end racc/parser.rb modeval..id9f4fc093ed
+..end racc/parser.rb modeval..id521073ac1f
 end
 ###### racc/parser.rb end
 
@@ -462,7 +462,7 @@ module Protobuf
 
   class ProtoParser < Racc::Parser
 
-module_eval <<'..end lib/protobuf/compiler/proto.y modeval..idbff1afc93c', 'lib/protobuf/compiler/proto.y', 163
+module_eval <<'..end lib/protobuf/compiler/proto.y modeval..id7865f341f1', 'lib/protobuf/compiler/proto.y', 163
 
   require 'strscan'
 
@@ -488,14 +488,14 @@ module_eval <<'..end lib/protobuf/compiler/proto.y modeval..idbff1afc93c', 'lib/
         raise 'EOF inside block comment' until @scanner.scan_until(/\*\//)
       when match(/(?:required|optional|repeated|import|package|option|message|extend|enum|service|rpc|returns|group|default|extensions|to|max|double|float|int32|int64|uint32|uint64|sint32|sint64|fixed32|fixed64|sfixed32|sfixed64|bool|string|bytes)\b/)
         yield [@token, @token.to_sym]
-      when match(/[1-9]\d*(?!\.)/, /0(?![.xX0-9])/)
+      when match(/[+-]?\d*\.\d+([Ee][\+-]?\d+)?/)
+        yield [:FLOAT_LITERAL, @token.to_f]
+      when match(/[+-]?[1-9]\d*(?!\.)/, /0(?![.xX0-9])/)
         yield [:DEC_INTEGER, @token.to_i]
       when match(/0[xX]([A-Fa-f0-9])+/)
         yield [:HEX_INTEGER, @token.to_i(0)]
       when match(/0[0-7]+/)
         yield [:OCT_INTEGER, @token.to_i(0)]
-      when match(/\d+(\.\d+)?([Ee][\+-]?\d+)?/)
-        yield [:FLOAT_LITERAL, @token.to_f]
       when match(/(true|false)\b/)
         yield [:BOOLEAN_LITERAL, @token == 'true']
       when match(/"(?:[^"\\]+|\\.)*"/, /'(?:[^'\\]+|\\.)*'/)
@@ -522,7 +522,7 @@ module_eval <<'..end lib/protobuf/compiler/proto.y modeval..idbff1afc93c', 'lib/
     end
     false
   end
-..end lib/protobuf/compiler/proto.y modeval..idbff1afc93c
+..end lib/protobuf/compiler/proto.y modeval..id7865f341f1
 
 ##### racc 1.4.5 generates ###
 
