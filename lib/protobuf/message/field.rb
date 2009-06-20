@@ -642,6 +642,14 @@ module Protobuf
     end
 
     class EnumField < VarintField
+      def default
+        if @default.is_a?(Symbol)
+          type.const_get @default
+        else
+          @default
+        end
+      end
+
       def acceptable?(val)
         raise TypeError unless type.valid_tag? val
         true
