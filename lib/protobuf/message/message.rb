@@ -273,22 +273,18 @@ module Protobuf
     end
     
     def [](tag_or_name)
-      if field = get_field(tag_or_name)
-        send field.name
-      elsif field = get_ext_field(tag_or_name)
+      if field = get_field(tag_or_name) || get_ext_field(tag_or_name)
         send field.name
       else
-        raise NoMethodError.new("No such method: #{tag_or_name.inspect}")
+        raise NoMethodError.new("No such field: #{tag_or_name.inspect}")
       end
     end
 
     def []=(tag_or_name, value)
-      if field = get_field(tag_or_name) and not field.repeated?
-        send "#{field.name}=", value
-      elsif field = get_ext_field(tag_or_name) and not field.repeated?
+      if field = get_field(tag_or_name) || get_ext_field(tag_or_name)
         send "#{field.name}=", value
       else
-        raise NoMethodError.new("No such method: #{tag_or_name.inspect}")
+        raise NoMethodError.new("No such field: #{tag_or_name.inspect}")
       end
     end
 
