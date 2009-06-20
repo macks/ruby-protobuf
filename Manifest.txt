@@ -5,12 +5,11 @@ Rakefile
 bin/mk_parser
 bin/rprotoc
 examples/addressbook.proto
-examples/addressbook.rb
+examples/addressbook.pb.rb
 examples/reading_a_message.rb
 examples/writing_a_message.rb
 lib/protobuf/common/wire_type.rb
 lib/protobuf/compiler/compiler.rb
-lib/protobuf/compiler/compiler_old.rb
 lib/protobuf/compiler/nodes.rb
 lib/protobuf/compiler/proto.y
 lib/protobuf/compiler/proto2.ebnf
