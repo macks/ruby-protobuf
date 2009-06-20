@@ -17,6 +17,8 @@ module Test
       required :bool, :type11, 11
       required :string, :type12, 12
       required :bytes, :type13, 13
+      required :sfixed32, :type14, 14
+      required :sfixed64, :type15, 15
     end
   end
 end

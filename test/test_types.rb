@@ -18,6 +18,8 @@ class TypesTest < Test::Unit::TestCase
     types.type12 = 'hello all types'
     image_bin = File.open('test/data/unk.png', 'r+b'){|f| f.read}
     types.type13 = image_bin
+    types.type14 = -100
+    types.type15 = -1000
 
     serialized_string = types.serialize_to_string
 
@@ -37,6 +39,49 @@ class TypesTest < Test::Unit::TestCase
     assert_equal 'hello all types', types2.type12
     assert_equal 10938, types2.type13.size
     assert_equal image_bin, types2.type13
+    assert_equal(-100, types2.type14)
+    assert_equal(-1000, types2.type15)
+  end
+
+  def test_serialize2
+    types = Test::Types::TestTypes.new
+    types.type1 = 1.0/0   # double (Inf)
+    types.type2 = -1.0/0  # float (-Inf)
+    types.type3 = -1      # int32
+    types.type4 = -10     # int64
+    types.type5 = 100     # uint32
+    types.type6 = 1000    # uint64
+    types.type7 = -1000   # sint32
+    types.type8 = -10000  # sint64
+    types.type9 = 10000   # fixed32
+    types.type10 = 100000 # fixed64
+    types.type11 = true
+    types.type12 = 'hello all types'
+    image_bin = File.open('test/data/unk.png', 'r+b'){|f| f.read}
+    types.type13 = image_bin
+    types.type14 = -2_000_000_000  # sfixed32
+    types.type15 = -8_000_000_000_000_000_000  # sfixed64
+
+    serialized_string = types.serialize_to_string
+
+    types2 = Test::Types::TestTypes.new
+    types2.parse_from_string serialized_string
+    assert_equal(1.0/0.0, types2.type1)
+    assert_equal(-1.0/0.0, types2.type2)
+    assert_equal(-1, types2.type3)
+    assert_equal(-10, types2.type4)
+    assert_equal(100, types2.type5)
+    assert_equal(1000, types2.type6)
+    assert_equal(-1000, types2.type7)
+    assert_equal(-10000, types2.type8)
+    assert_equal(10000, types2.type9)
+    assert_equal(100000, types2.type10)
+    assert types2.type11
+    assert_equal('hello all types', types2.type12)
+    assert_equal(10938, types2.type13.size)
+    assert_equal(image_bin, types2.type13)
+    assert_equal(-2_000_000_000, types2.type14)
+    assert_equal(-8_000_000_000_000_000_000, types2.type15)
   end
 
   def test_parse

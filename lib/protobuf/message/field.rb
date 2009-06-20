@@ -343,12 +343,17 @@ module Protobuf
       def wire_type
         Protobuf::WireType::VARINT
       end
- 
-      def set_bytes(message_instance, bytes)
+
+      def self.decode_bytes(bytes)
         value = 0
         bytes.each_with_index do |byte, index|
           value |= byte << (7 * index)
         end
+        value
+      end
+ 
+      def set_bytes(message_instance, bytes)
+        value = self.class.decode_bytes(bytes)
         message_instance.send("#{name}=", value)
       end
 
@@ -378,11 +383,32 @@ module Protobuf
     class Int32Field < VarintField
       def self.max; INT32_MAX; end
       def self.min; INT32_MIN; end
+
+      def get_bytes(value)
+        # original Google's library uses 64bits integer for negative value
+        self.class.get_bytes(value & 0xffff_ffff_ffff_ffff)
+      end
+ 
+      def set_bytes(message_instance, bytes)
+        value  = self.class.decode_bytes(bytes)
+        value -= 0x1_0000_0000_0000_0000 if (value & 0x8000_0000_0000_0000).nonzero?
+        message_instance.send("#{name}=", value)
+      end
     end
     
     class Int64Field < VarintField
       def self.max; INT64_MAX; end
       def self.min; INT64_MIN; end
+
+      def get_bytes(value)
+        self.class.get_bytes(value & 0xffff_ffff_ffff_ffff)
+      end
+ 
+      def set_bytes(message_instance, bytes)
+        value  = self.class.decode_bytes(bytes)
+        value -= 0x1_0000_0000_0000_0000 if (value & 0x8000_0000_0000_0000).nonzero?
+        message_instance.send("#{name}=", value)
+      end
     end
     
     class Uint32Field < VarintField
@@ -400,20 +426,21 @@ module Protobuf
       def self.min; INT32_MIN; end
  
       def set_bytes(message_instance, bytes)
-        # TODO use only bit-operations
-        byte = bytes.first
-        value = 
-          if byte % 2 == 0
-            byte / 2
-          else
-            -(byte + 1) / 2
-          end
+        value = self.class.decode_bytes(bytes)
+        if (value & 1).zero?
+          value >>= 1   # positive value
+        else
+          value = -(value >> 1) - 1  # negative value
+        end
         message_instance.send("#{name}=", value)
       end
 
       def get_bytes(value)
-        #(value << 1) ^ (value >> 31)
-        [(value << 1) ^ (value >> 31)].pack('C*')
+        if value >= 0
+          self.class.get_bytes(value << 1)
+        else
+          self.class.get_bytes((value << 1) & 0xffff_ffff ^ 0xffff_ffff)
+        end
       end
     end
     
@@ -422,20 +449,21 @@ module Protobuf
       def self.min; INT64_MIN; end
  
       def set_bytes(message_instance, bytes)
-        # TODO use only bit-operations
-        byte = bytes.first
-        value = 
-          if byte % 2 == 0
-            byte / 2
-          else
-            -(byte + 1) / 2
-          end
+        value = self.class.decode_bytes(bytes)
+        if (value & 1).zero?
+          value >>= 1   # positive value
+        else
+          value = -(value >> 1) - 1  # negative value
+        end
         message_instance.send("#{name}=", value)
       end
 
       def get_bytes(value)
-        #(value << 1) ^ (value >> 63)
-        [(value << 1) ^ (value >> 63)].pack('C*')
+        if value >= 0
+          self.class.get_bytes(value << 1)
+        else
+          self.class.get_bytes((value << 1) & 0xffff_ffff_ffff_ffff ^ 0xffff_ffff_ffff_ffff)
+        end
       end
     end
     
@@ -509,11 +537,11 @@ module Protobuf
       end
  
       def set_bytes(message_instance, bytes)
-        message_instance.send("#{name}=", bytes.unpack('L').first)
+        message_instance.send("#{name}=", bytes.unpack('V').first)
       end
 
       def get_bytes(value)
-        [value].pack('L')
+        [value].pack('V')
       end
     end
     
@@ -531,14 +559,18 @@ module Protobuf
       end
  
       def set_bytes(message_instance, bytes)
-        message_instance.send("#{name}=", bytes.unpack('l').first)
+        # we don't use 'Q' for pack/unpack. 'Q' is machine-dependent.
+        values = bytes.unpack('VV')
+        value = values[0] + (values[1] << 32)
+        message_instance.send("#{name}=", value)
       end
 
       def get_bytes(value)
-        [value].pack('Q')
+        # we don't use 'Q' for pack/unpack. 'Q' is machine-dependent.
+        [value & 0xffff_ffff, value >> 32].pack('VV')
       end
     end
-    
+
     class Sfixed32Field < VarintField
       def wire_type
         Protobuf::WireType::FIXED32
@@ -550,6 +582,16 @@ module Protobuf
 
       def self.min
         INT32_MIN
+      end
+ 
+      def set_bytes(message_instance, bytes)
+        value  = bytes.unpack('V').first
+        value -= 0x1_0000_0000 if (value & 0x8000_0000).nonzero?
+        message_instance.send("#{name}=", value)
+      end
+
+      def get_bytes(value)
+        [value].pack('V')
       end
     end
     
@@ -564,6 +606,19 @@ module Protobuf
 
       def self.min
         INT64_MIN
+      end
+ 
+      def set_bytes(message_instance, bytes)
+        # we don't use 'Q' for pack/unpack. 'Q' is machine-dependent.
+        values = bytes.unpack('VV')
+        value  = values[0] + (values[1] << 32)
+        value -= 0x1_0000_0000_0000_0000 if (value & 0x8000_0000_0000_0000).nonzero?
+        message_instance.send("#{name}=", value)
+      end
+
+      def get_bytes(value)
+        # we don't use 'Q' for pack/unpack. 'Q' is machine-dependent.
+        [value & 0xffff_ffff, value >> 32].pack('VV')
       end
     end
     
