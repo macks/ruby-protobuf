@@ -2,7 +2,7 @@ History.txt
 Manifest.txt
 README.txt
 Rakefile
-bin/mk_parser
+script/mk_parser
 bin/rprotoc
 examples/addressbook.proto
 examples/addressbook.pb.rb
