@@ -5,13 +5,13 @@ require 'rubygems'
 require 'hoe'
 require 'ruby_protobuf'
 
-Hoe.new('ruby_protobuf', RubyProtobuf::VERSION) do |p|
-  p.rubyforge_name = nil
-  p.author = 'MATSUYAMA Kengo'
-  p.email = 'macksx@gmail.com'
+Hoe.spec('ruby_protobuf') do |p|
+  p.version = RubyProtobuf::VERSION
+  p.rubyforge_name = 'ruby-protobuf'
+  p.developer('MATSUYAMA Kengo', 'macksx@gmail.com')
   p.summary = 'Protocol Buffers for Ruby'
   p.description = p.paragraphs_of('README.txt', 2..5).join("\n\n")
-  p.url = 'http://github.com/macks/ruby-protobuf'
+  p.url = 'http://code.google.com/p/ruby-protobuf'
   p.changes = p.paragraphs_of('History.txt', 0..1).join("\n\n")
 end
 

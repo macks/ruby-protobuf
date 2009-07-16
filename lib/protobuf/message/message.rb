@@ -188,9 +188,9 @@ module Protobuf
               "#{i}#{field.name} {\n#{value.inspect(indent + 1)}#{i}}\n"
             end
           elsif field.is_a? Protobuf::Field::EnumField
-            if field.optional? and not has_field?(field.name)
-              ''
-            else
+	    if field.optional? and not has_field?(field.name)
+	      ''
+	    else
               "#{i}#{field.name}: #{field.type.name_by_value(value)}\n"
             end
           else
@@ -225,7 +225,7 @@ module Protobuf
       if filename.is_a? File
         parse_from filename
       else
-        File.open(filename, 'r') do |f|
+        File.open(filename, 'rb') do |f|
           parse_from f
         end
       end
@@ -238,7 +238,9 @@ module Protobuf
     def serialize_to_string(string='')
       io = StringIO.new string
       serialize_to io
-      io.string
+      result = io.string
+      result.force_encoding('ASCII-8BIT') if result.respond_to?(:force_encoding)
+      result
     end
     alias to_s serialize_to_string
 
@@ -246,7 +248,7 @@ module Protobuf
       if filename.is_a? File
         serialize_to filename
       else
-        File.open(filename, 'w') do |f|
+        File.open(filename, 'wb') do |f|
           serialize_to f
         end
       end
@@ -263,8 +265,8 @@ module Protobuf
     end
 
     def set_field(tag, bytes)
-      #get_field_by_tag(tag).set self, bytes # TODO
-      (get_field_by_tag(tag) or get_ext_field_by_tag(tag)).set self, bytes
+      field = (get_field_by_tag(tag) or get_ext_field_by_tag(tag))
+      field.set self, bytes if field
     end
 
     def merge_field(tag, value)
@@ -273,22 +275,18 @@ module Protobuf
     end
 
     def [](tag_or_name)
-      if field = get_field(tag_or_name)
-        send field.name
-      elsif field = get_ext_field(tag_or_name)
+      if field = get_field(tag_or_name) || get_ext_field(tag_or_name)
         send field.name
       else
-        raise NoMethodError.new("No such method: #{tag_or_name.inspect}")
+        raise NoMethodError.new("No such field: #{tag_or_name.inspect}")
       end
     end
 
     def []=(tag_or_name, value)
-      if field = get_field(tag_or_name) and not field.repeated?
-        send "#{field.name}=", value
-      elsif field = get_ext_field(tag_or_name) and not field.repeated?
+      if field = get_field(tag_or_name) || get_ext_field(tag_or_name)
         send "#{field.name}=", value
       else
-        raise NoMethodError.new("No such method: #{tag_or_name.inspect}")
+        raise NoMethodError.new("No such field: #{tag_or_name.inspect}")
       end
     end
 

@@ -1,5 +1,11 @@
-=== 0.3.1 / 2008-08-22
+=== 0.3.3 / 2009-07-10
 
+* 0.3.3 (rev.218)
+  * Support C-like comment.
+  * Optimize for speed.
+  * Bug fixes.
+* 0.3.2 (rev.185)
+  * Bug fixes.
 * 0.3.1 fixed bugs concerning RPC (rev.146)
 * 0.3.0 RPC is available (rev.124)
   * RPC is available

@@ -39,4 +39,23 @@ class SerializeTest < Test::Unit::TestCase
     assert_equal 1234, person2.id
     assert_equal '山田 太郎', person2.name
   end
+
+  def test_unknown_field
+    person = Tutorial::Person.new
+    person.id = 1234
+    person.name = 'a b c'
+    serialized_string = person.serialize_to_string
+
+    # add invalid field
+    tag = 1000
+    wire_type = Protobuf::WireType::VARINT
+    serialized_string << Protobuf::Field::VarintField.encode((tag << 3) | wire_type)
+    serialized_string << Protobuf::Field::VarintField.encode(100)
+
+    # decode
+    person2 = Tutorial::Person.new
+    person2.parse_from_string serialized_string
+
+    assert_equal(person, person2)
+  end
 end

@@ -1,3 +1,3 @@
 class RubyProtobuf
-  VERSION = '0.3.2.3'
+  VERSION = '0.3.3'
 end

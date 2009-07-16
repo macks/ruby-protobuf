@@ -15,12 +15,7 @@ module Protobuf
     end
 
     def create_message(proto_file, proto_dir='.', out_dir='.', file_create=true)
-      out_dir.sub! %r{/$}, ''
-      proto_dir.sub! %r{/$}, ''
-      rb_file = 
-        if proto_file =~ %r{^/} 
-        then "#{out_dir}/#{proto_file.split('/').last.sub(/\.proto$/, '')}.pb.rb"  
-        else "#{out_dir}/#{proto_file.sub(/\.proto$/, '')}.pb.rb" end
+      rb_file = File.join(out_dir, File.basename(proto_file).sub(/\.[^\0]*\z/, '') + '.pb.rb')
       proto_path = validate_existence proto_file, proto_dir
 
       message_visitor = Protobuf::Visitor::CreateMessageVisitor.new proto_file, proto_dir, out_dir
@@ -31,8 +26,7 @@ module Protobuf
     end
 
     def create_rpc(proto_file, proto_dir='.', out_dir='.', file_create=true)
-      message_file = "#{out_dir}/#{proto_file.sub(/\.proto$/, '')}.pb.rb"
-      out_dir = "#{out_dir}/#{File.dirname proto_file}"
+      message_file = File.join(out_dir, File.basename(proto_file).sub(/\.[^\0]*\z/, '') + '.pb.rb')
       proto_path = validate_existence proto_file, proto_dir
 
       rpc_visitor = Protobuf::Visitor::CreateRpcVisitor.new
@@ -44,11 +38,15 @@ module Protobuf
 
     def validate_existence(path, base_dir)
       if File.exist? path
-      elsif File.exist?(path = "#{base_dir or '.'}/#{path}")
+        path
       else
-        raise ArgumentError.new("File does not exist: #{path}")
+        newpath = File.join(base_dir, path)
+        if File.exist? newpath
+          newpath
+        else
+          raise ArgumentError.new("File does not exist: #{path}")
+        end
       end
-      path
     end
   end
 end

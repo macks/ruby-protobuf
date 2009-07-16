@@ -85,7 +85,11 @@ module Protobuf
 
       def define_accessor
         define_getter
-        define_setter unless rule == :repeated
+        if rule == :repeated
+          define_array_setter
+        else
+          define_setter
+        end
       end
 
       def define_getter
@@ -110,6 +114,15 @@ module Protobuf
             elsif field.acceptable? val
               @values[field.name] = val
             end
+          end
+        end
+      end
+
+      def define_array_setter
+        field = self
+        @message_class.class_eval do
+          define_method("#{field.name}=") do |val|
+            @values[field.name].replace(val)
           end
         end
       end
@@ -224,31 +237,40 @@ module Protobuf
       end
 
       def []=(nth, val)
-        if @field.acceptable? val
-          super
-        end
+        super(normalize(val))
       end
 
       def <<(val)
-        if @field.acceptable? val
-          super
-        end
+        super(normalize(val))
       end
 
       def push(val)
-        if @field.acceptable? val
-          super
-        end
+        super(normalize(val))
       end
 
       def unshift(val)
-        if @field.acceptable? val
-          super
-        end
+        super(normalize(val))
+      end
+
+      def replace(val)
+        raise TypeError unless val.is_a?(Array)
+        val = val.map {|v| normalize(v)}
+        super(val)
       end
 
       def to_s
         "[#{@field.name}]"
+      end
+
+      private
+
+      def normalize(val)
+        raise TypeError unless @field.acceptable?(val)
+        if @field.is_a?(MessageField) && val.is_a?(Hash)
+          @field.type.new(val)
+        else
+          val
+        end
       end
     end
 
@@ -529,6 +551,24 @@ module Protobuf
         def default; nil end
       end
 
+      def define_setter
+        field = self
+        @message_class.class_eval do
+          define_method("#{field.name}=") do |val|
+            case val
+            when nil
+              @values.delete(field.name)
+            when Hash
+              @values[field.name] = field.type.new(val)
+            when field.type
+              @values[field.name] = val
+            else
+              raise TypeError
+            end
+          end
+        end
+      end
+
       def wire_type
         Protobuf::WireType::LENGTH_DELIMITED
       end
@@ -542,7 +582,7 @@ module Protobuf
       end
 
       def acceptable?(val)
-        raise TypeError unless val.instance_of? type
+        raise TypeError unless val.instance_of?(type) or val.instance_of?(Hash)
         true
       end
 
