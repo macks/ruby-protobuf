@@ -7,6 +7,7 @@ class StandardMessageTest < Test::Unit::TestCase
   def test_initialized
     person = Tutorial::Person.new
     assert !person.initialized?
+    assert_raise(Protobuf::NotInitializedError) { person.to_s }
     person.name = 'name'
     assert !person.initialized?
     person.id = 12
