@@ -5,7 +5,8 @@ module Protobuf
     end
 
     def defined_in(filename)
-      defined_filenames << File.expand_path(filename)
+      path = File.expand_path(filename)
+      defined_filenames << path unless defined_filenames.include?(path)
     end
 
     def proto_filenames
