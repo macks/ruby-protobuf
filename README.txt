@@ -1,6 +1,6 @@
 = RubyProtobuf
 
-* http://github.com/macks/ruby-protobuf
+* http://code.google.com/p/ruby-protobuf
 
 == DESCRIPTION:
 
@@ -22,16 +22,7 @@ Protocol Buffers for Ruby.
 
 == INSTALL:
 
-* gem source -a http://gems.github.com
-* sudo gem install macks-ruby_protobuf
-
-== AUTHOR:
-
-MATSUYAMA Kengo <macksx@gmail.com>
-
-Original Author:
- ANDO Yasushi <andyjpn@gmail.com>
- http://code.google.com/p/ruby-protobuf
+* sudo gem install ruby_protobuf
 
 == LICENSE:
 

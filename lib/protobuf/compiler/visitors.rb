@@ -24,7 +24,7 @@ module Protobuf
           FileUtils.mkpath File.dirname(filename)
           file.write contents
         end
-        FileUtils.chmod 0755, filename if executable
+       	FileUtils.chmod 0755, filename if executable
       end
 
       def log_writing(filename, message="writing...")
