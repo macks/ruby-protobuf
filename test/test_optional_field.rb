@@ -77,4 +77,27 @@ class OptionalFieldTest < Test::Unit::TestCase
     assert !message2.has_field?(:enum)
     assert !message2.has_field?(:signed)
   end
+
+  def test_merge_optional_fields
+    src1 = Test::Optional_field::Message.new
+    src2 = Test::Optional_field::Message.new
+    dst  = Test::Optional_field::Message.new
+
+    src1.number = 100
+    src1.text   = 'old'
+    src2.text   = 'new'
+    src2.signed = 20
+
+    serialized_string = src1.to_s + src2.to_s
+    dst.parse_from_string(serialized_string)
+
+    assert_equal 100,   dst.number
+    assert_equal 'new', dst.text
+    assert_equal 20,    dst.signed
+    assert  dst.has_field?(:number)
+    assert  dst.has_field?(:text)
+    assert !dst.has_field?(:enum)
+    assert  dst.has_field?(:signed)
+  end
+
 end
