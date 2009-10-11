@@ -1,6 +1,6 @@
 # encoding: utf-8
 require 'test/unit'
-require 'test/addressbook'
+require 'test/proto/addressbook.pb'
 
 class SerializeTest < Test::Unit::TestCase
   def test_serialize

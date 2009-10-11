@@ -1,5 +1,5 @@
 require 'test/unit'
-require 'test/addressbook'
+require 'test/proto/addressbook.pb'
 require 'protobuf/descriptor/descriptor_builder'
 require 'protobuf/descriptor/descriptor_proto'
 

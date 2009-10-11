@@ -4,7 +4,7 @@
 #   extensions 1 to 10;
 # }
 # 
-# message ExtCollisionTest {
+# extend ExtCollisionTest {
 #   optional string a = 11;
 # }
 

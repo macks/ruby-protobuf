@@ -1,5 +1,5 @@
 require 'test/unit'
-require 'test/addressbook_ext.rb'
+require 'test/proto/addressbook_ext.pb'
 
 class ExtensionTest < Test::Unit::TestCase
   def test_accessor

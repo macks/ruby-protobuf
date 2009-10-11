@@ -1,6 +1,6 @@
 require 'protobuf/message/message'
-require 'test/addressbook'
-require 'test/merge'
+require 'test/proto/addressbook.pb'
+require 'test/proto/merge.pb'
 require 'test/unit'
 
 # It should not conflict with Test::InnerMessage1 which is included in merge.proto
@@ -55,15 +55,15 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_defined_filenames
-    assert Tutorial::Person.defined_filenames
-    assert_equal 1, Tutorial::Person.defined_filenames.size
-    assert Tutorial::Person.defined_filenames.first =~ %r{/.*/test/addressbook\.rb}
+    assert(Tutorial::Person.defined_filenames)
+    assert_equal(1, Tutorial::Person.defined_filenames.size)
+    assert_match(%r{/.*/proto/addressbook\.pb\.rb}, Tutorial::Person.defined_filenames.first)
   end
 
   def test_proto_filenames
-    assert Tutorial::Person.proto_filenames
-    assert_equal 1, Tutorial::Person.proto_filenames.size
-    assert_equal 'test/addressbook.proto', Tutorial::Person.proto_filenames.first
+    assert(Tutorial::Person.proto_filenames)
+    assert_equal(1, Tutorial::Person.proto_filenames.size)
+    assert_equal('test/proto/addressbook.proto', Tutorial::Person.proto_filenames.first)
   end
 
   def test_proto_contents
@@ -87,6 +87,7 @@ message Person {
   }
 
   repeated PhoneNumber phone = 4;
+  optional uint32 age = 5 [default = 20];
 
   extensions 100 to 200;
 }

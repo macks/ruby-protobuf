@@ -1,5 +1,4 @@
 require 'test/unit'
-#require 'protobuf/compiler/compiler_old'
 require 'protobuf/compiler/compiler'
 
 class CompilerTest < Test::Unit::TestCase
@@ -297,22 +296,22 @@ puts response
   end
 
   def test_collision
-    assert_raise Protobuf::Message::TagCollisionError do require 'test/collision' end
-    assert_raise Protobuf::Message::TagCollisionError do 
+    assert_raise(Protobuf::Message::TagCollisionError) do require 'test/proto/collision.pb' end
+    assert_raise(Protobuf::Message::TagCollisionError) do
       Protobuf::Compiler.new.create_message('test/proto/collision.proto', '.', '.', false) 
     end
   end
 
   def test_ext_collision
-    assert_raise Protobuf::Message::TagCollisionError do require 'test/ext_collision' end
-    assert_raise Protobuf::Message::TagCollisionError do 
+    assert_raise(Protobuf::Message::TagCollisionError) do require 'test/proto/ext_collision.pb' end
+    assert_raise(Protobuf::Message::TagCollisionError) do 
       Protobuf::Compiler.new.create_message('test/proto/ext_collision.proto', '.', '.', false) 
     end
   end
 
   def test_ext_range
-    assert_raise RangeError do require 'test/ext_range' end
-    assert_raise RangeError do 
+    assert_raise(RangeError) do require 'test/proto/ext_range.pb' end
+    assert_raise(RangeError) do 
       Protobuf::Compiler.new.create_message('test/proto/ext_range.proto', '.', '.', false) 
     end
   end

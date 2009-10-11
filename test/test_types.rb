@@ -1,5 +1,5 @@
 require 'test/unit'
-require 'test/types'
+require 'test/proto/types.pb'
 
 class TypesTest < Test::Unit::TestCase
   def test_serialize

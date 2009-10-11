@@ -1,9 +1,9 @@
 require 'test/unit'
-require 'test/optional_field'
+require 'test/proto/optional_field.pb'
 
 class OptionalFieldTest < Test::Unit::TestCase
   def test_accessor
-    message = Test::Optional_field::Message.new
+    message = Test::OptionalField::Message.new
 
     # default values
     assert !message.has_field?(:number)
@@ -27,7 +27,7 @@ class OptionalFieldTest < Test::Unit::TestCase
     assert message.has_field?(:text)
     assert_equal 'abc', message.text
 
-    assert_nothing_raised { message.enum = Test::Optional_field::Message::Enum::A }
+    assert_nothing_raised { message.enum = Test::OptionalField::Message::Enum::A }
     assert message.has_field?(:enum)
     assert_equal 1, message.enum
 
@@ -37,8 +37,8 @@ class OptionalFieldTest < Test::Unit::TestCase
   end
 
   def test_serialize
-    message1 = Test::Optional_field::Message.new
-    message2 = Test::Optional_field::Message.new
+    message1 = Test::OptionalField::Message.new
+    message2 = Test::OptionalField::Message.new
 
     # all fields are empty
     serialized_string = message1.to_s
@@ -54,7 +54,7 @@ class OptionalFieldTest < Test::Unit::TestCase
     assert !message2.has_field?(:signed)
 
     # assign the value whith is equal to default value
-    message1 = Test::Optional_field::Message.new
+    message1 = Test::OptionalField::Message.new
     message1.number = message1.number
     message1.text   = message1.text
     message1.enum   = message1.enum
@@ -63,7 +63,7 @@ class OptionalFieldTest < Test::Unit::TestCase
     assert !serialized_string.empty?
 
     # set some fields
-    message1 = Test::Optional_field::Message.new
+    message1 = Test::OptionalField::Message.new
     message1.number = 100
     message1.text   = 'new text'
     serialized_string = message1.to_s
@@ -79,9 +79,9 @@ class OptionalFieldTest < Test::Unit::TestCase
   end
 
   def test_merge_optional_fields
-    src1 = Test::Optional_field::Message.new
-    src2 = Test::Optional_field::Message.new
-    dst  = Test::Optional_field::Message.new
+    src1 = Test::OptionalField::Message.new
+    src2 = Test::OptionalField::Message.new
+    dst  = Test::OptionalField::Message.new
 
     src1.number = 100
     src1.text   = 'old'

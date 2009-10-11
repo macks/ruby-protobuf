@@ -1,7 +1,7 @@
 require 'test/unit'
 require 'protobuf/message/message'
 require 'protobuf/message/enum'
-require 'test/addressbook'
+require 'test/proto/addressbook.pb'
 
 class AddressbookTest < Test::Unit::TestCase
   def test_enum

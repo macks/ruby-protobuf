@@ -1,5 +1,5 @@
 require 'test/unit'
-require 'test/addressbook'
+require 'test/proto/addressbook.pb'
 
 class ParseTest < Test::Unit::TestCase
   def test_parse
