@@ -195,7 +195,7 @@ end
 #!/usr/bin/env ruby
 require 'address_book_service'
 
-Tutorial::AddressBookService.new(:port => 9999).start
+Tutorial::AddressBookService.new(:Port => 9999).start
     eos
 
     assert_source <<-eos, file_contents['test/proto/client_search.rb']
