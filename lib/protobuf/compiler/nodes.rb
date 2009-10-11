@@ -16,7 +16,7 @@ module Protobuf
       def accept_descriptor_visitor(visitor)
       end
     end
-  
+
     class ProtoNode < Base
       attr_reader :children
 
@@ -50,7 +50,7 @@ require 'protobuf/message/extend'
         end
       end
     end
-  
+
     class ImportNode < Base
       def initialize(path)
         @path = path
@@ -109,7 +109,7 @@ require 'protobuf/message/extend'
         class_name = @name.to_s
         class_name.gsub!(/\A[a-z]/) {|c| c.upcase}
         visitor.write "class #{class_name} < ::Protobuf::Message"
-        visitor.in_context self.class do 
+        visitor.in_context self.class do
           define_in_the_file visitor
           #@children.each {|child| child.accept_message_visitor visitor}
           @children.each {|child| next if child == ';'; child.accept_message_visitor visitor}
@@ -135,7 +135,7 @@ require 'protobuf/message/extend'
       def accept_message_visitor(visitor)
         name = @name.is_a?(Array) ? @name.join : name.to_s
         visitor.write "class #{name} < ::Protobuf::Message"
-        visitor.in_context self.class do 
+        visitor.in_context self.class do
           define_in_the_file visitor
           @children.each {|child| child.accept_message_visitor visitor}
         end
@@ -154,7 +154,7 @@ require 'protobuf/message/extend'
 
       def accept_message_visitor(visitor)
         visitor.write "class #{@name} < ::Protobuf::Enum"
-        visitor.in_context self.class do 
+        visitor.in_context self.class do
           define_in_the_file visitor
           @children.each {|child| child.accept_message_visitor visitor}
         end
@@ -202,7 +202,7 @@ require 'protobuf/message/extend'
       def accept_descriptor_visitor(visitor)
         descriptor = Google::Protobuf::ServiceDescriptorProto.new :name => @name.to_s
         visitor.service_descriptor = descriptor
-        visitor.in_context descriptor do 
+        visitor.in_context descriptor do
           @children.each {|child| child.accept_descriptor_visitor visitor}
         end
       end
@@ -306,7 +306,7 @@ require 'protobuf/message/extend'
 
       #def accept_message_visitor(visitor)
       #end
-      
+
       def to_s
         if @high.nil?
           @low.to_s

@@ -7,7 +7,7 @@ module Protobuf
         def request(request_class)
           @request_class = request_class
         end
-        
+
         def response(response_class)
           @response_class = response_class
         end

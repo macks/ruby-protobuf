@@ -38,7 +38,7 @@ rule
   extend : 'extend' user_type '{' extend_body_list '}'
            { result = Protobuf::Node::ExtendNode.new val[1], val[3] }
 
-  extend_body_list : 
+  extend_body_list :
                      { result = [] }
                    | extend_body_list extend_body
                      { result << val[1] }
@@ -123,7 +123,7 @@ rule
   extensions : 'extensions' extension comma_extension_list ';'
                { result = Protobuf::Node::ExtensionsNode.new val[2].unshift(val[1]) }
 
-  comma_extension_list : 
+  comma_extension_list :
                          { result = [] }
                        | ',' extension
                          { result << val[1] }
@@ -153,7 +153,7 @@ rule
            | FLOAT_LITERAL
            | STRING_LITERAL
            | BOOLEAN_LITERAL
-  
+
   integer_literal : DEC_INTEGER
                   | HEX_INTEGER
                   | OCT_INTEGER

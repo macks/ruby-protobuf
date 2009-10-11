@@ -132,7 +132,7 @@ module Protobuf
         def acceptable_descriptor(proto)
           Protobuf::Descriptor.constants.each do |class_name|
             descriptor_class = Protobuf::Descriptor.const_get class_name
-            if descriptor_class.respond_to?(:proto_type) and 
+            if descriptor_class.respond_to?(:proto_type) and
               descriptor_class.proto_type == proto.class.name
               return descriptor_class
             end

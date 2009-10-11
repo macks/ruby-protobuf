@@ -13,13 +13,13 @@ module Protobuf
             # do nothing
             return
           else
-            backup_filename = "#{filename}.#{Time.now.to_i}" 
+            backup_filename = "#{filename}.#{Time.now.to_i}"
             log_writing "#{backup_filename}", "backingup..."
             FileUtils.copy filename, backup_filename
           end
         end
 
-        File.open(filename, 'w') do |file| 
+        File.open(filename, 'w') do |file|
           log_writing filename
           FileUtils.mkpath File.dirname(filename)
           file.write contents
@@ -49,7 +49,7 @@ module Protobuf
 
       def commented_proto_contents
         if proto_file
-          proto_filepath = File.exist?(proto_file) ? 
+          proto_filepath = File.exist?(proto_file) ?
             proto_file : "#{@proto_dir}/#{proto_file}"
           File.read(proto_filepath).gsub(/^/, '# ')
         end
@@ -91,7 +91,7 @@ module Protobuf
       end
 
       def visit(node)
-        node.accept_message_visitor self 
+        node.accept_message_visitor self
         self
       end
 
@@ -142,10 +142,10 @@ module Protobuf
           required_file = message_file.sub(/^\.\//, '').sub(/\.rb$/, '')
 
           create_bin out_dir, underscored_name, message_module, service_name, default_port
-          create_service message_file, out_dir, underscored_name, message_module, 
+          create_service message_file, out_dir, underscored_name, message_module,
             service_name, default_port, rpcs, required_file
           rpcs.each do |name, request, response|
-            create_client out_dir, underscored_name, default_port, name, request, response, 
+            create_client out_dir, underscored_name, default_port, name, request, response,
               message_module, required_file
           end
         end
@@ -159,7 +159,7 @@ module Protobuf
         @file_contents[bin_filename] = bin_contents
       end
 
-      def create_service(message_file, out_dir, underscored_name, module_name, service_name, 
+      def create_service(message_file, out_dir, underscored_name, module_name, service_name,
         default_port, rpcs, required_file)
         service_filename = "#{out_dir}/#{underscored_name}.rb"
         service_contents = template_erb('rpc_service').result binding
@@ -167,7 +167,7 @@ module Protobuf
         @file_contents[service_filename] = service_contents
       end
 
-      def create_client(out_dir, underscored_name, default_port, name, request, response, 
+      def create_client(out_dir, underscored_name, default_port, name, request, response,
         message_module, required_file)
         client_filename = "#{out_dir}/client_#{underscore name}.rb"
         client_contents = template_erb('rpc_client').result binding
@@ -196,7 +196,7 @@ module Protobuf
       end
 
       def visit(node)
-        node.accept_descriptor_visitor self 
+        node.accept_descriptor_visitor self
         self
       end
 
@@ -216,7 +216,7 @@ module Protobuf
       end
 
       def add_option(name, value)
-        options = 
+        options =
           case current_descriptor
           when Google::Protobuf::FileDescriptorProto
             Google::Protobuf::FileOptions.new

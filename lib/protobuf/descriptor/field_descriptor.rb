@@ -27,7 +27,7 @@ module Protobuf
         field_proto.type = Protobuf::Descriptor.type2id @field_instance.type
         if [Google::Protobuf::FieldDescriptorProto::Type::TYPE_MESSAGE,
           Google::Protobuf::FieldDescriptorProto::Type::TYPE_ENUM].include? field_proto.type
-          field_proto.type_name = @field_instance.type.to_s.split('::').last 
+          field_proto.type_name = @field_instance.type.to_s.split('::').last
         end
         field_proto.default_value = @field_instance.default.to_s if @field_instance.default
 

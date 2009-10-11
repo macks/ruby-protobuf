@@ -6,7 +6,7 @@ require '<%= required_file %>'
 class <%= module_name %>::<%= name %>Handler < Protobuf::Rpc::Handler
   request <%= module_name %>::<%= request %>
   response <%= module_name %>::<%= response %>
-  
+
   def self.process_request(request, response)
     # TODO: edit this method
   end
@@ -19,7 +19,7 @@ class <%= module_name %>::<%= service_name %> < Protobuf::Rpc::Server
       <%- rpcs.each do |name, | -%>
       :<%= underscore name %> => <%= module_name %>::<%= name %>Handler,
       <%- end -%>
-    } 
+    }
   end
 end
 
