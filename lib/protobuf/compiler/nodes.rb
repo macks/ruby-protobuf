@@ -72,7 +72,8 @@ require 'protobuf/message/extend'
 
       def accept_message_visitor(visitor)
         @path_list.each do |path|
-          visitor.write "module #{path.to_s.capitalize}"
+          camelized_name = path.to_s.gsub(/(?:\A|_)(\w)/) { $1.upcase }
+          visitor.write "module #{camelized_name}"
           visitor.increment
         end
       end
