@@ -112,9 +112,7 @@ require 'protobuf/message/extend'
         visitor.write "class #{class_name} < ::Protobuf::Message"
         visitor.in_context self.class do
           define_in_the_file visitor
-          #@children.each {|child| child.accept_message_visitor visitor}
-          @children.each {|child| next if child == ';'; child.accept_message_visitor visitor}
-          # TODO: `next if child == ';';' is a monky patching. There must be a parser error.
+          @children.each {|child| child.accept_message_visitor visitor}
         end
         visitor.write "end"
       end
