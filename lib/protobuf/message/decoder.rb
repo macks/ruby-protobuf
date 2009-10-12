@@ -76,11 +76,11 @@ module Protobuf
     end
 
     def read_start_group(stream)
-      raise NotImplementedError, 'Group is duplecated.'
+      raise NotImplementedError, 'Group is deprecated.'
     end
 
     def read_end_group(stream)
-      raise NotImplementedError, 'Group is duplecated.'
+      raise NotImplementedError, 'Group is deprecated.'
     end
   end
 end
