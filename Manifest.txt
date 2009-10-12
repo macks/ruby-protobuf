@@ -67,7 +67,6 @@ test/test_descriptor.rb
 test/test_extension.rb
 test/test_message.rb
 test/test_parse.rb
-test/test_ruby_protobuf.rb
 test/test_serialize.rb
 test/test_standard_message.rb
 test/test_types.rb
