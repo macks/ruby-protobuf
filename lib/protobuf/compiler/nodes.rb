@@ -247,8 +247,8 @@ require 'protobuf/message/extend'
 
       def accept_message_visitor(visitor)
         opts = @opts.empty? ? '' : ", #{@opts.map{|k, v| ":#{k} => #{v.inspect}" }.join(', ')}"
-        if visitor.context.first == Protobuf::Node::ExtendNode
-          opts += ', :extension => true'
+        if visitor.context.first == ExtendNode
+          opts << ', :extension => true'
         end
         type = if @type.is_a?(Array)
                then (@type.size > 1) ? "'#{@type.join '::'}'" : @type[0]
@@ -275,7 +275,7 @@ require 'protobuf/message/extend'
 
       def predefined_type?
         # TODO: constantize
-        %w{double float int64 uint64 int32 fixed64 fixed32 bool string group message bytes uint32 enum sfixed32 sfixed64 sint32 sint64}.include? @type.to_s
+        %w{double float int64 uint64 int32 fixed64 fixed32 bool string group message bytes uint32 enum sfixed32 sfixed64 sint32 sint64}.include?(@type.to_s)
       end
     end
 

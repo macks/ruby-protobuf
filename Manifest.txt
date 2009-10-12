@@ -8,6 +8,7 @@ examples/addressbook.proto
 examples/addressbook.pb.rb
 examples/reading_a_message.rb
 examples/writing_a_message.rb
+lib/protobuf/common/exceptions.rb
 lib/protobuf/common/wire_type.rb
 lib/protobuf/compiler/compiler.rb
 lib/protobuf/compiler/nodes.rb

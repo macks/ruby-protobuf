@@ -296,15 +296,15 @@ puts response
   end
 
   def test_collision
-    assert_raise(Protobuf::Message::TagCollisionError) do require 'test/proto/collision.pb' end
-    assert_raise(Protobuf::Message::TagCollisionError) do
+    assert_raise(Protobuf::TagCollisionError) do require 'test/proto/collision.pb' end
+    assert_raise(Protobuf::TagCollisionError) do
       Protobuf::Compiler.new.create_message('test/proto/collision.proto', '.', '.', false)
     end
   end
 
   def test_ext_collision
-    assert_raise(Protobuf::Message::TagCollisionError) do require 'test/proto/ext_collision.pb' end
-    assert_raise(Protobuf::Message::TagCollisionError) do
+    assert_raise(Protobuf::TagCollisionError) do require 'test/proto/ext_collision.pb' end
+    assert_raise(Protobuf::TagCollisionError) do
       Protobuf::Compiler.new.create_message('test/proto/ext_collision.proto', '.', '.', false)
     end
   end

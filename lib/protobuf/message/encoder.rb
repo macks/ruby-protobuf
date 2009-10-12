@@ -1,7 +1,7 @@
 require 'protobuf/common/wire_type'
+require 'protobuf/common/exceptions'
 
 module Protobuf
-  class NotInitializedError < StandardError; end
 
   class Encoder
     class <<self
@@ -29,11 +29,13 @@ module Protobuf
       end
     end
 
+    private
+
     def write_pair(field, value, stream)
       key = (field.tag << 3) | field.wire_type
       key_bytes = Protobuf::Field::VarintField.encode(key)
       stream.write(key_bytes)
-      bytes = field.get(value)
+      bytes = field.encode(value)
       stream.write(bytes)
     end
   end

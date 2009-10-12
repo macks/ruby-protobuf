@@ -10,9 +10,8 @@ Hoe.spec('ruby_protobuf') do
   self.rubyforge_name = 'ruby-protobuf'
   self.developer('MATSUYAMA Kengo', 'macksx@gmail.com')
   self.summary = 'Protocol Buffers for Ruby'
-  self.description = paragraphs_of('README.txt', 2..5).join("\n\n")
+  self.description = 'Ruby implementation for Protocol Buffers.'
   self.url = 'http://code.google.com/p/ruby-protobuf'
-  self.changes = paragraphs_of('History.txt', 0..1).join("\n\n")
 end
 
 # vim: syntax=ruby

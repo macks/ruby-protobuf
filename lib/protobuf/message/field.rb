@@ -3,69 +3,81 @@ require 'protobuf/descriptor/field_descriptor'
 
 module Protobuf
   module Field
-    def self.build(message_class, rule, type, name, tag, opts={})
-      field_class =
-        if [:double, :float, :int32, :int64, :uint32, :uint64,
-          :sint32, :sint64, :fixed32, :fixed64, :sfixed32, :sfixed64,
-          :bool, :string, :bytes].include? type
-          eval "Protobuf::Field::#{type.to_s.capitalize}Field"
+
+    PREDEFINED_TYPES = [
+      :double,   :float,
+      :int32,    :int64,
+      :uint32,   :uint64,
+      :sint32,   :sint64,
+      :fixed32,  :fixed64,
+      :sfixed32, :sfixed64,
+      :string,   :bytes,
+      :bool,
+    ].freeze
+
+    def self.build(message_class, rule, type, name, tag, options={})
+      field_class = \
+        if PREDEFINED_TYPES.include?(type)
+          const_get("#{type.to_s.capitalize}Field")
         else
-          Protobuf::Field::FieldProxy
+          FieldProxy
         end
-      field_class.new(message_class, rule, type, name, tag, opts)
+      field_class.new(message_class, rule, type, name, tag, options)
     end
 
-    class InvalidRuleError < StandardError; end
-
     class BaseField
-      class <<self
-        def descriptor
-          @descriptor ||= Protobuf::Descriptor::FieldDescriptor.new
-        end
 
-        def default; nil end
+      def self.descriptor
+        @descriptor ||= Descriptor::FieldDescriptor.new
       end
 
-      attr_accessor :message_class, :rule, :type, :name, :tag, :default
+      def self.default
+        nil
+      end
+
+      attr_reader :message_class, :rule, :type, :name, :tag, :default
 
       def descriptor
-        @descriptor ||= Protobuf::Descriptor::FieldDescriptor.new(self)
+        @descriptor ||= Descriptor::FieldDescriptor.new(self)
       end
 
-      def initialize(message_class, rule, type, name, tag, opts={})
-        @message_class, @rule, @type, @name, @tag, @default, @extension =
-          message_class, rule, type, name, tag, opts[:default], opts[:extension]
-        @error_message = 'Type invalid'
+      def initialize(message_class, rule, type, name, tag, options)
+        @message_class, @rule, @type, @name, @tag = \
+          message_class, rule, type, name, tag
+        @default = options.delete(:default)
+        @extension = options.delete(:extension)
+        unless options.empty?
+          warn "WARNING: Unknown options: #{options.inspect} (in #{@message_class.name.sub(/^.*:/, '')}.#{@name})"
+        end
         define_accessor
       end
 
-      def ready?; true end
+      def ready?
+        true
+      end
 
       def initialized?(message)
-        case rule
+        value = message.send(@name)
+        case @rule
         when :required
-          return false if message[name].nil?
-          return false if kind_of?(Protobuf::Field::MessageField) && !message[name].initialized?
+          ! value.nil? && (! kind_of?(MessageField) || value.initialized?)
         when :repeated
-          return message[name].all? {|msg|
-            ! kind_of?(Protobuf::Field::MessageField) || msg.initialized?
-          }
+          value.all? {|msg| ! kind_of?(MessageField) || msg.initialized? }
         when :optional
-          return false if message[name] && kind_of?(Protobuf::Field::MessageField) && ! message[name].initialized?
+          value.nil? || ! kind_of?(MessageField) || value.initialized?
         end
-        true
       end
 
       def clear(message)
         if repeated?
-          message[name].clear
+          message[@name].clear
         else
-          message.instance_variable_get(:@values).delete(name)
+          message.instance_variable_get(:@values).delete(@name)
         end
       end
 
       def default_value
-        case rule
+        case @rule
         when :repeated
           FieldArray.new(self)
         when :required
@@ -73,7 +85,7 @@ module Protobuf
         when :optional
           typed_default_value(default)
         else
-          raise InvalidRuleError
+          raise 'Implementation error. (Maybe you hit a bug!)'
         end
       end
 
@@ -81,11 +93,74 @@ module Protobuf
         default || self.class.default
       end
 
+      # Decode +bytes+ and pass to +message_instance+.
+      def set(message_instance, bytes)
+        value = decode(bytes)
+        if repeated?
+          message_instance.send(@name) << value
+        else
+          message_instance.send("#{@name}=", value)
+        end
+      end
+
+      # Decode +bytes+ and return a field value.
+      def decode(bytes)
+        raise NotImplementedError, "#{self.class.name}\#decode"
+      end
+
+      # Encode +value+ and return a byte string.
+      def encode(value)
+        raise NotImplementedError, "#{self.class.name}\#encode"
+      end
+
+      # Merge +value+ with message_instance.
+      def merge(message_instance, value)
+        if repeated?
+          merge_array(message_instance, value)
+        else
+          merge_value(message_instance, value)
+        end
+      end
+
+      # Is this a repeated field?
+      def repeated?
+        @rule == :repeated
+      end
+
+      # Is this a required field?
+      def required?
+        @rule == :required
+      end
+
+      # Is this a optional field?
+      def optional?
+        @rule == :optional
+      end
+
+      # Upper limit for this field.
+      def max
+        self.class.max
+      end
+
+      # Lower limit for this field.
+      def min
+        self.class.min
+      end
+
+      # Is a +value+ acceptable for this field?
+      def acceptable?(value)
+        true
+      end
+
+      def to_s
+        "#{@rule} #{@type} #{@name} = #{@tag} #{@default ? "[default=#{@default.inspect}]" : ''}"
+      end
+
       private
 
       def define_accessor
         define_getter
-        if rule == :repeated
+        if repeated?
           define_array_setter
         else
           define_setter
@@ -127,113 +202,63 @@ module Protobuf
         end
       end
 
-      public
-
-      # encoder/decoder related methods
-
-      def set(message_instance, bytes)
-        value = decode(bytes)
-        if repeated?
-          message_instance.send(name) << value
-        else
-          message_instance.send("#{name}=", value)
-        end
-      end
-
-      def get(value)
-        encode(value)
-      end
-
-      def decode(bytes)
-        raise NotImplementedError, "#{self.class.name}\#decode"
-      end
-      private :decode
-
-      def encode(value)
-        raise NotImplementedError, "#{self.class.name}\#encode"
-      end
-      private :encode
-
-      def merge(message_instance, value)
-        if repeated?
-          merge_array(message_instance, value)
-        else
-          merge_value(message_instance, value)
-        end
-      end
-
       def merge_array(message_instance, value)
-        message_instance[tag].concat(value)
+        message_instance.send(@name).concat(value)
       end
 
       def merge_value(message_instance, value)
-        message_instance[tag] = value
+        message_instance.send("#{@name}=", value)
       end
 
-      # utility methods
+    end # BaseField
 
-      def repeated?; rule == :repeated end
-      def required?; rule == :required end
-      def optional?; rule == :optional end
-
-      def max; self.class.max end
-      def min; self.class.min end
-
-      def acceptable?(val)
-        true
-      end
-
-      def error_message
-        @error_message
-      end
-
-      def to_s
-        "#{rule} #{type} #{name} = #{tag} #{default ? "[default=#{default}]" : ''}"
-      end
-    end
 
     class FieldProxy
-      def initialize(message_class, rule, type, name, tag, opts={})
-        @message_class, @rule, @type, @name, @tag, @opts =
-          message_class, rule, type, name, tag, opts
+
+      def initialize(message_class, rule, type, name, tag, options)
+        @message_class, @rule, @type, @name, @tag, @options =
+          message_class, rule, type, name, tag, options
       end
 
-      def ready?; false end
+      def ready?
+        false
+      end
 
       def setup
         type = typename_to_class(@message_class, @type)
-        field_class =
-          if type.superclass == Protobuf::Enum
-            Protobuf::Field::EnumField
-          elsif type.superclass == Protobuf::Message
-            Protobuf::Field::MessageField
+        field_class = \
+          if type < Enum
+            EnumField
+          elsif type < Message
+            MessageField
           else
             raise TypeError, type.inspect
           end
-        field_class.new(@message_class, @rule, type, @name, @tag, @opts)
+        field_class.new(@message_class, @rule, type, @name, @tag, @options)
       end
 
       private
 
       def typename_to_class(message_class, type)
-        suffix = type.to_s.split('::')
-        modules = message_class.to_s.split('::')
-        args = (Object.method(:const_defined?).arity == 1) ? [] : [nil, false]
+        names = type.to_s.split('::')
+        outer = message_class.to_s.split('::')
+        args = (Object.method(:const_defined?).arity == 1) ? [] : [false]
         while
-          mod = modules.empty? ? Object : eval(modules.join('::'))
-          mod = suffix.inject(mod) {|m, s|
-            args[0] = s
-            m && m.const_defined?(*args) && m.const_get(s)
+          mod = outer.empty? ? Object : eval(outer.join('::'))
+          mod = names.inject(mod) {|m, s|
+            m && m.const_defined?(s, *args) && m.const_get(s)
           }
           break if mod
-          raise NameError.new("type not found: #{type}", type) if modules.empty?
-          modules.pop
+          raise NameError.new("type not found: #{type}", type) if outer.empty?
+          outer.pop
         end
         mod
       end
+
     end
 
     class FieldArray < Array
+
       def initialize(field)
         @field = field
       end
@@ -274,15 +299,16 @@ module Protobuf
           val
         end
       end
+
     end
 
     class BytesField < BaseField
-      class <<self
-        def default; '' end
+      def self.default
+        ''
       end
 
       def wire_type
-        Protobuf::WireType::LENGTH_DELIMITED
+        WireType::LENGTH_DELIMITED
       end
 
       def acceptable?(val)
@@ -319,7 +345,9 @@ module Protobuf
       UINT64_MAX =  2**64 - 1
 
       class <<self
-        def default; 0 end
+        def default
+          0
+        end
 
         def decode(bytes)
           value = 0
@@ -343,7 +371,7 @@ module Protobuf
       end
 
       def wire_type
-        Protobuf::WireType::VARINT
+        WireType::VARINT
       end
 
       def decode(bytes)
@@ -431,7 +459,7 @@ module Protobuf
       def self.min; -1.0/0; end
 
       def wire_type
-        Protobuf::WireType::FIXED32
+        WireType::FIXED32
       end
 
       def decode(bytes)
@@ -451,7 +479,7 @@ module Protobuf
 
     class DoubleField < FloatField
       def wire_type
-        Protobuf::WireType::FIXED64
+        WireType::FIXED64
       end
 
       def decode(bytes)
@@ -465,7 +493,7 @@ module Protobuf
 
     class Fixed32Field < Uint32Field
       def wire_type
-        Protobuf::WireType::FIXED32
+        WireType::FIXED32
       end
 
       def decode(bytes)
@@ -479,7 +507,7 @@ module Protobuf
 
     class Fixed64Field < Uint64Field
       def wire_type
-        Protobuf::WireType::FIXED64
+        WireType::FIXED64
       end
 
       def decode(bytes)
@@ -496,7 +524,7 @@ module Protobuf
 
     class Sfixed32Field < Int32Field
       def wire_type
-        Protobuf::WireType::FIXED32
+        WireType::FIXED32
       end
 
       def decode(bytes)
@@ -512,7 +540,7 @@ module Protobuf
 
     class Sfixed64Field < Int64Field
       def wire_type
-        Protobuf::WireType::FIXED64
+        WireType::FIXED64
       end
 
       def decode(bytes)
@@ -530,8 +558,8 @@ module Protobuf
     end
 
     class BoolField < VarintField
-      class <<self
-        def default; false end
+      def self.default
+        false
       end
 
       def acceptable?(val)
@@ -548,10 +576,38 @@ module Protobuf
       end
     end
 
+
     class MessageField < BaseField
-      class <<self
-        def default; nil end
+      def wire_type
+        WireType::LENGTH_DELIMITED
       end
+
+      def typed_default_value(default=nil)
+        if default.is_a?(Symbol)
+          type.module_eval(default.to_s)
+        else
+          default
+        end
+      end
+
+      def acceptable?(val)
+        raise TypeError unless val.instance_of?(type) || val.instance_of?(Hash)
+        true
+      end
+
+      def decode(bytes)
+        message = type.new
+        message.parse_from_string(bytes.pack('C*')) # TODO
+        message
+      end
+
+      def encode(value)
+        bytes = value.serialize_to_string
+        string_size = VarintField.encode(bytes.size)
+        string_size << bytes
+      end
+
+      private
 
       def define_setter
         field = self
@@ -571,39 +627,11 @@ module Protobuf
         end
       end
 
-      def wire_type
-        Protobuf::WireType::LENGTH_DELIMITED
-      end
-
-      def typed_default_value(default=nil)
-        if default.is_a?(Symbol)
-          type.module_eval(default.to_s)
-        else
-          default
-        end
-      end
-
-      def acceptable?(val)
-        raise TypeError unless val.instance_of?(type) || val.instance_of?(Hash)
-        true
-      end
-
-      def decode(bytes)
-        message = type.new
-        message.parse_from_string bytes.pack('C*') # TODO
-        message
-      end
-
-      def encode(value)
-        bytes = value.serialize_to_string
-        string_size = VarintField.encode(bytes.size)
-        string_size << bytes
-      end
-
       def merge_value(message_instance, value)
         message_instance[tag].merge_from(value)
       end
     end
+
 
     class EnumField < VarintField
       def default

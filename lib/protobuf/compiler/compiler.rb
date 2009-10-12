@@ -18,9 +18,9 @@ module Protobuf
       rb_file = File.join(out_dir, File.basename(proto_file).sub(/\.[^\0]*\z/, '') + '.pb.rb')
       proto_path = validate_existence(proto_file, proto_dir)
 
-      message_visitor = Protobuf::Visitor::CreateMessageVisitor.new(proto_file, proto_dir, out_dir)
+      message_visitor = Visitor::CreateMessageVisitor.new(proto_file, proto_dir, out_dir)
       File.open(proto_path) do |file|
-        message_visitor.visit(Protobuf::ProtoParser.new.parse(file))
+        message_visitor.visit(ProtoParser.new.parse(file))
       end
       message_visitor.create_files(rb_file, out_dir, file_create)
     end
@@ -29,9 +29,9 @@ module Protobuf
       message_file = File.join(out_dir, File.basename(proto_file).sub(/\.[^\0]*\z/, '') + '.pb.rb')
       proto_path = validate_existence(proto_file, proto_dir)
 
-      rpc_visitor = Protobuf::Visitor::CreateRpcVisitor.new
+      rpc_visitor = Visitor::CreateRpcVisitor.new
       File.open(proto_path) do |file|
-        rpc_visitor.visit(Protobuf::ProtoParser.new.parse(file))
+        rpc_visitor.visit(ProtoParser.new.parse(file))
       end
       rpc_visitor.create_files(message_file, out_dir, file_create)
     end

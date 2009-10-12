@@ -4,7 +4,7 @@ require 'protobuf/message/protoable'
 module Protobuf
   class Enum
     class <<self
-      include Protobuf::Protoable
+      include Protoable
 
       def get_name_by_tag(tag)
         constants.find do |name|
@@ -21,7 +21,7 @@ module Protobuf
       end
 
       def descriptor
-        @descriptor ||= Protobuf::Descriptor::EnumDescriptor.new(self)
+        @descriptor ||= Descriptor::EnumDescriptor.new(self)
       end
     end
   end

@@ -1,10 +1,11 @@
 require 'protobuf/common/wire_type'
+require 'protobuf/common/exceptions'
 
 module Protobuf
-  class InvalidWireType < StandardError; end
 
   class Decoder
     class <<self
+      # Read bytes from +stream+ and pass to +message+ object.
       def decode(stream, message)
         self.new(stream, message).decode
       end
@@ -16,7 +17,7 @@ module Protobuf
 
     def decode(stream=@stream, message=@message)
       until stream.eof?
-        tag, wire_type = read_key stream
+        tag, wire_type = read_key(stream)
         bytes =
           case wire_type
           when WireType::VARINT
@@ -39,7 +40,7 @@ module Protobuf
       message
     end
 
-    protected
+    private
 
     def read_key(stream)
       bytes = read_varint(stream)
@@ -70,7 +71,7 @@ module Protobuf
     def read_length_delimited(stream)
       bytes = read_varint(stream)
       value_length = Protobuf::Field::VarintField.decode(bytes)
-      value = stream.read value_length
+      value = stream.read(value_length)
       value.unpack('C*')
     end
 
