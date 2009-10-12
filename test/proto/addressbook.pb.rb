@@ -24,9 +24,11 @@
 #   extensions 100 to 200;
 # }
 # 
+# /*
 # extend Person {
 #   optional int32 age = 100;
 # }
+# */
 # 
 # message AddressBook {
 #   repeated Person person = 1;
@@ -57,10 +59,6 @@ module Tutorial
     repeated :PhoneNumber, :phone, 4
     optional :uint32, :age, 5, :default => 20
     extensions 100..200
-  end
-  class Person < ::Protobuf::Message
-    defined_in __FILE__
-    optional :int32, :age, 100, :extension => true
   end
   class AddressBook < ::Protobuf::Message
     defined_in __FILE__

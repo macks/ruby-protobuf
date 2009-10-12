@@ -1,7 +1,7 @@
-message ExtCollisionTest {
+message ExtRangeTest {
   extensions 1 to 10;
 }
 
-extend ExtCollisionTest {
+extend ExtRangeTest {
   optional string a = 11;
 }

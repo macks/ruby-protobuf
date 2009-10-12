@@ -92,9 +92,11 @@ message Person {
   extensions 100 to 200;
 }
 
+/*
 extend Person {
   optional int32 age = 100;
 }
+*/
 
 message AddressBook {
   repeated Person person = 1;
