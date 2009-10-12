@@ -317,7 +317,8 @@ module Protobuf
       end
 
       def decode(bytes)
-        bytes.pack('C*')
+        bytes.force_encoding('ASCII-8BIT') if bytes.respond_to?(:force_encoding)
+        bytes
       end
 
       def encode(value)
@@ -330,9 +331,8 @@ module Protobuf
 
     class StringField < BytesField
       def decode(bytes)
-        message = bytes.pack('C*')
-        message.force_encoding('UTF-8') if message.respond_to?(:force_encoding)
-        message
+        bytes.force_encoding('UTF-8') if bytes.respond_to?(:force_encoding)
+        bytes
       end
     end
 
@@ -374,8 +374,8 @@ module Protobuf
         WireType::VARINT
       end
 
-      def decode(bytes)
-        self.class.decode(bytes)
+      def decode(value)
+        value
       end
 
       def encode(value)
@@ -396,8 +396,7 @@ module Protobuf
         VarintField.encode(value & 0xffff_ffff_ffff_ffff)
       end
 
-      def decode(bytes)
-        value  = VarintField.decode(bytes)
+      def decode(value)
         value -= 0x1_0000_0000_0000_0000 if (value & 0x8000_0000_0000_0000).nonzero?
         value
       end
@@ -425,8 +424,7 @@ module Protobuf
 
     # Base class for sint32 and sint64
     class SignedIntegerField < VarintField
-      def decode(bytes)
-        value = VarintField.decode(bytes)
+      def decode(value)
         if (value & 1).zero?
           value >> 1   # positive value
         else
@@ -567,8 +565,8 @@ module Protobuf
         true
       end
 
-      def decode(bytes)
-        bytes.first == 1
+      def decode(value)
+        value == 1
       end
 
       def encode(value)
@@ -597,7 +595,7 @@ module Protobuf
 
       def decode(bytes)
         message = type.new
-        message.parse_from_string(bytes.pack('C*')) # TODO
+        message.parse_from_string(bytes)
         message
       end
 

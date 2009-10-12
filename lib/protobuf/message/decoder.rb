@@ -3,19 +3,12 @@ require 'protobuf/common/exceptions'
 
 module Protobuf
 
-  class Decoder
-    class <<self
-      # Read bytes from +stream+ and pass to +message+ object.
-      def decode(stream, message)
-        self.new(stream, message).decode
-      end
-    end
+  module Decoder
 
-    def initialize(stream=nil, message=nil)
-      @stream, @message = stream, message
-    end
+    module_function
 
-    def decode(stream=@stream, message=@message)
+    # Read bytes from +stream+ and pass to +message+ object.
+    def decode(stream, message)
       until stream.eof?
         tag, wire_type = read_key(stream)
         bytes =
@@ -40,47 +33,51 @@ module Protobuf
       message
     end
 
-    private
-
+    # Read key pair (tag and wire-type) from +stream+.
     def read_key(stream)
-      bytes = read_varint(stream)
-      bits = Protobuf::Field::VarintField.decode(bytes)
+      bits = read_varint(stream)
       wire_type = bits & 0x07
       tag = bits >> 3
       [tag, wire_type]
     end
 
+    # Read varint value from +stream+. Returns +Integer+.
     def read_varint(stream)
       read_method = stream.respond_to?(:readbyte) ? :readbyte : :readchar
-      bytes = []
+      value = index = 0
       begin
         byte = stream.send(read_method)
-        bytes << (byte & 0x7f)
+        value |= (byte & 0x7f) << (7 * index)
+        index += 1
       end while (byte & 0x80).nonzero?
-      bytes
+      value
     end
 
+    # Read 32-bit value from +stream+. Returns +String+.
     def read_fixed32(stream)
       stream.read(4)
     end
 
+    # Read 64-bit value from +stream+. Returns +String+.
     def read_fixed64(stream)
       stream.read(8)
     end
 
+    # Read length-delimited value from +stream+. Returns +String+.
     def read_length_delimited(stream)
-      bytes = read_varint(stream)
-      value_length = Protobuf::Field::VarintField.decode(bytes)
-      value = stream.read(value_length)
-      value.unpack('C*')
+      value_length = read_varint(stream)
+      stream.read(value_length)
     end
 
+    # Not implemented.
     def read_start_group(stream)
       raise NotImplementedError, 'Group is deprecated.'
     end
 
+    # Not implemented.
     def read_end_group(stream)
       raise NotImplementedError, 'Group is deprecated.'
     end
+
   end
 end
