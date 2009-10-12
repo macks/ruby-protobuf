@@ -5,7 +5,7 @@ require '<%= required_file %>'
 # build request
 request = <%= message_module %>::<%= request %>.new
 # TODO: setup a request
-raise StandardError.new('setup a request')
+raise StandardError, 'setup a request'
 
 # create blunk response
 response = <%= message_module %>::<%= response %>.new

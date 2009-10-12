@@ -8,11 +8,11 @@ module Protobuf
       end
 
       def call(name, request, response)
-        socket = TCPSocket.open @host, @port
+        socket = TCPSocket.open(@host, @port)
         socket.write "#{name}\n"
-        request.serialize_to socket
+        request.serialize_to(socket)
         socket.close_write
-        response.parse_from socket
+        response.parse_from(socket)
       end
     end
   end

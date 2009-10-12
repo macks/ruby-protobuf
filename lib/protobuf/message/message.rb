@@ -18,45 +18,47 @@ module Protobuf
       end
 
       def []=(key, value)
-        raise RangeError.new("#{key} is not in #{@key_range}") unless @key_range.include? key
+        raise RangeError, "#{key} is not in #{@key_range}" unless @key_range.include?(key)
         super
       end
 
       def include_tag?(tag)
-        @key_range.include? tag
+        @key_range.include?(tag)
       end
     end
 
     class <<self
       include Protobuf::Protoable
-      def fields; @fields ||= {} end
+      def fields
+        @fields ||= {}
+      end
 
       def extensions(range)
-        @extension_fields = ExtensionFields.new range
+        @extension_fields = ExtensionFields.new(range)
       end
 
       def required(type, name, tag, opts={})
-        define_field :required, type, name, tag, opts
+        define_field(:required, type, name, tag, opts)
       end
 
       def optional(type, name, tag, opts={})
-        define_field :optional, type, name, tag, opts
+        define_field(:optional, type, name, tag, opts)
       end
 
       def repeated(type, name, tag, opts={})
-        define_field :repeated, type, name, tag, opts
+        define_field(:repeated, type, name, tag, opts)
       end
 
       def define_field(rule, type, fname, tag, opts={})
         field_hash = opts[:extension] ? extension_fields : (@fields ||= {})
-        raise Protobuf::Message::TagCollisionError.new(<<-eos.strip) if field_hash.keys.include? tag
-          Field number #{tag} has already been used in "#{self.name}" by field "#{fname}".
-        eos
-        field_hash[tag] = Protobuf::Field.build self, rule, type, fname, tag, opts
+        if field_hash.keys.include?(tag)
+          raise Protobuf::Message::TagCollisionError, %!{Field number #{tag} has already been used in "#{self.name}" by field "#{fname}".!
+        end
+        field_hash[tag] = Protobuf::Field.build(self, rule, type, fname, tag, opts)
       end
 
       def extension_tag?(tag)
-        extension_fields.include_tag? tag
+        extension_fields.include_tag?(tag)
       end
 
       def extension_fields
@@ -74,9 +76,9 @@ module Protobuf
 
       def get_field(tag_or_name)
         case tag_or_name
-        when Integer; get_field_by_tag tag_or_name
-        when String, Symbol; get_field_by_name tag_or_name
-        else; raise TypeError.new(tag_or_name.class)
+        when Integer        then get_field_by_tag(tag_or_name)
+        when String, Symbol then get_field_by_name(tag_or_name)
+        else                     raise TypeError, tag_or_name.class
         end
       end
 
@@ -94,9 +96,9 @@ module Protobuf
       #TODO merge to get_field
       def get_ext_field(tag_or_name)
         case tag_or_name
-        when Integer; get_ext_field_by_tag tag_or_name
-        when String, Symbol; get_ext_field_by_name tag_or_name
-        else; raise TypeError.new(tag_or_name.class)
+        when Integer        then get_ext_field_by_tag tag_or_name
+        when String, Symbol then get_ext_field_by_name tag_or_name
+        else                     raise TypeError, tag_or_name.class
         end
       end
 
@@ -134,17 +136,17 @@ module Protobuf
 
     def initialized?
       fields.all? {|tag, field| field.initialized?(self) } && \
-      extension_fields.all? {|tag, field| field.initialized?(self) }
+        extension_fields.all? {|tag, field| field.initialized?(self) }
     end
 
     def has_field?(tag_or_name)
       field = get_field(tag_or_name) || get_ext_field(tag_or_name)
-      raise ArgumentError.new("unknown field: #{tag_or_name.inspect}") unless field
+      raise ArgumentError, "unknown field: #{tag_or_name.inspect}" unless field
       @values.has_key?(field.name)
     end
 
     def ==(obj)
-      return false unless obj.is_a? self.class
+      return false unless obj.is_a?(self.class)
       each_field do |field, value|
         return false unless value == obj.send(field.name)
       end
@@ -153,7 +155,7 @@ module Protobuf
 
     def clear!
       each_field do |field, value|
-        field.clear self
+        field.clear(self)
       end
     end
 
@@ -188,16 +190,16 @@ module Protobuf
               "#{i}#{field.name} {\n#{value.inspect(indent + 1)}#{i}}\n"
             end
           elsif field.is_a? Protobuf::Field::EnumField
-	    if field.optional? and not has_field?(field.name)
-	      ''
-	    else
+            if field.optional? && ! has_field?(field.name)
+              ''
+            else
               "#{i}#{field.name}: #{field.type.name_by_value(value)}\n"
             end
           else
             if $DEBUG
               "#{i}#{field.name}: #{value.inspect}\n"
             else
-              if field.optional? and not has_field?(field.name)
+              if field.optional? && ! has_field?(field.name)
                 ''
               else
                 "#{i}#{field.name}: #{value.inspect}\n"
@@ -208,10 +210,10 @@ module Protobuf
       each_field do |field, value|
         if field.repeated?
           value.each do |v|
-            field_value_to_string.call field, v
+            field_value_to_string.call(field, v)
           end
         else
-          field_value_to_string.call field, value
+          field_value_to_string.call(field, value)
         end
       end
       ret
@@ -278,7 +280,7 @@ module Protobuf
       if field = get_field(tag_or_name) || get_ext_field(tag_or_name)
         send field.name
       else
-        raise NoMethodError.new("No such field: #{tag_or_name.inspect}")
+        raise NoMethodError, "No such field: #{tag_or_name.inspect}"
       end
     end
 
@@ -286,7 +288,7 @@ module Protobuf
       if field = get_field(tag_or_name) || get_ext_field(tag_or_name)
         send "#{field.name}=", value
       else
-        raise NoMethodError.new("No such field: #{tag_or_name.inspect}")
+        raise NoMethodError, "No such field: #{tag_or_name.inspect}"
       end
     end
 

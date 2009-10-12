@@ -42,7 +42,7 @@ module Protobuf
       when Google::Protobuf::FieldDescriptorProto::Type::TYPE_SINT64
         :sint64
       else
-        raise ArgumentError.new("Invalid type: #{proto.type}")
+        raise ArgumentError, "Invalid type: #{proto.type}"
       end
     end
 
@@ -100,7 +100,7 @@ module Protobuf
       when Google::Protobuf::FieldDescriptorProto::Label::LABEL_REPEATED
         :repeated
       else
-        raise ArgumentError.new("Invalid label: #{proto.label}")
+        raise ArgumentError, "Invalid label: #{proto.label}"
       end
     end
 
@@ -114,7 +114,7 @@ module Protobuf
       when :repeated
         Google::Protobuf::FieldDescriptorProto::Label::LABEL_REPEATED
       else
-        raise ArgumentError.new("Invalid label: #{label}")
+        raise ArgumentError, "Invalid label: #{label}"
       end
     end
 
@@ -126,14 +126,13 @@ module Protobuf
         end
 
         def build(proto, opt={})
-          acceptable_descriptor(proto).build proto
+          acceptable_descriptor(proto).build(proto)
         end
 
         def acceptable_descriptor(proto)
           Protobuf::Descriptor.constants.each do |class_name|
-            descriptor_class = Protobuf::Descriptor.const_get class_name
-            if descriptor_class.respond_to?(:proto_type) and
-              descriptor_class.proto_type == proto.class.name
+            descriptor_class = Protobuf::Descriptor.const_get(class_name)
+            if descriptor_class.respond_to?(:proto_type) && descriptor_class.proto_type == proto.class.name
               return descriptor_class
             end
           end

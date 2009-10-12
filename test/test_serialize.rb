@@ -17,13 +17,13 @@ class SerializeTest < Test::Unit::TestCase
 
     # parse the serialized string
     person2 = Tutorial::Person.new
-    person2.parse_from_string serialized_string
-    assert_equal 1234, person2.id
-    assert_equal 'John Doe', person2.name
-    assert_equal 'jdoe@example.com', person2.email
-    assert_equal 1, person2.phone.size
-    assert_equal '555-4321', person2.phone[0].number
-    assert_equal Tutorial::Person::PhoneType::HOME, person2.phone[0].type
+    person2.parse_from_string(serialized_string)
+    assert_equal(1234, person2.id)
+    assert_equal('John Doe', person2.name)
+    assert_equal('jdoe@example.com', person2.email)
+    assert_equal(1, person2.phone.size)
+    assert_equal('555-4321', person2.phone[0].number)
+    assert_equal(Tutorial::Person::PhoneType::HOME, person2.phone[0].type)
   end
 
   def test_serialize_utf8string
@@ -35,9 +35,9 @@ class SerializeTest < Test::Unit::TestCase
 
     # parse the serialized string
     person2 = Tutorial::Person.new
-    person2.parse_from_string serialized_string
-    assert_equal 1234, person2.id
-    assert_equal '山田 太郎', person2.name
+    person2.parse_from_string(serialized_string)
+    assert_equal(1234, person2.id)
+    assert_equal('山田 太郎', person2.name)
   end
 
   def test_unknown_field
@@ -54,7 +54,7 @@ class SerializeTest < Test::Unit::TestCase
 
     # decode
     person2 = Tutorial::Person.new
-    person2.parse_from_string serialized_string
+    person2.parse_from_string(serialized_string)
 
     assert_equal(person, person2)
   end

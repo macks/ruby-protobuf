@@ -10,9 +10,9 @@ class RepeatedTypesTest < Test::Unit::TestCase
     # has 1 member
     types = Test::Types::RepeatedTypes.new
     types.type1 << 0.01
-    types.type2 << 0.1 
+    types.type2 << 0.1
     types.type3 << 1
-    types.type4 << 10 
+    types.type4 << 10
     types.type5 << 100
     types.type6 << 1000
     types.type7 << -1

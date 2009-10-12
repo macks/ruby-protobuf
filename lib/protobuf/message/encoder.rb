@@ -21,20 +21,20 @@ module Protobuf
 
         if field.repeated?
           value.each do |val|
-            write_pair field, val, stream
+            write_pair(field, val, stream)
           end
         else
-          write_pair field, value, stream
+          write_pair(field, value, stream)
         end
       end
     end
 
     def write_pair(field, value, stream)
       key = (field.tag << 3) | field.wire_type
-      key_bytes = Protobuf::Field::VarintField.encode key
-      stream.write key_bytes
-      bytes = field.get value
-      stream.write bytes
+      key_bytes = Protobuf::Field::VarintField.encode(key)
+      stream.write(key_bytes)
+      bytes = field.get(value)
+      stream.write(bytes)
     end
   end
 end

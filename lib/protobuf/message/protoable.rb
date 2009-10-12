@@ -18,8 +18,8 @@ module Protobuf
     def proto_contents
       #TODO: temporary implementation because the result includes not only this message but also all messages
       ret = {}
-      defined_filenames.map do |filename|
-        header = retrieve_header File.read(filename)
+      defined_filenames.each do |filename|
+        header = retrieve_header(File.read(filename))
         ret[header.first] = header.last
       end
       ret

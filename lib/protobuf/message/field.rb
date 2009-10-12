@@ -12,7 +12,7 @@ module Protobuf
         else
           Protobuf::Field::FieldProxy
         end
-      field_class.new message_class, rule, type, name, tag, opts
+      field_class.new(message_class, rule, type, name, tag, opts)
     end
 
     class InvalidRuleError < StandardError; end
@@ -29,7 +29,7 @@ module Protobuf
       attr_accessor :message_class, :rule, :type, :name, :tag, :default
 
       def descriptor
-        @descriptor ||= Protobuf::Descriptor::FieldDescriptor.new self
+        @descriptor ||= Protobuf::Descriptor::FieldDescriptor.new(self)
       end
 
       def initialize(message_class, rule, type, name, tag, opts={})
@@ -45,13 +45,13 @@ module Protobuf
         case rule
         when :required
           return false if message[name].nil?
-          return false if is_a?(Protobuf::Field::MessageField) and not message[name].initialized?
+          return false if kind_of?(Protobuf::Field::MessageField) && !message[name].initialized?
         when :repeated
           return message[name].all? {|msg|
-            (not is_a?(Protobuf::Field::MessageField)) or msg.initialized?
+            ! kind_of?(Protobuf::Field::MessageField) || msg.initialized?
           }
         when :optional
-          return false if message[name] and is_a?(Protobuf::Field::MessageField) and not message[name].initialized?
+          return false if message[name] && kind_of?(Protobuf::Field::MessageField) && ! message[name].initialized?
         end
         true
       end
@@ -67,18 +67,18 @@ module Protobuf
       def default_value
         case rule
         when :repeated
-          FieldArray.new self
+          FieldArray.new(self)
         when :required
           nil
         when :optional
-          typed_default_value default
+          typed_default_value(default)
         else
           raise InvalidRuleError
         end
       end
 
       def typed_default_value(default=nil)
-        default or self.class.default
+        default || self.class.default
       end
 
       private
@@ -111,7 +111,7 @@ module Protobuf
           define_method("#{field.name}=") do |val|
             if val.nil?
               @values.delete(field.name)
-            elsif field.acceptable? val
+            elsif field.acceptable?(val)
               @values[field.name] = val
             end
           end
@@ -145,25 +145,25 @@ module Protobuf
       end
 
       def decode(bytes)
-        raise NotImplementedError.new("#{self.class.name}\#decode")
+        raise NotImplementedError, "#{self.class.name}\#decode"
       end
       private :decode
 
       def encode(value)
-        raise NotImplementedError.new("#{self.class.name}\#encode")
+        raise NotImplementedError, "#{self.class.name}\#encode"
       end
       private :encode
 
       def merge(message_instance, value)
         if repeated?
-          merge_array message_instance, value
+          merge_array(message_instance, value)
         else
-          merge_value message_instance, value
+          merge_value(message_instance, value)
         end
       end
 
       def merge_array(message_instance, value)
-        message_instance[tag].concat value
+        message_instance[tag].concat(value)
       end
 
       def merge_value(message_instance, value)
@@ -201,17 +201,19 @@ module Protobuf
       def ready?; false end
 
       def setup
-        type = typename_to_class @message_class, @type
+        type = typename_to_class(@message_class, @type)
         field_class =
           if type.superclass == Protobuf::Enum
             Protobuf::Field::EnumField
           elsif type.superclass == Protobuf::Message
             Protobuf::Field::MessageField
           else
-            raise TypeError.new(type.inspect)
+            raise TypeError, type.inspect
           end
-        field_class.new @message_class, @rule, type, @name, @tag, @opts
+        field_class.new(@message_class, @rule, type, @name, @tag, @opts)
       end
+
+      private
 
       def typename_to_class(message_class, type)
         suffix = type.to_s.split('::')
@@ -221,7 +223,7 @@ module Protobuf
           mod = modules.empty? ? Object : eval(modules.join('::'))
           mod = suffix.inject(mod) {|m, s|
             args[0] = s
-            m and m.const_defined?(*args) and m.const_get(s)
+            m && m.const_defined?(*args) && m.const_get(s)
           }
           break if mod
           raise NameError.new("type not found: #{type}", type) if modules.empty?
@@ -284,7 +286,7 @@ module Protobuf
       end
 
       def acceptable?(val)
-        raise TypeError unless val.instance_of? String
+        raise TypeError unless val.instance_of?(String)
         true
       end
 
@@ -328,7 +330,7 @@ module Protobuf
         end
 
         def encode(value)
-          raise RangeError.new(value) if value < 0
+          raise RangeError, "#{value} is negative" if value < 0
           return [value].pack('C') if value < 128
           bytes = []
           until value == 0
@@ -353,8 +355,8 @@ module Protobuf
       end
 
       def acceptable?(val)
-        raise TypeError.new(val.class.name) unless val.is_a? Integer
-        raise RangeError.new(val) if val < min or max < val
+        raise TypeError, val.class.name unless val.is_a?(Integer)
+        raise RangeError if val < min || max < val
         true
       end
     end
@@ -441,8 +443,8 @@ module Protobuf
       end
 
       def acceptable?(val)
-        raise TypeError.new(val.class.name) unless val.is_a? Numeric
-        raise RangeError.new(val) if val < min or max < val
+        raise TypeError, val.class.name unless val.is_a?(Numeric)
+        raise RangeError if val < min || max < val
         true
       end
     end
@@ -533,7 +535,7 @@ module Protobuf
       end
 
       def acceptable?(val)
-        raise TypeError unless [TrueClass, FalseClass].include? val.class
+        raise TypeError unless [true, false].include?(val)
         true
       end
 
@@ -574,15 +576,15 @@ module Protobuf
       end
 
       def typed_default_value(default=nil)
-        if default.is_a? Symbol
-          type.module_eval default.to_s
+        if default.is_a?(Symbol)
+          type.module_eval(default.to_s)
         else
           default
         end
       end
 
       def acceptable?(val)
-        raise TypeError unless val.instance_of?(type) or val.instance_of?(Hash)
+        raise TypeError unless val.instance_of?(type) || val.instance_of?(Hash)
         true
       end
 
@@ -594,26 +596,26 @@ module Protobuf
 
       def encode(value)
         bytes = value.serialize_to_string
-        string_size = VarintField.encode bytes.size
+        string_size = VarintField.encode(bytes.size)
         string_size << bytes
       end
 
       def merge_value(message_instance, value)
-        message_instance[tag].merge_from value
+        message_instance[tag].merge_from(value)
       end
     end
 
     class EnumField < VarintField
       def default
         if @default.is_a?(Symbol)
-          type.const_get @default
+          type.const_get(@default)
         else
           @default
         end
       end
 
       def acceptable?(val)
-        raise TypeError unless type.valid_tag? val
+        raise TypeError unless type.valid_tag?(val)
         true
       end
     end

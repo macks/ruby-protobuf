@@ -11,9 +11,9 @@ module Protobuf
 
       def build(proto, opt)
         mod = opt[:module]
-        cls = mod.const_set proto.name, Class.new(Protobuf::Enum)
+        cls = mod.const_set(proto.name, Class.new(Protobuf::Enum))
         proto.value.each do |value_proto|
-          cls.const_set value_proto.name, value_proto.number
+          cls.const_set(value_proto.name, value_proto.number)
         end
       end
 
@@ -23,7 +23,7 @@ module Protobuf
         @enum_class.constants.each do |const|
           enum_value_proto = Google::Protobuf::EnumValueDescriptorProto.new
           enum_value_proto.name = const.to_s
-          enum_value_proto.number = @enum_class.const_get const
+          enum_value_proto.number = @enum_class.const_get(const)
           enum_proto.value << enum_value_proto
         end
         parent_proto.enum_type << enum_proto

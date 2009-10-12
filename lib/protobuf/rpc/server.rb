@@ -5,7 +5,7 @@ module Protobuf
   module Rpc
     class Server < WEBrick::GenericServer
       def initialize(config={:Port => 9999}, default=WEBrick::Config::General)
-        super config, default
+        super(config, default)
         setup_handlers
       end
 
@@ -20,17 +20,17 @@ module Protobuf
       def run(socket)
         handler = get_handler socket
         request = handler.request_class.new
-        request.parse_from socket
+        request.parse_from(socket)
         response = handler.response_class.new
         begin
-          handler.process_request request, response
-        rescue StandardError => ex
-          @logger.error ex
+          handler.process_request(request, response)
+        rescue StandardError
+          @logger.error $!
         ensure
           begin
-            response.serialize_to socket
-          rescue Errno::EPIPE, Errno::ECONNRESET, Errno::ENOTCONN => ex
-            @logger.error ex
+            response.serialize_to(socket)
+          rescue Errno::EPIPE, Errno::ECONNRESET, Errno::ENOTCONN
+            @logger.error $!
           end
         end
       end

@@ -63,7 +63,7 @@ class DescriptorTest < Test::Unit::TestCase
     person_phone_number_number_proto.type = FieldDescriptorProto::Type::TYPE_STRING
     person_phone_number_number_proto.name = 'number'
     person_phone_number_number_proto.number = 1
-    
+
     person_phone_number_type_proto = FieldDescriptorProto.new
     person_phone_number_proto.field << person_phone_number_type_proto
     person_phone_number_type_proto.label = FieldDescriptorProto::Label::LABEL_OPTIONAL
@@ -93,29 +93,29 @@ class DescriptorTest < Test::Unit::TestCase
     address_book_person_proto.name = 'person'
     address_book_person_proto.number = 1
 
-    Protobuf::Descriptor::DescriptorBuilder.build tutorial_proto
+    Protobuf::Descriptor::DescriptorBuilder.build(tutorial_proto)
 
     assert_nothing_raised {Build::Tutorial::Person}
     assert_nothing_raised {Build::Tutorial::Person.new}
-    assert_equal ['email', 'id', 'name', 'phone'], 
-      Build::Tutorial::Person.fields.map{|tag, field| field.name}.sort
+    assert_equal(['email', 'id', 'name', 'phone'],
+      Build::Tutorial::Person.fields.map{|tag, field| field.name}.sort)
 
     assert_nothing_raised {Build::Tutorial::Person::PhoneNumber}
     assert_nothing_raised {Build::Tutorial::Person::PhoneNumber.new}
-    assert_equal ['number', 'type'], 
-      Build::Tutorial::Person::PhoneNumber.fields.map{|tag, field| field.name}.sort
+    assert_equal(['number', 'type'],
+      Build::Tutorial::Person::PhoneNumber.fields.map{|tag, field| field.name}.sort)
 
     assert_nothing_raised {Build::Tutorial::Person::PhoneType}
-    assert_equal 0, Build::Tutorial::Person::PhoneType::MOBILE
-    assert_equal 1, Build::Tutorial::Person::PhoneType::HOME
-    assert_equal 2, Build::Tutorial::Person::PhoneType::WORK
+    assert_equal(0, Build::Tutorial::Person::PhoneType::MOBILE)
+    assert_equal(1, Build::Tutorial::Person::PhoneType::HOME)
+    assert_equal(2, Build::Tutorial::Person::PhoneType::WORK)
 
     assert_nothing_raised {Build::Tutorial::AddressBook}
   end
 
   def test_unbuild
-    proto = Protobuf::Descriptor::FileDescriptor.unbuild Tutorial::Person
-    proto.serialize_to_file 'person.bin'
+    proto = Protobuf::Descriptor::FileDescriptor.unbuild(Tutorial::Person)
+    proto.serialize_to_file('person.bin')
     puts
     puts "run `test/check_unbuild.rb'"
   end

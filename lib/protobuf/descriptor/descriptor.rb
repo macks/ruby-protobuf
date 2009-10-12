@@ -11,15 +11,15 @@ module Protobuf
 
       def build(proto, opt={})
         mod = opt[:module]
-        cls = mod.const_set proto.name, Class.new(@message_class)
+        cls = mod.const_set(proto.name, Class.new(@message_class))
         proto.nested_type.each do |message_proto|
-          Protobuf::Message.descriptor.build message_proto, :module => cls
+          Protobuf::Message.descriptor.build(message_proto, :module => cls)
         end
         proto.enum_type.each do |enum_proto|
-          Protobuf::Enum.descriptor.build enum_proto, :module => cls
+          Protobuf::Enum.descriptor.build(enum_proto, :module => cls)
         end
         proto.field.each do |field_proto|
-          Protobuf::Field::BaseField.descriptor.build field_proto, :class => cls
+          Protobuf::Field::BaseField.descriptor.build(field_proto, :class => cls)
         end
       end
 
@@ -27,11 +27,11 @@ module Protobuf
         message_proto = Google::Protobuf::DescriptorProto.new
         message_proto.name = @message_class.to_s.split('::').last
         @message_class.fields.each do |tag, field|
-          field.descriptor.unbuild message_proto
+          field.descriptor.unbuild(message_proto)
         end
         ObjectSpace.each_object(Class) do |cls|
-          if innerclass? @message_class, cls
-            cls.descriptor.unbuild message_proto
+          if innerclass?(@message_class, cls)
+            cls.descriptor.unbuild(message_proto)
           end
         end
 
@@ -41,14 +41,15 @@ module Protobuf
         when Google::Protobuf::DescriptorProto
           parent_proto.nested_type << message_proto
         else
-          raise TypeError.new(parent_proto.class.name)
+          raise TypeError, parent_proto.class.name
         end
       end
 
+      private
+
       def innerclass?(parent, child)
-        child.name =~ /::/ and child.name.split('::')[0..-2].join('::') == parent.name
+        child.name =~ /::/ && child.name.split('::')[0..-2].join('::') == parent.name
       end
     end
   end
 end
-
