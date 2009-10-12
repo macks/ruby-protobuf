@@ -1,5 +1,7 @@
-=== 0.3.3 / 2009-07-10
+=== 0.4.0 / 2009-??-??
 
+* 0.4.0 alpha
+  * Use camel case for a generated module name.
 * 0.3.3 (rev.218)
   * Support C-like comment.
   * Optimize for speed.
@@ -17,4 +19,3 @@
 * 0.1.0 fixed a small bug
 * 0.0.1 major enhancement
   * Birthday!
-
