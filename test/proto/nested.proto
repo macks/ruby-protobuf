@@ -1,3 +1,5 @@
+package test.nested;
+
 message Foo {  
   message Bar {
   } 
