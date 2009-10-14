@@ -44,10 +44,14 @@ module Protobuf
       def initialize(message_class, rule, type, name, tag, options)
         @message_class, @rule, @type, @name, @tag = \
           message_class, rule, type, name, tag
-        @default = options.delete(:default)
+        @default   = options.delete(:default)
         @extension = options.delete(:extension)
+        @packed    = repeated? && options.delete(:packed)
         unless options.empty?
           warn "WARNING: Unknown options: #{options.inspect} (in #{@message_class.name.sub(/^.*:/, '')}.#{@name})"
+        end
+        if packed? && ! [WireType::VARINT, WireType::FIXED32, WireType::FIXED64].include?(wire_type)
+          raise "Can't use packed encoding for `#{@type}' type"
         end
         define_accessor
       end
@@ -95,11 +99,25 @@ module Protobuf
 
       # Decode +bytes+ and pass to +message_instance+.
       def set(message_instance, bytes)
-        value = decode(bytes)
-        if repeated?
-          message_instance.send(@name) << value
+        if packed?
+          array = message_instance.send(@name)
+          method = \
+            case wire_type
+            when WireType::FIXED32 then :read_fixed32
+            when WireType::FIXED64 then :read_fixed64
+            when WireType::VARINT  then :read_varint
+            end
+          stream = StringIO.new(bytes)
+          until stream.eof?
+            array << decode(Decoder.send(method, stream))
+          end
         else
-          message_instance.send("#{@name}=", value)
+          value = decode(bytes)
+          if repeated?
+            message_instance.send(@name) << value
+          else
+            message_instance.send("#{@name}=", value)
+          end
         end
       end
 
@@ -135,6 +153,11 @@ module Protobuf
       # Is this a optional field?
       def optional?
         @rule == :optional
+      end
+
+      # Is this a packed repeated field?
+      def packed?
+        !!@packed
       end
 
       # Upper limit for this field.

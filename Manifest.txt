@@ -2,10 +2,9 @@ History.txt
 Manifest.txt
 README.txt
 Rakefile
-script/mk_parser
 bin/rprotoc
-examples/addressbook.proto
 examples/addressbook.pb.rb
+examples/addressbook.proto
 examples/reading_a_message.rb
 examples/writing_a_message.rb
 lib/protobuf/common/exceptions.rb
@@ -38,6 +37,7 @@ lib/protobuf/rpc/client.rb
 lib/protobuf/rpc/handler.rb
 lib/protobuf/rpc/server.rb
 lib/ruby_protobuf.rb
+script/mk_parser
 test/check_unbuild.rb
 test/data/data.bin
 test/data/data_source.py
@@ -63,6 +63,8 @@ test/proto/nested.pb.rb
 test/proto/nested.proto
 test/proto/optional_field.pb.rb
 test/proto/optional_field.proto
+test/proto/packed.pb.rb
+test/proto/packed.proto
 test/proto/rpc.proto
 test/proto/types.pb.rb
 test/proto/types.proto
@@ -72,6 +74,7 @@ test/test_descriptor.rb
 test/test_extension.rb
 test/test_message.rb
 test/test_optional_field.rb
+test/test_packed_field.rb
 test/test_parse.rb
 test/test_repeated_types.rb
 test/test_serialize.rb

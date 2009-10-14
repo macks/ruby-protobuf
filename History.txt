@@ -2,6 +2,7 @@
 
 * 0.4.0 alpha
   * Use camel case for a generated module name.
+  * Support packed repeated field.
 * 0.3.3 (rev.218)
   * Support C-like comment.
   * Optimize for speed.
