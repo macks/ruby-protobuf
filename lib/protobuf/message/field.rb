@@ -36,6 +36,7 @@ module Protobuf
       end
 
       attr_reader :message_class, :rule, :type, :name, :tag, :default
+      attr_reader :default_value
 
       def descriptor
         @descriptor ||= Descriptor::FieldDescriptor.new(self)
@@ -44,15 +45,27 @@ module Protobuf
       def initialize(message_class, rule, type, name, tag, options)
         @message_class, @rule, @type, @name, @tag = \
           message_class, rule, type, name, tag
+
         @default   = options.delete(:default)
         @extension = options.delete(:extension)
         @packed    = repeated? && options.delete(:packed)
         unless options.empty?
-          warn "WARNING: Unknown options: #{options.inspect} (in #{@message_class.name.sub(/^.*:/, '')}.#{@name})"
+          warn "WARNING: Invalid options: #{options.inspect} (in #{@message_class.name.split('::').last}.#{@name})"
         end
         if packed? && ! [WireType::VARINT, WireType::FIXED32, WireType::FIXED64].include?(wire_type)
           raise "Can't use packed encoding for `#{@type}' type"
         end
+
+        @default_value = \
+          case @rule
+          when :repeated
+            FieldArray.new(self).freeze
+          when :required
+            nil
+          when :optional
+            typed_default_value(@default)
+          end
+
         define_accessor
       end
 
@@ -60,8 +73,8 @@ module Protobuf
         true
       end
 
-      def initialized?(message)
-        value = message.send(@name)
+      def initialized?(message_instance)
+        value = message_instance.send(@name)
         case @rule
         when :required
           ! value.nil? && (! kind_of?(MessageField) || value.initialized?)
@@ -72,29 +85,12 @@ module Protobuf
         end
       end
 
-      def clear(message)
+      def clear(message_instance)
         if repeated?
-          message[@name].clear
+          message_instance.send(@name).clear
         else
-          message.instance_variable_get(:@values).delete(@name)
+          message_instance.instance_variable_get(:@values).delete(@name)
         end
-      end
-
-      def default_value
-        case @rule
-        when :repeated
-          FieldArray.new(self)
-        when :required
-          nil
-        when :optional
-          typed_default_value(default)
-        else
-          raise 'Implementation error. (Maybe you hit a bug!)'
-        end
-      end
-
-      def typed_default_value(default=nil)
-        default || self.class.default
       end
 
       # Decode +bytes+ and pass to +message_instance+.
@@ -131,7 +127,7 @@ module Protobuf
         raise NotImplementedError, "#{self.class.name}\#encode"
       end
 
-      # Merge +value+ with message_instance.
+      # Merge +value+ with +message_instance+.
       def merge(message_instance, value)
         if repeated?
           merge_array(message_instance, value)
@@ -233,6 +229,14 @@ module Protobuf
         message_instance.send("#{@name}=", value)
       end
 
+      def typed_default_value(default)
+        if default.nil?
+          self.class.default
+        else
+          default
+        end
+      end
+
     end # BaseField
 
 
@@ -325,6 +329,7 @@ module Protobuf
 
     end
 
+    # Field class for +bytes+ type.
     class BytesField < BaseField
       def self.default
         ''
@@ -603,14 +608,6 @@ module Protobuf
         WireType::LENGTH_DELIMITED
       end
 
-      def typed_default_value(default=nil)
-        if default.is_a?(Symbol)
-          type.module_eval(default.to_s)
-        else
-          default
-        end
-      end
-
       def acceptable?(val)
         raise TypeError unless val.instance_of?(type) || val.instance_of?(Hash)
         true
@@ -624,8 +621,8 @@ module Protobuf
 
       def encode(value)
         bytes = value.serialize_to_string
-        string_size = VarintField.encode(bytes.size)
-        string_size << bytes
+        result = VarintField.encode(bytes.size)
+        result << bytes
       end
 
       private
@@ -649,23 +646,25 @@ module Protobuf
       end
 
       def merge_value(message_instance, value)
-        message_instance[tag].merge_from(value)
+        message_instance.send(@name).merge_from(value)
       end
     end
 
 
     class EnumField < VarintField
-      def default
-        if @default.is_a?(Symbol)
-          type.const_get(@default)
-        else
-          @default
-        end
+      def acceptable?(val)
+        raise TypeError unless @type.valid_tag?(val)
+        true
       end
 
-      def acceptable?(val)
-        raise TypeError unless type.valid_tag?(val)
-        true
+      private
+
+      def typed_default_value(default)
+        if default.is_a?(Symbol)
+          @type.const_get(default)
+        else
+          self.class.default
+        end
       end
     end
   end

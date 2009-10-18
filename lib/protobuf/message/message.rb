@@ -29,32 +29,27 @@ module Protobuf
     class <<self
       include Protoable
 
-      # Returns a collection of field object.
-      def fields
-        @fields ||= {}
-      end
-
-      # Reserve field numbers for extensions.
+      # Reserve field numbers for extensions. Don't use this method directly.
       def extensions(range)
         @extension_fields = ExtensionFields.new(range)
       end
 
-      # Define a required field.
+      # Define a required field. Don't use this method directly.
       def required(type, name, tag, options={})
         define_field(:required, type, name, tag, options)
       end
 
-      # Define a optional field.
+      # Define a optional field. Don't use this method directly.
       def optional(type, name, tag, options={})
         define_field(:optional, type, name, tag, options)
       end
 
-      # Define a repeated field.
+      # Define a repeated field. Don't use this method directly.
       def repeated(type, name, tag, options={})
         define_field(:repeated, type, name, tag, options)
       end
 
-      # Define a field.
+      # Define a field. Don't use this method directly.
       def define_field(rule, type, fname, tag, options)
         field_hash = options[:extension] ? extension_fields : fields
         if field_hash.keys.include?(tag)
@@ -67,19 +62,28 @@ module Protobuf
         extension_fields.include_tag?(tag)
       end
 
+      # A collection of field object.
+      def fields
+        @fields ||= {}
+      end
+
+      # An extension field object.
       def extension_fields
         @extension_fields ||= ExtensionFields.new
       end
 
+      # Find a field object by +name+.
       def get_field_by_name(name)
         name = name.to_sym
         fields.values.find {|field| field.name == name}
       end
 
+      # Find a field object by +tag+ number.
       def get_field_by_tag(tag)
         fields[tag]
       end
 
+      # Find a field object by +tag_or_name+.
       def get_field(tag_or_name)
         case tag_or_name
         when Integer        then get_field_by_tag(tag_or_name)
@@ -269,8 +273,8 @@ module Protobuf
 
     def merge_from(message)
       # TODO
-      fields.each {|tag, field| merge_field tag, message[tag]}
-      self.class.extension_fields.each {|tag, field| merge_field tag, message[tag]}
+      fields.each {|tag, field| merge_field(tag, message.send(field.name))}
+      extension_fields.each {|tag, field| merge_field(tag, message.send(field.name))}
     end
 
     def set_field(tag, bytes)
