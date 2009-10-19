@@ -1,0 +1,16 @@
+TODO
+
+* Documents
+ * RDoc.
+* Compiler
+ * Identifier names.
+ * Check validity for default value. (Enum class)
+* Encoder/Decoder
+ * Unknown fields.
+* Implementation
+ * DynamicMessage class.
+ * Improve descriptor.
+ * Rewrite extension fields.
+ * Rewrite enum class.
+* Tests
+ * RPC tests.
