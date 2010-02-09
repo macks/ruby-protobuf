@@ -1,3 +1,4 @@
+require 'protobuf/common/util'
 require 'protobuf/common/wire_type'
 require 'protobuf/descriptor/field_descriptor'
 
@@ -267,7 +268,7 @@ module Protobuf
       private
 
       def typename_to_class(message_class, type)
-        names = type.to_s.split('::')
+        names = type.to_s.split('::').map {|s| Util.camelize(s) }
         outer = message_class.to_s.split('::')
         args = (Object.method(:const_defined?).arity == 1) ? [] : [false]
         while

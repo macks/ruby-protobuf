@@ -1,3 +1,4 @@
+require 'protobuf/common/util'
 require 'protobuf/descriptor/descriptor_proto'
 
 module Protobuf
@@ -72,8 +73,7 @@ require 'protobuf/message/extend'
 
       def accept_message_visitor(visitor)
         @path_list.each do |path|
-          camelized_name = path.to_s.gsub(/(?:\A|_)(\w)/) { $1.upcase }
-          visitor.write("module #{camelized_name}")
+          visitor.write("module #{Util.camelize(path)}")
           visitor.increment
         end
       end
