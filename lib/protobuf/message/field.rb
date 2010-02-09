@@ -640,7 +640,7 @@ module Protobuf
             when field.type
               @values[field.name] = val
             else
-              raise TypeError
+              raise TypeError, "Expected value of type '#{field.type}', but got '#{val.type}'"
             end
           end
         end
