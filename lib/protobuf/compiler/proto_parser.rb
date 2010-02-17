@@ -10,7 +10,7 @@
 unless $".index 'racc/parser.rb'
 $".push 'racc/parser.rb'
 
-self.class.module_eval <<'..end racc/parser.rb modeval..id521073ac1f', 'racc/parser.rb', 1
+self.class.module_eval <<'..end racc/parser.rb modeval..id7b75faf019', 'racc/parser.rb', 1
 #
 # $Id: parser.rb,v 1.7 2005/11/20 17:31:32 aamine Exp $
 #
@@ -453,7 +453,7 @@ module Racc
   end
 
 end
-..end racc/parser.rb modeval..id521073ac1f
+..end racc/parser.rb modeval..id7b75faf019
 end
 ###### racc/parser.rb end
 
@@ -462,7 +462,7 @@ module Protobuf
 
   class ProtoParser < Racc::Parser
 
-module_eval <<'..end lib/protobuf/compiler/proto.y modeval..id7865f341f1', 'lib/protobuf/compiler/proto.y', 163
+module_eval <<'..end lib/protobuf/compiler/proto.y modeval..id3b198a64ce', 'lib/protobuf/compiler/proto.y', 158
 
   require 'strscan'
 
@@ -522,7 +522,7 @@ module_eval <<'..end lib/protobuf/compiler/proto.y modeval..id7865f341f1', 'lib/
     end
     false
   end
-..end lib/protobuf/compiler/proto.y modeval..id7865f341f1
+..end lib/protobuf/compiler/proto.y modeval..id3b198a64ce
 
 ##### racc 1.4.5 generates ###
 
@@ -537,7 +537,7 @@ racc_reduce_table = [
  1, 54, :_reduce_none,
  1, 54, :_reduce_none,
  1, 54, :_reduce_none,
- 1, 54, :_reduce_none,
+ 1, 54, :_reduce_10,
  3, 58, :_reduce_11,
  4, 59, :_reduce_12,
  0, 62, :_reduce_13,
@@ -550,20 +550,20 @@ racc_reduce_table = [
  2, 67, :_reduce_20,
  1, 68, :_reduce_none,
  1, 68, :_reduce_none,
- 1, 68, :_reduce_none,
+ 1, 68, :_reduce_23,
  5, 57, :_reduce_24,
  0, 71, :_reduce_25,
  2, 71, :_reduce_26,
  1, 72, :_reduce_none,
  1, 72, :_reduce_none,
- 1, 72, :_reduce_none,
+ 1, 72, :_reduce_29,
  4, 73, :_reduce_30,
  5, 61, :_reduce_31,
  0, 75, :_reduce_32,
  2, 75, :_reduce_33,
  1, 76, :_reduce_none,
  1, 76, :_reduce_none,
- 1, 76, :_reduce_none,
+ 1, 76, :_reduce_36,
  10, 77, :_reduce_37,
  0, 78, :_reduce_none,
  1, 78, :_reduce_none,
@@ -577,7 +577,7 @@ racc_reduce_table = [
  1, 80, :_reduce_none,
  1, 80, :_reduce_none,
  1, 80, :_reduce_none,
- 1, 80, :_reduce_none,
+ 1, 80, :_reduce_50,
  6, 70, :_reduce_51,
  6, 69, :_reduce_52,
  9, 69, :_reduce_53,
@@ -957,14 +957,14 @@ Racc_debug_parser = false
 
 module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 3
   def _reduce_1( val, _values, result )
- result = Protobuf::Node::ProtoNode.new val
+ result = Protobuf::Node::ProtoNode.new(val)
    result
   end
 .,.,
 
 module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 5
   def _reduce_2( val, _values, result )
- result.children << val[1]
+ result.children << val[1] if val[1]
    result
   end
 .,.,
@@ -983,74 +983,79 @@ module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 5
 
  # reduce 9 omitted
 
- # reduce 10 omitted
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 14
+  def _reduce_10( val, _values, result )
+ result = nil
+   result
+  end
+.,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 18
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 17
   def _reduce_11( val, _values, result )
- result = Protobuf::Node::ImportNode.new val[1]
+ result = Protobuf::Node::ImportNode.new(val[1])
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 21
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 20
   def _reduce_12( val, _values, result )
- result = Protobuf::Node::PackageNode.new val[2].unshift(val[1])
+ result = Protobuf::Node::PackageNode.new(val[2].unshift(val[1]))
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 24
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 23
   def _reduce_13( val, _values, result )
  result = []
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 26
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 25
   def _reduce_14( val, _values, result )
  result << val[2]
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 29
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 28
   def _reduce_15( val, _values, result )
  result = Protobuf::Node::OptionNode.new(*val[1])
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 32
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 31
   def _reduce_16( val, _values, result )
  result = [val[1].unshift(val[0]), val[3]]
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 35
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 34
   def _reduce_17( val, _values, result )
- result = Protobuf::Node::MessageNode.new val[1], val[2]
+ result = Protobuf::Node::MessageNode.new(val[1], val[2])
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 38
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 37
   def _reduce_18( val, _values, result )
- result = Protobuf::Node::ExtendNode.new val[1], val[3]
+ result = Protobuf::Node::ExtendNode.new(val[1], val[3])
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 41
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 40
   def _reduce_19( val, _values, result )
  result = []
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 43
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 42
   def _reduce_20( val, _values, result )
- result << val[1]
+ result << val[1] if val[1]
    result
   end
 .,.,
@@ -1059,25 +1064,30 @@ module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 43
 
  # reduce 22 omitted
 
- # reduce 23 omitted
-
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 51
-  def _reduce_24( val, _values, result )
- result = Protobuf::Node::EnumNode.new val[1], val[3]
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 46
+  def _reduce_23( val, _values, result )
+ result = nil
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 54
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 49
+  def _reduce_24( val, _values, result )
+ result = Protobuf::Node::EnumNode.new(val[1], val[3])
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 52
   def _reduce_25( val, _values, result )
  result = []
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 56
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 54
   def _reduce_26( val, _values, result )
- result << val[1]
+ result << val[1] if val[1]
    result
   end
 .,.,
@@ -1086,32 +1096,37 @@ module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 56
 
  # reduce 28 omitted
 
- # reduce 29 omitted
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 58
+  def _reduce_29( val, _values, result )
+ result = nil
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 61
+  def _reduce_30( val, _values, result )
+ result = Protobuf::Node::EnumFieldNode.new(val[0], val[2])
+   result
+  end
+.,.,
 
 module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 64
-  def _reduce_30( val, _values, result )
- result = Protobuf::Node::EnumFieldNode.new val[0], val[2]
+  def _reduce_31( val, _values, result )
+ result = Protobuf::Node::ServiceNode.new(val[1], val[3])
    result
   end
 .,.,
 
 module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 67
-  def _reduce_31( val, _values, result )
- result = Protobuf::Node::ServiceNode.new val[1], val[3]
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 70
   def _reduce_32( val, _values, result )
  result = []
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 72
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 69
   def _reduce_33( val, _values, result )
- result << val[1]
+ result << val[1] if val[1]
    result
   end
 .,.,
@@ -1120,11 +1135,16 @@ module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 72
 
  # reduce 35 omitted
 
- # reduce 36 omitted
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 73
+  def _reduce_36( val, _values, result )
+ result = nil
+   result
+  end
+.,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 80
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 76
   def _reduce_37( val, _values, result )
- result = Protobuf::Node::RpcNode.new val[1], val[3], val[7]
+ result = Protobuf::Node::RpcNode.new(val[1], val[3], val[7])
    result
   end
 .,.,
@@ -1133,23 +1153,23 @@ module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 80
 
  # reduce 39 omitted
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 86
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 82
   def _reduce_40( val, _values, result )
  result = val[1]
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 89
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 85
   def _reduce_41( val, _values, result )
  result = []
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 91
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 87
   def _reduce_42( val, _values, result )
- result << val[1]
+ result << val[1] if val[1]
    result
   end
 .,.,
@@ -1168,25 +1188,30 @@ module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 91
 
  # reduce 49 omitted
 
- # reduce 50 omitted
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 96
+  def _reduce_50( val, _values, result )
+ result = nil
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 99
+  def _reduce_51( val, _values, result )
+ result = Protobuf::Node::GroupNode.new(val[0], val[2], val[4], val[5])
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 102
+  def _reduce_52( val, _values, result )
+ result = Protobuf::Node::FieldNode.new(val[0], val[1], val[2], val[4])
+   result
+  end
+.,.,
 
 module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 104
-  def _reduce_51( val, _values, result )
- result = Protobuf::Node::GroupNode.new val[0], val[2], val[4], val[5]
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 107
-  def _reduce_52( val, _values, result )
- result = Protobuf::Node::FieldNode.new val[0], val[1], val[2], val[4]
-   result
-  end
-.,.,
-
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 109
   def _reduce_53( val, _values, result )
- result = Protobuf::Node::FieldNode.new val[0], val[1], val[2], val[4], val[6]
+ result = Protobuf::Node::FieldNode.new(val[0], val[1], val[2], val[4], val[6])
    result
   end
 .,.,
@@ -1257,14 +1282,14 @@ module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 109
 
  # reduce 86 omitted
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 114
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 109
   def _reduce_87( val, _values, result )
  result = val
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 116
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 111
   def _reduce_88( val, _values, result )
  result << val[2]
    result
@@ -1273,51 +1298,51 @@ module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 116
 
  # reduce 89 omitted
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 120
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 115
   def _reduce_90( val, _values, result )
  result = [:default, val[2]]
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 123
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 118
   def _reduce_91( val, _values, result )
- result = Protobuf::Node::ExtensionsNode.new val[2].unshift(val[1])
+ result = Protobuf::Node::ExtensionsNode.new(val[2].unshift(val[1]))
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 126
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 121
   def _reduce_92( val, _values, result )
  result = []
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 128
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 123
   def _reduce_93( val, _values, result )
  result << val[1]
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 131
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 126
   def _reduce_94( val, _values, result )
- result = Protobuf::Node::ExtensionRangeNode.new val[0]
+ result = Protobuf::Node::ExtensionRangeNode.new(val[0])
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 133
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 128
   def _reduce_95( val, _values, result )
- result = Protobuf::Node::ExtensionRangeNode.new val[0], val[2]
+ result = Protobuf::Node::ExtensionRangeNode.new(val[0], val[2])
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 135
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 130
   def _reduce_96( val, _values, result )
- result = Protobuf::Node::ExtensionRangeNode.new val[0], :max
+ result = Protobuf::Node::ExtensionRangeNode.new(val[0], :max)
    result
   end
 .,.,
@@ -1360,14 +1385,14 @@ module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 135
 
  # reduce 115 omitted
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 146
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 141
   def _reduce_116( val, _values, result )
  result = val[1].unshift(val[0])
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 148
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 143
   def _reduce_117( val, _values, result )
  result = val[1].unshift(val[0])
    result

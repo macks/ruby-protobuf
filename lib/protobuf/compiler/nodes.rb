@@ -22,7 +22,7 @@ module Protobuf
       attr_reader :children
 
       def initialize(children)
-        @children = children
+        @children = children || []
       end
 
       def accept_message_visitor(visitor)
