@@ -2,12 +2,14 @@ History.txt
 Manifest.txt
 README.txt
 Rakefile
+TODO
 bin/rprotoc
 examples/addressbook.pb.rb
 examples/addressbook.proto
 examples/reading_a_message.rb
 examples/writing_a_message.rb
 lib/protobuf/common/exceptions.rb
+lib/protobuf/common/util.rb
 lib/protobuf/common/wire_type.rb
 lib/protobuf/compiler/compiler.rb
 lib/protobuf/compiler/nodes.rb
@@ -57,6 +59,8 @@ test/proto/ext_collision.proto
 test/proto/ext_range.pb.rb
 test/proto/ext_range.proto
 test/proto/float_default.proto
+test/proto/lowercase.pb.rb
+test/proto/lowercase.proto
 test/proto/merge.pb.rb
 test/proto/merge.proto
 test/proto/nested.pb.rb
@@ -72,6 +76,7 @@ test/test_addressbook.rb
 test/test_compiler.rb
 test/test_descriptor.rb
 test/test_extension.rb
+test/test_lowercase.rb
 test/test_message.rb
 test/test_optional_field.rb
 test/test_packed_field.rb
