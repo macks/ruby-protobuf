@@ -3,6 +3,7 @@
 $:.push(File.dirname(__FILE__) + '/lib')
 require 'rubygems'
 require 'hoe'
+require 'hoe/rcov'
 require 'ruby_protobuf'
 
 Hoe.spec('ruby_protobuf') do
