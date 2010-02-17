@@ -654,7 +654,12 @@ module Protobuf
 
     class EnumField < VarintField
       def acceptable?(val)
-        raise TypeError unless @type.valid_tag?(val)
+        case val
+        when Symbol
+          raise TypeError unless @type.const_defined?(val)
+        else
+          raise TypeError unless @type.valid_tag?(val)
+        end
         true
       end
 
@@ -667,6 +672,21 @@ module Protobuf
           self.class.default
         end
       end
+
+      def define_setter
+        field = self
+        @message_class.class_eval do
+          define_method("#{field.name}=") do |val|
+            if val.nil?
+              @values.delete(field.name)
+            elsif field.acceptable?(val)
+              val = field.type.const_get(val) if val.is_a?(Symbol)
+              @values[field.name] = val
+            end
+          end
+        end
+      end
+
     end
   end
 end

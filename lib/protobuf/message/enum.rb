@@ -6,18 +6,14 @@ module Protobuf
     class <<self
       include Protoable
 
-      def get_name_by_tag(tag)
-        constants.find do |name|
-          const_get(name) == tag
-        end
-      end
-
-      def valid_tag?(tag)
-        not get_name_by_tag(tag).nil?
-      end
-
       def name_by_value(value)
         constants.find {|c| const_get(c) == value}
+      end
+
+      alias get_name_by_tag name_by_value
+
+      def valid_tag?(tag)
+        !! name_by_value(tag)
       end
 
       def descriptor

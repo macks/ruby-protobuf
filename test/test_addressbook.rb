@@ -18,6 +18,20 @@ class AddressbookTest < Test::Unit::TestCase
     end
   end
 
+  def test_symbol_enum
+    phone_number = Tutorial::Person::PhoneNumber.new
+    assert_equal(Tutorial::Person::PhoneType::HOME, phone_number.type)
+    phone_number.type = :MOBILE
+    assert_equal(0, phone_number.type)
+    phone_number.type = :HOME
+    assert_equal(1, phone_number.type)
+    phone_number.type = :WORK
+    assert_equal(2, phone_number.type)
+    assert_raise(TypeError) do
+      phone_number.type = :UNKNOWN
+    end
+  end
+
   def test_initial_value
     person = Tutorial::Person.new
     assert_nil(person.name)
