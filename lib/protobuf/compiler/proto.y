@@ -192,9 +192,9 @@ end
         yield [:BOOLEAN_LITERAL, @token == 'true']
       when match(/"(?:[^"\\]+|\\.)*"/, /'(?:[^'\\]+|\\.)*'/)
         yield [:STRING_LITERAL, eval(@token)]
-      when match(/[a-zA-Z_][\w_]*/)
+      when match(/[a-zA-Z_]\w*/)
         yield [:IDENT, @token.to_sym]
-      when match(/[A-Z][\w_]*/)
+      when match(/[A-Z]\w*/)
         yield [:CAMEL_IDENT, @token.to_sym]
       when match(/./)
         yield [@token, @token]

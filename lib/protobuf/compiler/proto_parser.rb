@@ -10,7 +10,7 @@
 unless $".index 'racc/parser.rb'
 $".push 'racc/parser.rb'
 
-self.class.module_eval <<'..end racc/parser.rb modeval..id7b75faf019', 'racc/parser.rb', 1
+self.class.module_eval <<'..end racc/parser.rb modeval..id24fd9e97a6', 'racc/parser.rb', 1
 #
 # $Id: parser.rb,v 1.7 2005/11/20 17:31:32 aamine Exp $
 #
@@ -453,7 +453,7 @@ module Racc
   end
 
 end
-..end racc/parser.rb modeval..id7b75faf019
+..end racc/parser.rb modeval..id24fd9e97a6
 end
 ###### racc/parser.rb end
 
@@ -462,7 +462,7 @@ module Protobuf
 
   class ProtoParser < Racc::Parser
 
-module_eval <<'..end lib/protobuf/compiler/proto.y modeval..id3b198a64ce', 'lib/protobuf/compiler/proto.y', 158
+module_eval <<'..end lib/protobuf/compiler/proto.y modeval..id110d2bf917', 'lib/protobuf/compiler/proto.y', 158
 
   require 'strscan'
 
@@ -500,9 +500,9 @@ module_eval <<'..end lib/protobuf/compiler/proto.y modeval..id3b198a64ce', 'lib/
         yield [:BOOLEAN_LITERAL, @token == 'true']
       when match(/"(?:[^"\\]+|\\.)*"/, /'(?:[^'\\]+|\\.)*'/)
         yield [:STRING_LITERAL, eval(@token)]
-      when match(/[a-zA-Z_][\w_]*/)
+      when match(/[a-zA-Z_]\w*/)
         yield [:IDENT, @token.to_sym]
-      when match(/[A-Z][\w_]*/)
+      when match(/[A-Z]\w*/)
         yield [:CAMEL_IDENT, @token.to_sym]
       when match(/./)
         yield [@token, @token]
@@ -522,7 +522,7 @@ module_eval <<'..end lib/protobuf/compiler/proto.y modeval..id3b198a64ce', 'lib/
     end
     false
   end
-..end lib/protobuf/compiler/proto.y modeval..id3b198a64ce
+..end lib/protobuf/compiler/proto.y modeval..id110d2bf917
 
 ##### racc 1.4.5 generates ###
 
