@@ -75,7 +75,7 @@ module Protobuf
       end
 
       def initialized?(message_instance)
-        value = message_instance.send(@name)
+        value = message_instance.__send__(@name)
         case @rule
         when :required
           ! value.nil? && (! kind_of?(MessageField) || value.initialized?)
@@ -88,7 +88,7 @@ module Protobuf
 
       def clear(message_instance)
         if repeated?
-          message_instance.send(@name).clear
+          message_instance.__send__(@name).clear
         else
           message_instance.instance_variable_get(:@values).delete(@name)
         end
@@ -97,7 +97,7 @@ module Protobuf
       # Decode +bytes+ and pass to +message_instance+.
       def set(message_instance, bytes)
         if packed?
-          array = message_instance.send(@name)
+          array = message_instance.__send__(@name)
           method = \
             case wire_type
             when WireType::FIXED32 then :read_fixed32
@@ -106,14 +106,14 @@ module Protobuf
             end
           stream = StringIO.new(bytes)
           until stream.eof?
-            array << decode(Decoder.send(method, stream))
+            array << decode(Decoder.__send__(method, stream))
           end
         else
           value = decode(bytes)
           if repeated?
-            message_instance.send(@name) << value
+            message_instance.__send__(@name) << value
           else
-            message_instance.send("#{@name}=", value)
+            message_instance.__send__("#{@name}=", value)
           end
         end
       end
@@ -223,11 +223,11 @@ module Protobuf
       end
 
       def merge_array(message_instance, value)
-        message_instance.send(@name).concat(value)
+        message_instance.__send__(@name).concat(value)
       end
 
       def merge_value(message_instance, value)
-        message_instance.send("#{@name}=", value)
+        message_instance.__send__("#{@name}=", value)
       end
 
       def typed_default_value(default)
@@ -647,7 +647,7 @@ module Protobuf
       end
 
       def merge_value(message_instance, value)
-        message_instance.send(@name).merge_from(value)
+        message_instance.__send__(@name).merge_from(value)
       end
     end
 

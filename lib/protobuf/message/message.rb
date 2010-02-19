@@ -158,7 +158,7 @@ module Protobuf
     def ==(obj)
       return false unless obj.is_a?(self.class)
       each_field do |field, value|
-        return false unless value == obj.send(field.name)
+        return false unless value == obj.__send__(field.name)
       end
       true
     end
@@ -173,12 +173,12 @@ module Protobuf
       ret = self.class.new
       each_field do |field, value|
         if field.repeated?
-          field_array = ret.send(field.name)
+          field_array = ret.__send__(field.name)
           value.each do |v|
             field_array << (v.is_a?(Numeric) ? v : v.dup)
           end
         else
-          ret.send("#{field.name}=", value.is_a?(Numeric) ? value : value.dup)
+          ret.__send__("#{field.name}=", value.is_a?(Numeric) ? value : value.dup)
         end
       end
       ret
@@ -273,8 +273,8 @@ module Protobuf
 
     def merge_from(message)
       # TODO
-      fields.each {|tag, field| merge_field(tag, message.send(field.name))}
-      extension_fields.each {|tag, field| merge_field(tag, message.send(field.name))}
+      fields.each {|tag, field| merge_field(tag, message.__send__(field.name))}
+      extension_fields.each {|tag, field| merge_field(tag, message.__send__(field.name))}
     end
 
     def set_field(tag, bytes)
@@ -289,7 +289,7 @@ module Protobuf
 
     def [](tag_or_name)
       if field = get_field(tag_or_name) || get_ext_field(tag_or_name)
-        send(field.name)
+        __send__(field.name)
       else
         raise NoMethodError, "No such field: #{tag_or_name.inspect}"
       end
@@ -297,7 +297,7 @@ module Protobuf
 
     def []=(tag_or_name, value)
       if field = get_field(tag_or_name) || get_ext_field(tag_or_name)
-        send("#{field.name}=", value)
+        __send__("#{field.name}=", value)
       else
         raise NoMethodError, "No such field: #{tag_or_name.inspect}"
       end
@@ -346,7 +346,7 @@ module Protobuf
     #   end
     def each_field
       fields.merge(extension_fields).sort_by {|tag, _| tag}.each do |_, field|
-        value = send(field.name)
+        value = __send__(field.name)
         yield(field, value)
       end
     end
