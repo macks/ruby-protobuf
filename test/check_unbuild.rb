@@ -14,17 +14,17 @@ class DescriptorTest < Test::Unit::TestCase
 
     assert_nothing_raised {Tutorial::Person}
     assert_nothing_raised {Tutorial::Person.new}
-    assert_equal ['email', 'id', 'name', 'phone'], 
-      Tutorial::Person.fields.map{|tag, field| field.name}.sort
+    assert_equal(['age', 'email', 'id', 'name', 'phone'], 
+      Tutorial::Person.fields.map{|tag, field| field.name}.sort)
 
     assert_nothing_raised {Tutorial::Person::PhoneNumber}
     assert_nothing_raised {Tutorial::Person::PhoneNumber.new}
-    assert_equal ['number', 'type'], 
-      Tutorial::Person::PhoneNumber.fields.map{|tag, field| field.name}.sort
+    assert_equal(['number', 'type'], 
+      Tutorial::Person::PhoneNumber.fields.map{|tag, field| field.name}.sort)
 
     assert_nothing_raised {Tutorial::Person::PhoneType}
-    assert_equal 0, Tutorial::Person::PhoneType::MOBILE
-    assert_equal 1, Tutorial::Person::PhoneType::HOME
-    assert_equal 2, Tutorial::Person::PhoneType::WORK
+    assert_equal(0, Tutorial::Person::PhoneType::MOBILE)
+    assert_equal(1, Tutorial::Person::PhoneType::HOME)
+    assert_equal(2, Tutorial::Person::PhoneType::WORK)
   end
 end
