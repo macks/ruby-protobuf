@@ -292,7 +292,7 @@ module Protobuf
       end
 
       def []=(nth, val)
-        super(normalize(val))
+        super(nth, normalize(val))
       end
 
       def <<(val)

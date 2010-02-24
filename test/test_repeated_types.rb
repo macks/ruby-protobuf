@@ -103,4 +103,30 @@ class RepeatedTypesTest < Test::Unit::TestCase
     assert_equal(-2_000_000_000, types2.type14[1])
     assert_equal(-8_000_000_000_000_000_000, types2.type15[1])
   end
+
+  def test_repeated_types
+    types = Test::Types::RepeatedTypes.new
+    # types.type3 is a repeated int32 field.
+    assert(types.type3.empty?)
+    types.type3 << 0
+    types.type3 << 1
+    assert_equal(0, types.type3[0])
+    assert_equal(1, types.type3[1])
+    assert_equal(2, types.type3.size)
+
+    assert_raise(TypeError) do
+      types.type3 << 'string'
+    end
+    
+    types.type3[1] = 10
+    assert_equal(0, types.type3[0])
+    assert_equal(10, types.type3[1])
+    assert_equal(2, types.type3.size)
+
+    types.type3.replace([10, 20, 30])
+    assert_equal(10, types.type3[0])
+    assert_equal(20, types.type3[1])
+    assert_equal(30, types.type3[2])
+    assert_equal(3, types.type3.size)
+  end
 end
