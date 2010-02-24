@@ -24,8 +24,8 @@ module Test
       defined_in __FILE__
       class Enum < ::Protobuf::Enum
         defined_in __FILE__
-        A = 1
-        B = 2
+        define :A, 1
+        define :B, 2
       end
       optional :uint32, :number, 1, :default => 20
       optional :string, :text, 2, :default => "default string"

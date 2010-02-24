@@ -11,6 +11,5 @@ TODO
  * DynamicMessage class.
  * Improve descriptor.
  * Rewrite extension fields.
- * Rewrite enum class.
 * Tests
  * RPC tests.

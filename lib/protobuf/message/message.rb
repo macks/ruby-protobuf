@@ -204,36 +204,28 @@ module Protobuf
     private :copy_to
 
     def inspect(indent=0)
-      ret = []
+      result = []
       i = '  ' * indent
       field_value_to_string = lambda {|field, value|
-        ret << \
-          case field
-          when Field::MessageField
-            if value.nil?
-              if $DEBUG
-                "#{i}#{field.name} {\n#{'  ' * (indent + 1)}nil\n#{i}}\n"
-              else
-                "#{i}#{field.name} {}\n"
-              end
-            else
-              "#{i}#{field.name} {\n#{value.inspect(indent + 1)}#{i}}\n"
-            end
-          when Field::EnumField
-            if field.optional? && ! has_field?(field.name)
-              ''
-            else
-              "#{i}#{field.name}: #{field.type.name_by_value(value)}\n"
-            end
+        result << \
+          if field.optional? && ! has_field?(field.name)
+            ''
           else
-            if $DEBUG
-              "#{i}#{field.name}: #{value.inspect}\n"
-            else
-              if field.optional? && ! has_field?(field.name)
-                ''
+            case field
+            when Field::MessageField
+              if value.nil?
+                "#{i}#{field.name} {}\n"
               else
-                "#{i}#{field.name}: #{value.inspect}\n"
+                "#{i}#{field.name} {\n#{value.inspect(indent + 1)}#{i}}\n"
               end
+            when Field::EnumField
+              if value.is_a?(EnumValue)
+                "#{i}#{field.name}: #{value.name}\n"
+              else
+                "#{i}#{field.name}: #{field.type.name_by_value(value)}\n"
+              end
+            else
+              "#{i}#{field.name}: #{value.inspect}\n"
             end
           end
       }
@@ -246,7 +238,7 @@ module Protobuf
           field_value_to_string.call(field, value)
         end
       end
-      ret.join
+      result.join
     end
 
     def parse_from_string(string)

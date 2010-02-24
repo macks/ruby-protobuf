@@ -1,4 +1,4 @@
-=== 0.4.0 / 2009-??-??
+=== 0.4.0 / 2010-??-??
 
 * 0.4.0 alpha
   * Change coding styles.
@@ -6,6 +6,7 @@
   * Incompatibility issues.
     * Use camel case for a generated module name.
     * Internal API changes.
+    * Enum values.
 * 0.3.3 (rev.218)
   * Support C-like comment.
   * Optimize for speed.

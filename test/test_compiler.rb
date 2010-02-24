@@ -88,9 +88,9 @@ module Tutorial
     
     class PhoneType < ::Protobuf::Enum
       defined_in __FILE__
-      MOBILE = 0
-      HOME = 1
-      WORK = 2
+      define :MOBILE, 0
+      define :HOME, 1
+      define :WORK, 2
     end
     
     class PhoneNumber < ::Protobuf::Message

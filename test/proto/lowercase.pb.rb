@@ -7,7 +7,7 @@
 #   } 
 # }
 # message baaz {  
-#   optional foo.bar x = 1;
+#   required foo.bar x = 1;
 # }
 
 require 'protobuf/message/message'

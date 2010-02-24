@@ -75,6 +75,7 @@ test/proto/types.proto
 test/test_addressbook.rb
 test/test_compiler.rb
 test/test_descriptor.rb
+test/test_enum_value.rb
 test/test_extension.rb
 test/test_lowercase.rb
 test/test_message.rb

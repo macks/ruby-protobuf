@@ -649,6 +649,8 @@ module Protobuf
         case val
         when Symbol
           raise TypeError unless @type.const_defined?(val)
+        when EnumValue
+          raise TypeError if val.parent_class != @type
         else
           raise TypeError unless @type.valid_tag?(val)
         end
@@ -671,8 +673,19 @@ module Protobuf
           define_method("#{field.name}=") do |val|
             if val.nil?
               @values.delete(field.name)
-            elsif field.acceptable?(val)
-              val = field.type.const_get(val) if val.is_a?(Symbol)
+            else
+              val = \
+                case val
+                when Symbol
+                  field.type.const_get(val) rescue nil
+                when Integer
+                  field.type.const_get(field.type.name_by_value(val)) rescue nil
+                when EnumValue
+                  raise TypeError, "Invalid value: #{val.inspect}" if val.parent_class != field.type
+                  val
+                end
+              raise TypeError, "Invalid value: #{val.inspect}" unless val
+
               @values[field.name] = val
             end
           end
