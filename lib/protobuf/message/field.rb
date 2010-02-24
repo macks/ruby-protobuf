@@ -64,7 +64,7 @@ module Protobuf
           when :required
             nil
           when :optional
-            typed_default_value(@default)
+            typed_default_value
           end
 
         define_accessor
@@ -222,11 +222,11 @@ module Protobuf
         message_instance.__send__("#{@name}=", value)
       end
 
-      def typed_default_value(default)
-        if default.nil?
+      def typed_default_value
+        if @default.nil?
           self.class.default
         else
-          default
+          @default
         end
       end
 
@@ -659,9 +659,9 @@ module Protobuf
 
       private
 
-      def typed_default_value(default)
-        if default.is_a?(Symbol)
-          @type.const_get(default)
+      def typed_default_value
+        if @default.is_a?(Symbol)
+          @type.const_get(@default)
         else
           self.class.default
         end
