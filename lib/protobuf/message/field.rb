@@ -86,14 +86,6 @@ module Protobuf
         end
       end
 
-      def clear(message_instance)
-        if repeated?
-          message_instance.__send__(@name).clear
-        else
-          message_instance.instance_variable_get(:@values).delete(@name)
-        end
-      end
-
       # Decode +bytes+ and pass to +message_instance+.
       def set(message_instance, bytes)
         if packed?

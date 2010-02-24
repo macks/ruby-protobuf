@@ -164,25 +164,44 @@ module Protobuf
     end
 
     def clear!
-      each_field do |field, value|
-        field.clear(self)
+      @values.delete_if do |_, value|
+        if value.is_a?(Field::FieldArray)
+          value.clear
+          false
+        else
+          true
+        end
       end
+      self
     end
 
     def dup
-      ret = self.class.new
-      each_field do |field, value|
-        if field.repeated?
-          field_array = ret.__send__(field.name)
-          value.each do |v|
-            field_array << (v.is_a?(Numeric) ? v : v.dup)
-          end
+      copy_to(super, :dup)
+    end
+
+    def clone
+      copy_to(super, :clone)
+    end
+
+    def copy_to(object, method)
+      duplicate = proc {|obj|
+        case obj
+        when Message, String then obj.__send__(method)
+        else                      obj
+        end
+      }
+
+      object.__send__(:initialize)
+      @values.each do |name, value|
+        if value.is_a?(Field::FieldArray)
+          object.__send__(name).replace(value.map {|v| duplicate.call(v)})
         else
-          ret.__send__("#{field.name}=", value.is_a?(Numeric) ? value : value.dup)
+          object.__send__("#{name}=", duplicate.call(value))
         end
       end
-      ret
+      object
     end
+    private :copy_to
 
     def inspect(indent=0)
       ret = []
