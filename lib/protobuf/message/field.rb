@@ -657,6 +657,10 @@ module Protobuf
         true
       end
 
+      def encode(value)
+        super(value.to_i)
+      end
+
       private
 
       def typed_default_value
