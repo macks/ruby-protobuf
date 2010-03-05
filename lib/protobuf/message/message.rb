@@ -263,7 +263,7 @@ module Protobuf
       io = StringIO.new(string)
       serialize_to(io)
       result = io.string
-      result.force_encoding('ASCII-8BIT') if result.respond_to?(:force_encoding)
+      result.force_encoding(Encoding::ASCII_8BIT) if result.respond_to?(:force_encoding)
       result
     end
     alias to_s serialize_to_string

@@ -338,21 +338,29 @@ module Protobuf
       end
 
       def decode(bytes)
-        bytes.force_encoding('ASCII-8BIT') if bytes.respond_to?(:force_encoding)
+        bytes.force_encoding(Encoding::ASCII_8BIT) if bytes.respond_to?(:force_encoding)
         bytes
       end
 
       def encode(value)
-        value = value.dup
-        value.force_encoding('ASCII-8BIT') if value.respond_to?(:force_encoding)
-        string_size = VarintField.encode(value.size)
-        string_size << value
+        if value.respond_to?(:force_encoding)
+          # Ruby 1.9
+          old_encoding = value.encoding
+          result = VarintField.encode(value.bytesize)
+          result << value.force_encoding(Encoding::ASCII_8BIT)
+          value.force_encoding(old_encoding)
+          result
+        else
+          # Ruby 1.8
+          result = VarintField.encode(value.size)
+          result << value
+        end
       end
     end
 
     class StringField < BytesField
       def decode(bytes)
-        bytes.force_encoding('UTF-8') if bytes.respond_to?(:force_encoding)
+        bytes.force_encoding(Encoding::UTF_8) if bytes.respond_to?(:force_encoding)
         bytes
       end
     end
