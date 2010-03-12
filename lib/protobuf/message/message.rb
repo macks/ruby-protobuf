@@ -120,10 +120,10 @@ module Protobuf
     def initialize(values={})
       @values = {}
 
-      self.class.fields.each do |tag, field|
+      self.class.fields.to_a.each do |tag, field|
         unless field.ready?
           field = field.setup
-          self.class.class_eval {@fields[tag] = field}
+          self.class.fields[tag] = field
         end
         if field.repeated?
           @values[field.name] = Field::FieldArray.new(field)
@@ -131,10 +131,10 @@ module Protobuf
       end
 
       # TODO
-      self.class.extension_fields.each do |tag, field|
+      self.class.extension_fields.to_a.each do |tag, field|
         unless field.ready?
           field = field.setup
-          self.class.class_eval {@extension_fields[tag] = field}
+          self.class.extension_fields[tag] = field
         end
         if field.repeated?
           @values[field.name] = Field::FieldArray.new(field)
