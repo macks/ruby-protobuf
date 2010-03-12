@@ -96,7 +96,7 @@ rule
                     | option
                     | ';'        { result = nil }
 
-  group : label 'group' CAMEL_IDENT '=' integer_literal message_body
+  group : label 'group' IDENT '=' integer_literal message_body
           { result = Protobuf::Node::GroupNode.new(val[0], val[2], val[4], val[5]) }
 
   field : label type field_name '=' integer_literal ';'
@@ -194,8 +194,6 @@ end
         yield [:STRING_LITERAL, eval(@token)]
       when match(/[a-zA-Z_]\w*/)
         yield [:IDENT, @token.to_sym]
-      when match(/[A-Z]\w*/)
-        yield [:CAMEL_IDENT, @token.to_sym]
       when match(/./)
         yield [@token, @token]
       else
