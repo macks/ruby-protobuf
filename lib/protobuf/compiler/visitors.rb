@@ -106,7 +106,11 @@ module Protobuf
       end
 
       def create_files(filename, out_dir, file_create)
-        Class.new.class_eval(to_s) # check the message
+        begin
+          Class.new.class_eval(to_s) # check the message
+        rescue LoadError => e
+          puts "Warning, couldn't test load proto file because of imports"
+        end
         if file_create
           log_writing(filename)
           FileUtils.mkpath(File.dirname(filename))
