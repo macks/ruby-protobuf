@@ -1,5 +1,7 @@
-=== 0.4.0 / 2010-??-??
+=== 0.4.1 / 2010-04-30
 
+* 0.4.1
+  * Switched to 'jeweler'.
 * 0.4.0 alpha
   * Change coding styles.
   * Support packed repeated field.
