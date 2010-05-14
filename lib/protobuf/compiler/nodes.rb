@@ -107,9 +107,7 @@ require 'protobuf/message/extend'
       end
 
       def accept_message_visitor(visitor)
-        class_name = @name.to_s
-        class_name.gsub!(/\A[a-z]/) {|c| c.upcase}
-        visitor.write("class #{class_name} < ::Protobuf::Message")
+        visitor.write("class #{Util.modulize(@name)} < ::Protobuf::Message")
         visitor.in_context(self.class) do
           define_in_the_file(visitor)
           @children.each {|child| child.accept_message_visitor(visitor) }
@@ -133,7 +131,7 @@ require 'protobuf/message/extend'
 
       def accept_message_visitor(visitor)
         name = @name.is_a?(Array) ? @name.join : name.to_s
-        visitor.write("class #{name} < ::Protobuf::Message")
+        visitor.write("class #{Util.modulize(name)} < ::Protobuf::Message")
         visitor.in_context(self.class) do
           define_in_the_file(visitor)
           @children.each {|child| child.accept_message_visitor(visitor) }
@@ -152,7 +150,7 @@ require 'protobuf/message/extend'
       end
 
       def accept_message_visitor(visitor)
-        visitor.write("class #{@name} < ::Protobuf::Enum")
+        visitor.write("class #{Util.modulize(@name)} < ::Protobuf::Enum")
         visitor.in_context(self.class) do
           define_in_the_file(visitor)
           @children.each {|child| child.accept_message_visitor(visitor) }

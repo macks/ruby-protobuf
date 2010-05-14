@@ -3,9 +3,9 @@ require 'protobuf/rpc/handler'
 require '<%= required_file %>'
 
 <%- rpcs.each do |name, request, response| -%>
-class <%= module_name %>::<%= name %>Handler < Protobuf::Rpc::Handler
-  request <%= module_name %>::<%= request %>
-  response <%= module_name %>::<%= response %>
+class <%= module_name %>::<%= Util.modulize(name) %>Handler < Protobuf::Rpc::Handler
+  request <%= module_name %>::<%= Util.modulize(request) %>
+  response <%= module_name %>::<%= Util.modulize(response) %>
 
   def self.process_request(request, response)
     # TODO: edit this method
@@ -13,11 +13,11 @@ class <%= module_name %>::<%= name %>Handler < Protobuf::Rpc::Handler
 end
 
 <%- end -%>
-class <%= module_name %>::<%= service_name %> < Protobuf::Rpc::Server
+class <%= module_name %>::<%= Util.modulize(service_name) %> < Protobuf::Rpc::Server
   def setup_handlers
     @handlers = {
       <%- rpcs.each do |name, | -%>
-      :<%= underscore name %> => <%= module_name %>::<%= name %>Handler,
+      :<%= Util.underscore(name) %> => <%= module_name %>::<%= Util.modulize(name) %>Handler,
       <%- end -%>
     }
   end

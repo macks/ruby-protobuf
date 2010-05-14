@@ -1,9 +1,19 @@
-package test.lowercase;
+package test.lower_case.lowerCamelCase;
 
 message foo {  
   message bar {
+    message fooBar {
+    }
   } 
 }
 message baaz {  
   required foo.bar x = 1;
+}
+enum baaaz {
+  abc = 0;
+  def = 1;
+}
+
+service qux {
+  rpc quuuux(baaz) returns (foo);
 }

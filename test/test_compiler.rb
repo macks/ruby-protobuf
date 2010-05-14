@@ -228,7 +228,7 @@ request = Tutorial::Person.new
 # TODO: setup a request
 raise StandardError, 'setup a request'
 
-# create blunk response
+# create blank response
 response = Tutorial::AddressBook.new
 
 # execute rpc
@@ -248,7 +248,7 @@ request = Tutorial::Person.new
 # TODO: setup a request
 raise StandardError, 'setup a request'
 
-# create blunk response
+# create blank response
 response = Tutorial::Person.new
 
 # execute rpc

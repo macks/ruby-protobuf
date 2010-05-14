@@ -9,5 +9,9 @@ module Protobuf
     def modulize(name)
       name.to_s.sub(/\A[a-z]/) {|c| c.upcase }
     end
+
+    def underscore(name)
+      name.to_s.gsub(/\B[A-Z]/, '_\&').downcase
+    end
   end
 end

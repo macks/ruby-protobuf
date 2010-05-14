@@ -3,15 +3,15 @@ require 'protobuf/rpc/client'
 require '<%= required_file %>'
 
 # build request
-request = <%= message_module %>::<%= request %>.new
+request = <%= message_module %>::<%= Util.modulize(request) %>.new
 # TODO: setup a request
 raise StandardError, 'setup a request'
 
-# create blunk response
-response = <%= message_module %>::<%= response %>.new
+# create blank response
+response = <%= message_module %>::<%= Util.modulize(response) %>.new
 
 # execute rpc
-Protobuf::Rpc::Client.new('localhost', <%= default_port %>).call :<%= underscore name %>, request, response
+Protobuf::Rpc::Client.new('localhost', <%= default_port %>).call :<%= Util.underscore(name) %>, request, response
 
 # show response
 puts response

@@ -1,5 +1,6 @@
 require 'erb'
 require 'fileutils'
+require 'protobuf/common/util'
 require 'protobuf/descriptor/descriptor_proto'
 
 module Protobuf
@@ -143,8 +144,8 @@ module Protobuf
         @create_file = create_file
         default_port = 9999
         @services.each do |service_name, rpcs|
-          underscored_name = underscore service_name.to_s
-          message_module = package.map{|p| p.to_s.capitalize}.join('::')
+          underscored_name = Util.underscore(service_name.to_s)
+          message_module = package.map{|p| Util.camelize(p.to_s)}.join('::')
           required_file = message_file.sub(/^\.\//, '').sub(/\.rb$/, '')
 
           create_bin(out_dir, underscored_name, message_module, service_name, default_port)
@@ -165,27 +166,21 @@ module Protobuf
         @file_contents[bin_filename] = bin_contents
       end
 
-      def create_service(message_file, out_dir, underscored_name, module_name, service_name,
-        default_port, rpcs, required_file)
+      def create_service(message_file, out_dir, underscored_name, module_name, service_name, default_port, rpcs, required_file)
         service_filename = "#{out_dir}/#{underscored_name}.rb"
         service_contents = template_erb('rpc_service').result(binding)
         create_file_with_backup(service_filename, service_contents) if @create_file
         @file_contents[service_filename] = service_contents
       end
 
-      def create_client(out_dir, underscored_name, default_port, name, request, response,
-        message_module, required_file)
-        client_filename = "#{out_dir}/client_#{underscore name}.rb"
+      def create_client(out_dir, underscored_name, default_port, name, request, response, message_module, required_file)
+        client_filename = "#{out_dir}/client_#{Util.underscore(name)}.rb"
         client_contents = template_erb('rpc_client').result binding
         create_file_with_backup(client_filename, client_contents, true) if @create_file
         @file_contents[client_filename] = client_contents
       end
 
       private
-
-      def underscore(str)
-        str.to_s.gsub(/\B[A-Z]/, '_\&').downcase
-      end
 
       def template_erb(template)
         ERB.new(File.read("#{File.dirname(__FILE__)}/template/#{template}.erb"), nil, '-')
