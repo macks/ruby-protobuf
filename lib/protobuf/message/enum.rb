@@ -1,4 +1,5 @@
 require 'delegate'
+require 'protobuf/common/util'
 require 'protobuf/descriptor/enum_descriptor'
 require 'protobuf/message/protoable'
 
@@ -30,11 +31,17 @@ module Protobuf
 
       private
 
+      # for compatibility
       def define(name, value)
         enum_value = EnumValue.new(self, name, value)
-        const_set(name, enum_value)
-        @values ||= {}
-        @values[name] = enum_value
+        const_set(Util.modulize(name), enum_value)
+        (@values ||= {})[name] = enum_value
+      end
+
+      def value(name, val)
+        enum_value = EnumValue.new(self, name, val)
+        (@values ||= {})[name] = enum_value
+        enum_value
       end
     end
   end

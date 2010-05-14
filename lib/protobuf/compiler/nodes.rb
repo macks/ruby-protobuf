@@ -175,7 +175,7 @@ require 'protobuf/message/extend'
       end
 
       def accept_message_visitor(visitor)
-        visitor.write("define :#{@name}, #{@value}")
+        visitor.write("#{Util.modulize(@name)} = value(:#{@name}, #{@value})")
       end
 
       def accept_descriptor_visitor(visitor)

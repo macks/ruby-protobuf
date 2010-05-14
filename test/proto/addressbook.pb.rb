@@ -47,9 +47,9 @@ module Tutorial
     optional :string, :email, 3
     class PhoneType < ::Protobuf::Enum
       defined_in __FILE__
-      define :MOBILE, 0
-      define :HOME, 1
-      define :WORK, 2
+      MOBILE = value(:MOBILE, 0)
+      HOME = value(:HOME, 1)
+      WORK = value(:WORK, 2)
     end
     class PhoneNumber < ::Protobuf::Message
       defined_in __FILE__
