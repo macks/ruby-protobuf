@@ -107,9 +107,9 @@ module Protobuf
 
       def create_files(filename, out_dir, file_create)
         begin
-          Class.new.class_eval(to_s) # check the message
-        rescue LoadError => e
-          puts "Warning, couldn't test load proto file because of imports"
+          eval(to_s, TOPLEVEL_BINDING)  # check the message
+        rescue LoadError
+          $stderr.puts "Warning, couldn't test load proto file because of imports"
         end
         if file_create
           log_writing(filename)

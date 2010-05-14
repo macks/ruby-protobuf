@@ -26,6 +26,7 @@ module Protobuf
       def unbuild(parent_proto)
         message_proto = Google::Protobuf::DescriptorProto.new
         message_proto.name = @message_class.to_s.split('::').last
+        @message_class.new  # XXX: Setup field proxies.
         @message_class.fields.each do |tag, field|
           field.descriptor.unbuild(message_proto)
         end
