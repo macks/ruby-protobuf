@@ -14,7 +14,7 @@ module Protobuf
         if not defined?(@values)
           constants.find {|c| const_get(c) == value}  # for compatibility
         else
-          @values_index ||= @values.inject({}) {|hash, (n, v)| hash[v.value] = n; hash }
+          @values_index ||= @values.inject({}) {|hash, (n, v)| hash[v.value.to_i] = n; hash }
           @values_index[value]
         end
       end
