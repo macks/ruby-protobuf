@@ -14,4 +14,10 @@ module Protobuf
       name.to_s.gsub(/\B[A-Z]/, '_\&').downcase
     end
   end
+
+  begin
+    Version = File.read(File.dirname(__FILE__) + '/../../../VERSION')
+  rescue
+    Version = 'unknown'
+  end
 end

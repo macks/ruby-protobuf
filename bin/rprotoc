@@ -21,6 +21,8 @@ opts.on('-o', '--out <OUT_DIR>', 'Specify the directory in which Ruby source fil
 opts.on_tail('-v', '--version', 'Show version.'){ puts(opts.ver); exit }
 opts.on_tail('-h', '--help', 'Show this message.'){ puts(opts.help); exit }
 
+Version = Protobuf::Version
+
 begin
   opts.order!
 rescue OptionParser::ParseError
