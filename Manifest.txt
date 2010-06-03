@@ -38,7 +38,6 @@ lib/protobuf/message/service.rb
 lib/protobuf/rpc/client.rb
 lib/protobuf/rpc/handler.rb
 lib/protobuf/rpc/server.rb
-lib/ruby_protobuf.rb
 script/mk_parser
 test/check_unbuild.rb
 test/data/data.bin
