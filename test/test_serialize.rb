@@ -40,6 +40,13 @@ class SerializeTest < Test::Unit::TestCase
     assert_equal('山田 太郎', person2.name)
   end
 
+  def test_frozen_string
+    person = Tutorial::Person.new
+    person.id = 1234
+    person.name = 'a b c'.freeze
+    assert_nothing_raised { serialized_string = person.serialize_to_string }
+  end
+
   def test_unknown_field
     person = Tutorial::Person.new
     person.id = 1234

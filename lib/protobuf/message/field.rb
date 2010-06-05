@@ -345,11 +345,8 @@ module Protobuf
       def encode(value)
         if value.respond_to?(:force_encoding)
           # Ruby 1.9
-          old_encoding = value.encoding
           result = VarintField.encode(value.bytesize)
-          result << value.force_encoding(Encoding::ASCII_8BIT)
-          value.force_encoding(old_encoding)
-          result
+          result << value.dup.force_encoding(Encoding::ASCII_8BIT)
         else
           # Ruby 1.8
           result = VarintField.encode(value.size)
