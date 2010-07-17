@@ -46,7 +46,7 @@ module Protobuf
     end
   end
 
-  class EnumValue < SimpleDelegator
+  class EnumValue < DelegateClass(Fixnum)
 
     attr_reader :parent_class, :name, :value
 
