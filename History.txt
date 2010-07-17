@@ -1,7 +1,7 @@
 === 0.4.5 / 2010-07-17
 
 * 0.4.5
-  * Bug fix. (enum value)
+  * Bug fixes. (enum value, frozen string)
 * 0.4.4
   * Bug fix. (rprotoc)
 * 0.4.3
