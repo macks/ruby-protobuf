@@ -36,7 +36,7 @@ module Protobuf
         nil
       end
 
-      attr_reader :message_class, :rule, :type, :name, :tag, :default
+      attr_reader :message_class, :rule, :type, :name, :tag, :default, :extension
       attr_reader :default_value
 
       def descriptor

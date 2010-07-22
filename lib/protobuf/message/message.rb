@@ -11,27 +11,12 @@ module Protobuf
 
   class Message
 
-    class ExtensionFields < Hash
-      def initialize(key_range=0..-1)
-        @key_range = key_range
-      end
-
-      def []=(key, value)
-        raise RangeError, "#{key} is not in #{@key_range}" unless @key_range.include?(key)
-        super
-      end
-
-      def include_tag?(tag)
-        @key_range.include?(tag)
-      end
-    end
-
     class <<self
       include Protoable
 
       # Reserve field numbers for extensions. Don't use this method directly.
       def extensions(range)
-        @extension_fields = ExtensionFields.new(range)
+        @extension_tag = range
       end
 
       # Define a required field. Don't use this method directly.
@@ -51,25 +36,23 @@ module Protobuf
 
       # Define a field. Don't use this method directly.
       def define_field(rule, type, fname, tag, options)
-        field_hash = options[:extension] ? extension_fields : fields
-        if field_hash.keys.include?(tag)
-          raise TagCollisionError, %!{Field number #{tag} has already been used in "#{self.name}" by field "#{fname}".!
+        if options[:extension] && ! extension_tag?(tag)
+          raise RangeError, "#{tag} is not in #{@extension_tag}"
         end
-        field_hash[tag] = Field.build(self, rule, type, fname, tag, options)
+
+        if fields.include?(tag)
+          raise TagCollisionError, "Field tag #{tag} has already been used."
+        end
+        fields[tag] = Field.build(self, rule, type, fname, tag, options)
       end
 
       def extension_tag?(tag)
-        extension_fields.include_tag?(tag)
+        @extension_tag.include?(tag)
       end
 
       # A collection of field object.
       def fields
         @fields ||= {}
-      end
-
-      # An extension field object.
-      def extension_fields
-        @extension_fields ||= ExtensionFields.new
       end
 
       # Find a field object by +name+.
@@ -92,26 +75,6 @@ module Protobuf
         end
       end
 
-      #TODO merge to get_field_by_name
-      def get_ext_field_by_name(name)
-        name = name.to_sym
-        extension_fields.values.find {|field| field.name == name}
-      end
-
-      #TODO merge to get_field_by_tag
-      def get_ext_field_by_tag(tag)
-        extension_fields[tag]
-      end
-
-      #TODO merge to get_field
-      def get_ext_field(tag_or_name)
-        case tag_or_name
-        when Integer        then get_ext_field_by_tag(tag_or_name)
-        when String, Symbol then get_ext_field_by_name(tag_or_name)
-        else                     raise TypeError, tag_or_name.class
-        end
-      end
-
       def descriptor
         @descriptor ||= Descriptor::Descriptor.new(self)
       end
@@ -130,27 +93,15 @@ module Protobuf
         end
       end
 
-      # TODO
-      self.class.extension_fields.to_a.each do |tag, field|
-        unless field.ready?
-          field = field.setup
-          self.class.extension_fields[tag] = field
-        end
-        if field.repeated?
-          @values[field.name] = Field::FieldArray.new(field)
-        end
-      end
-
       values.each {|tag, val| self[tag] = val}
     end
 
     def initialized?
-      fields.all? {|tag, field| field.initialized?(self) } && \
-        extension_fields.all? {|tag, field| field.initialized?(self) }
+      fields.all? {|tag, field| field.initialized?(self) }
     end
 
     def has_field?(tag_or_name)
-      field = get_field(tag_or_name) || get_ext_field(tag_or_name)
+      field = get_field(tag_or_name)
       raise ArgumentError, "unknown field: #{tag_or_name.inspect}" unless field
       @values.has_key?(field.name)
     end
@@ -283,23 +234,20 @@ module Protobuf
     end
 
     def merge_from(message)
-      # TODO
       fields.each {|tag, field| merge_field(tag, message.__send__(field.name))}
-      extension_fields.each {|tag, field| merge_field(tag, message.__send__(field.name))}
     end
 
     def set_field(tag, bytes)
-      field = (get_field_by_tag(tag) || get_ext_field_by_tag(tag))
+      field = get_field_by_tag(tag)
       field.set(self, bytes) if field
     end
 
     def merge_field(tag, value)
-      #get_field_by_tag(tag).merge self, bytes #TODO
-      (get_field_by_tag(tag) || get_ext_field_by_tag(tag)).merge(self, value)
+      get_field_by_tag(tag).merge(self, value)
     end
 
     def [](tag_or_name)
-      if field = get_field(tag_or_name) || get_ext_field(tag_or_name)
+      if field = get_field(tag_or_name)
         __send__(field.name)
       else
         raise NoMethodError, "No such field: #{tag_or_name.inspect}"
@@ -307,7 +255,7 @@ module Protobuf
     end
 
     def []=(tag_or_name, value)
-      if field = get_field(tag_or_name) || get_ext_field(tag_or_name)
+      if field = get_field(tag_or_name)
         __send__("#{field.name}=", value)
       else
         raise NoMethodError, "No such field: #{tag_or_name.inspect}"
@@ -334,29 +282,12 @@ module Protobuf
       self.class.get_field(tag_or_name)
     end
 
-    # Returns extension fields. See Message#fields method.
-    def extension_fields
-      self.class.extension_fields
-    end
-
-    def get_ext_field_by_name(name) # :nodoc:
-      self.class.get_ext_field_by_name(name)
-    end
-
-    def get_ext_field_by_tag(tag) # :nodoc:
-      self.class.get_ext_field_by_tag(tag)
-    end
-
-    def get_ext_field(tag_or_name) # :nodoc:
-      self.class.get_ext_field(tag_or_name)
-    end
-
     # Iterate over a field collection.
     #   message.each_field do |field_object, value|
     #     # do something
     #   end
     def each_field
-      fields.merge(extension_fields).sort_by {|tag, _| tag}.each do |_, field|
+      fields.sort_by {|tag, _| tag}.each do |_, field|
         value = __send__(field.name)
         yield(field, value)
       end

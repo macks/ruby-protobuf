@@ -3,8 +3,8 @@ require 'test/proto/addressbook_ext.pb'
 
 class ExtensionTest < Test::Unit::TestCase
   def test_accessor
-    assert(TutorialExt::Person.extension_fields.to_a.map{|t, f| f.name}.include?(:age))
     person = TutorialExt::Person.new
+    assert(TutorialExt::Person.get_field(:age).extension)
     assert_nothing_raised {person.age = 100}
     assert_equal(100, person.age)
   end
