@@ -70,7 +70,7 @@ module Protobuf
         define_accessor
       end
 
-      def ready?
+      def ready? # :nodoc:
         true
       end
 
@@ -146,7 +146,7 @@ module Protobuf
 
       # Is this a packed repeated field?
       def packed?
-        !!@packed
+        @packed
       end
 
       # Upper limit for this field.
@@ -240,7 +240,7 @@ module Protobuf
           message_class, rule, type, name, tag, options
       end
 
-      def ready?
+      def ready? # :nodoc:
         false
       end
 
@@ -338,7 +338,6 @@ module Protobuf
       end
 
       def decode(bytes)
-        bytes.force_encoding(Encoding::ASCII_8BIT) if bytes.respond_to?(:force_encoding)
         bytes
       end
 
@@ -346,7 +345,7 @@ module Protobuf
         if value.respond_to?(:force_encoding)
           # Ruby 1.9
           result = VarintField.encode(value.bytesize)
-          result << value.dup.force_encoding(Encoding::ASCII_8BIT)
+          result << value.dup.force_encoding(Encoding::BINARY)
         else
           # Ruby 1.8
           result = VarintField.encode(value.size)
@@ -592,7 +591,7 @@ module Protobuf
       end
 
       def decode(value)
-        value == 1
+        value != 0
       end
 
       def encode(value)

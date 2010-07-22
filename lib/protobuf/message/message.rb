@@ -120,7 +120,7 @@ module Protobuf
     def initialize(values={})
       @values = {}
 
-      self.class.fields.to_a.each do |tag, field|
+      self.class.fields.dup.each do |tag, field|
         unless field.ready?
           field = field.setup
           self.class.fields[tag] = field
@@ -263,7 +263,7 @@ module Protobuf
       io = StringIO.new(string)
       serialize_to(io)
       result = io.string
-      result.force_encoding(Encoding::ASCII_8BIT) if result.respond_to?(:force_encoding)
+      result.force_encoding(Encoding::BINARY) if result.respond_to?(:force_encoding)
       result
     end
     alias to_s serialize_to_string

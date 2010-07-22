@@ -11,7 +11,7 @@ module Protobuf
     def decode(stream, message)
       until stream.eof?
         tag, wire_type = read_key(stream)
-        bytes =
+        bytes_or_value =
           case wire_type
           when WireType::VARINT
             read_varint(stream)
@@ -28,7 +28,7 @@ module Protobuf
           else
             raise InvalidWireType, wire_type
           end
-        message.set_field(tag, bytes)
+        message.set_field(tag, bytes_or_value)
       end
       message
     end
