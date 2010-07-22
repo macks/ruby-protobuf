@@ -1,4 +1,3 @@
-require 'pp'
 require 'stringio'
 require 'protobuf/descriptor/descriptor'
 require 'protobuf/message/decoder'
@@ -93,7 +92,7 @@ module Protobuf
         end
       end
 
-      values.each {|tag, val| self[tag] = val}
+      values.each {|name, val| self.__send__("#{name}=", val)}
     end
 
     def initialized?
