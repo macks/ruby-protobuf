@@ -14,6 +14,7 @@ module Protobuf
         next unless message.has_field?(field.name)
 
         if field.repeated?
+          next if value.empty?
           if field.packed?
             key = (field.tag << 3) | WireType::LENGTH_DELIMITED
             packed_value = value.map {|val| field.encode(val) }.join

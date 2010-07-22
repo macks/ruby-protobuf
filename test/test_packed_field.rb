@@ -37,4 +37,9 @@ class PackedFieldTest < Test::Unit::TestCase
     end
   end
 
+  def test_empty_packed_field
+    message = Test::PackedField::Message.new
+    assert_equal('', message.to_s)
+  end
+
 end
