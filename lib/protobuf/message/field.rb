@@ -651,7 +651,7 @@ module Protobuf
     class EnumField < VarintField
       def acceptable?(val)
         case val
-        when Symbol
+        when Symbol, String
           raise TypeError unless @type.const_defined?(val)
         when EnumValue
           raise TypeError if val.parent_class != @type
@@ -682,9 +682,9 @@ module Protobuf
             if val.nil?
               @values.delete(field.name)
             else
-              val = \
+              enum_value = \
                 case val
-                when Symbol
+                when Symbol, String
                   field.type.const_get(val) rescue nil
                 when Integer
                   field.type.const_get(field.type.name_by_value(val)) rescue nil
@@ -692,9 +692,9 @@ module Protobuf
                   raise TypeError, "Invalid value: #{val.inspect}" if val.parent_class != field.type
                   val
                 end
-              raise TypeError, "Invalid value: #{val.inspect}" unless val
+              raise TypeError, "Invalid value: #{val.inspect}" unless enum_value
 
-              @values[field.name] = val
+              @values[field.name] = enum_value
             end
           end
         end

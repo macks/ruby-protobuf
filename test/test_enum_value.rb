@@ -30,9 +30,10 @@ class EnumValueTest < Test::Unit::TestCase
     assert_equal(1, phone_number.type)
 
     phone_number.type = :HOME
-    assert_kind_of(Protobuf::EnumValue, phone_number.type)
     assert_equal(Tutorial::Person::PhoneType::HOME, phone_number.type)
-    assert_equal(1, phone_number.type)
+
+    phone_number.type = 'HOME'
+    assert_equal(Tutorial::Person::PhoneType::HOME, phone_number.type)
 
     assert_raise(TypeError) do
       phone_number.type = TutorialExt::Person::PhoneType::HOME
