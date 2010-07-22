@@ -283,10 +283,29 @@ module Protobuf
     #     # do something
     #   end
     def each_field
-      fields.sort_by {|tag, _| tag}.each do |_, field|
+      @sorted_fields ||= fields.sort_by {|tag, _| tag}
+      @sorted_fields.each do |_, field|
         value = __send__(field.name)
         yield(field, value)
       end
     end
+
+    def to_hash
+      hash = {}
+      each_field do |field, value|
+        next unless has_field?(field.tag)
+        case value
+        when Array
+          next if value.empty?
+          hash[field.name] = value.map {|val| val.is_a?(Message) ? val.to_hash : val}
+        when Message
+          hash[field.name] = value.to_hash
+        else
+          hash[field.name] = value
+        end
+      end
+      hash
+    end
+
   end
 end
