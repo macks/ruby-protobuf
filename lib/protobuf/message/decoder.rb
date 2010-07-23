@@ -7,28 +7,43 @@ module Protobuf
 
     module_function
 
+    READ_METHODS = [
+      :read_varint,           # 0: Varint
+      :read_fixed64,          # 1: 64 bit
+      :read_length_delimited, # 2: Length-delimited
+      :read_start_group,      # 3: Start group
+      :read_end_group,        # 4: End group
+      :read_fixed32,          # 5: 32 bit
+    ]
+
     # Read bytes from +stream+ and pass to +message+ object.
     def decode(stream, message)
       until stream.eof?
         tag, wire_type = read_key(stream)
-        bytes_or_value =
-          case wire_type
-          when WireType::VARINT
-            read_varint(stream)
-          when WireType::FIXED64
-            read_fixed64(stream)
-          when WireType::LENGTH_DELIMITED
-            read_length_delimited(stream)
-          when WireType::START_GROUP
-            read_start_group(stream)
-          when WireType::END_GROUP
-            read_end_group(stream)
-          when WireType::FIXED32
-            read_fixed32(stream)
+        field = message.get_field_by_tag(tag)
+
+        method = READ_METHODS[wire_type]
+        raise InvalidWireType, "Unknown wire type: #{wire_type}" unless method
+        value = send(method, stream)
+
+        if field.nil?
+          # ignore unknown field
+        elsif field.repeated?
+          array = message.__send__(field.name)
+          if wire_type == WireType::LENGTH_DELIMITED && WireType::PACKABLE_TYPES.include?(field.wire_type)
+            # packed
+            s = StringIO.new(value)
+            m = READ_METHODS[field.wire_type]
+            until s.eof?
+              array << field.decode(send(m, s))
+            end
           else
-            raise InvalidWireType, wire_type
+            # non-packed
+            array << field.decode(value)
           end
-        message.set_field(tag, bytes_or_value)
+        else
+          message.__send__("#{field.name}=", field.decode(value))
+        end
       end
       message
     end

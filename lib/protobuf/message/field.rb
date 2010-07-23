@@ -53,7 +53,7 @@ module Protobuf
         unless options.empty?
           warn "WARNING: Invalid options: #{options.inspect} (in #{@message_class.name.split('::').last}.#{@name})"
         end
-        if packed? && ! [WireType::VARINT, WireType::FIXED32, WireType::FIXED64].include?(wire_type)
+        if packed? && ! WireType::PACKABLE_TYPES.include?(wire_type)
           raise "Can't use packed encoding for `#{@type}' type"
         end
 
@@ -83,30 +83,6 @@ module Protobuf
           value.all? {|msg| ! kind_of?(MessageField) || msg.initialized? }
         when :optional
           value.nil? || ! kind_of?(MessageField) || value.initialized?
-        end
-      end
-
-      # Decode +bytes+ and pass to +message_instance+.
-      def set(message_instance, bytes)
-        if packed?
-          array = message_instance.__send__(@name)
-          method = \
-            case wire_type
-            when WireType::FIXED32 then :read_fixed32
-            when WireType::FIXED64 then :read_fixed64
-            when WireType::VARINT  then :read_varint
-            end
-          stream = StringIO.new(bytes)
-          until stream.eof?
-            array << decode(Decoder.__send__(method, stream))
-          end
-        else
-          value = decode(bytes)
-          if repeated?
-            message_instance.__send__(@name) << value
-          else
-            message_instance.__send__("#{@name}=", value)
-          end
         end
       end
 

@@ -236,11 +236,6 @@ module Protobuf
       fields.each {|tag, field| field.merge(self, message.__send__(field.name))}
     end
 
-    def set_field(tag, bytes)
-      field = get_field_by_tag(tag)
-      field.set(self, bytes) if field
-    end
-
     def [](tag_or_name)
       if field = get_field(tag_or_name)
         __send__(field.name)
