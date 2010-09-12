@@ -1,5 +1,7 @@
-=== 0.4.5 / 2010-07-17
+=== 0.4.6 / 2010-??-??
 
+* 0.4.6
+  * Ignore "syntax = ...." in .proto.
 * 0.4.5
   * Bug fixes. (enum value, frozen string)
 * 0.4.4

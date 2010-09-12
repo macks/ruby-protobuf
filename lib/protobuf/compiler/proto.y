@@ -12,6 +12,7 @@ rule
              | package
              | option
              | service
+             | syntax
              | ';'      { result = nil }
 
   import : 'import' STRING_LITERAL ';'
@@ -73,6 +74,8 @@ rule
                | rpc
                | ';'     { result = nil}
 
+  syntax : 'syntax' '=' STRING_LITERAL ';'  { result = Protobuf::Node::SyntaxNode.new(val[2]) }
+
   rpc : 'rpc' IDENT '(' rpc_arg ')' 'returns' '(' rpc_arg ')' ';'
         { result = Protobuf::Node::RpcNode.new(val[1], val[3], val[7]) }
 
@@ -104,7 +107,7 @@ rule
         | label type field_name '=' integer_literal '[' field_option_list ']' ';'
           { result = Protobuf::Node::FieldNode.new(val[0], val[1], val[2], val[4], val[6]) }
 
-  field_name : IDENT | "required" | "optional" | "repeated" | "import" | "package" | "option" | "message" | "extend" | "enum" | "service" | "rpc" | "returns" | "group" | "default" | "extensions" | "to" | "max" | "double" | "float" | "int32" | "int64" | "uint32" | "uint64" | "sint32" | "sint64" | "fixed32" | "fixed64" | "sfixed32" | "sfixed64" | "bool" | "string" | "bytes"
+  field_name : IDENT | "required" | "optional" | "repeated" | "import" | "package" | "option" | "message" | "extend" | "enum" | "service" | "syntax" | "rpc" | "returns" | "group" | "default" | "extensions" | "to" | "max" | "double" | "float" | "int32" | "int64" | "uint32" | "uint64" | "sint32" | "sint64" | "fixed32" | "fixed64" | "sfixed32" | "sfixed64" | "bool" | "string" | "bytes"
 
   field_option_list : field_option
                       { result = val }
@@ -178,7 +181,7 @@ end
       when match(/\/\*/)
         # C-like comment
         raise 'EOF inside block comment' until @scanner.scan_until(/\*\//)
-      when match(/(?:required|optional|repeated|import|package|option|message|extend|enum|service|rpc|returns|group|default|extensions|to|max|double|float|int32|int64|uint32|uint64|sint32|sint64|fixed32|fixed64|sfixed32|sfixed64|bool|string|bytes)\b/)
+      when match(/(?:required|optional|repeated|import|package|option|message|extend|enum|service|syntax|rpc|returns|group|default|extensions|to|max|double|float|int32|int64|uint32|uint64|sint32|sint64|fixed32|fixed64|sfixed32|sfixed64|bool|string|bytes)\b/)
         yield [@token, @token.to_sym]
       when match(/[+-]?\d*\.\d+([Ee][\+-]?\d+)?/)
         yield [:FLOAT_LITERAL, @token.to_f]

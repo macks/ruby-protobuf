@@ -317,5 +317,11 @@ require 'protobuf/message/extend'
         end
       end
     end
+
+    class SyntaxNode < Base
+      def initialize(syntax)
+        # do nothing
+      end
+    end
   end
 end

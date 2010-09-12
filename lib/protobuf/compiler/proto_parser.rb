@@ -10,7 +10,7 @@
 unless $".index 'racc/parser.rb'
 $".push 'racc/parser.rb'
 
-self.class.module_eval <<'..end racc/parser.rb modeval..idd168e4f443', 'racc/parser.rb', 1
+self.class.module_eval <<'..end racc/parser.rb modeval..id57af5bfae3', 'racc/parser.rb', 1
 #
 # $Id: parser.rb,v 1.7 2005/11/20 17:31:32 aamine Exp $
 #
@@ -453,7 +453,7 @@ module Racc
   end
 
 end
-..end racc/parser.rb modeval..idd168e4f443
+..end racc/parser.rb modeval..id57af5bfae3
 end
 ###### racc/parser.rb end
 
@@ -462,7 +462,7 @@ module Protobuf
 
   class ProtoParser < Racc::Parser
 
-module_eval <<'..end lib/protobuf/compiler/proto.y modeval..ida0eea88ba4', 'lib/protobuf/compiler/proto.y', 158
+module_eval <<'..end lib/protobuf/compiler/proto.y modeval..idf83c19ba1e', 'lib/protobuf/compiler/proto.y', 161
 
   require 'strscan'
 
@@ -486,7 +486,7 @@ module_eval <<'..end lib/protobuf/compiler/proto.y modeval..ida0eea88ba4', 'lib/
       when match(/\/\*/)
         # C-like comment
         raise 'EOF inside block comment' until @scanner.scan_until(/\*\//)
-      when match(/(?:required|optional|repeated|import|package|option|message|extend|enum|service|rpc|returns|group|default|extensions|to|max|double|float|int32|int64|uint32|uint64|sint32|sint64|fixed32|fixed64|sfixed32|sfixed64|bool|string|bytes)\b/)
+      when match(/(?:required|optional|repeated|import|package|option|message|extend|enum|service|syntax|rpc|returns|group|default|extensions|to|max|double|float|int32|int64|uint32|uint64|sint32|sint64|fixed32|fixed64|sfixed32|sfixed64|bool|string|bytes)\b/)
         yield [@token, @token.to_sym]
       when match(/[+-]?\d*\.\d+([Ee][\+-]?\d+)?/)
         yield [:FLOAT_LITERAL, @token.to_f]
@@ -520,267 +520,272 @@ module_eval <<'..end lib/protobuf/compiler/proto.y modeval..ida0eea88ba4', 'lib/
     end
     false
   end
-..end lib/protobuf/compiler/proto.y modeval..ida0eea88ba4
+..end lib/protobuf/compiler/proto.y modeval..idf83c19ba1e
 
 ##### racc 1.4.5 generates ###
 
 racc_reduce_table = [
  0, 0, :racc_error,
- 1, 52, :_reduce_1,
- 2, 52, :_reduce_2,
- 1, 53, :_reduce_none,
- 1, 53, :_reduce_none,
- 1, 53, :_reduce_none,
- 1, 53, :_reduce_none,
- 1, 53, :_reduce_none,
- 1, 53, :_reduce_none,
- 1, 53, :_reduce_none,
- 1, 53, :_reduce_10,
- 3, 57, :_reduce_11,
- 4, 58, :_reduce_12,
- 0, 61, :_reduce_13,
- 3, 61, :_reduce_14,
- 3, 59, :_reduce_15,
- 4, 62, :_reduce_16,
- 3, 54, :_reduce_17,
- 5, 55, :_reduce_18,
- 0, 66, :_reduce_19,
- 2, 66, :_reduce_20,
- 1, 67, :_reduce_none,
- 1, 67, :_reduce_none,
- 1, 67, :_reduce_23,
- 5, 56, :_reduce_24,
- 0, 70, :_reduce_25,
- 2, 70, :_reduce_26,
- 1, 71, :_reduce_none,
- 1, 71, :_reduce_none,
- 1, 71, :_reduce_29,
- 4, 72, :_reduce_30,
- 5, 60, :_reduce_31,
- 0, 74, :_reduce_32,
- 2, 74, :_reduce_33,
- 1, 75, :_reduce_none,
- 1, 75, :_reduce_none,
- 1, 75, :_reduce_36,
- 10, 76, :_reduce_37,
- 0, 77, :_reduce_none,
+ 1, 53, :_reduce_1,
+ 2, 53, :_reduce_2,
+ 1, 54, :_reduce_none,
+ 1, 54, :_reduce_none,
+ 1, 54, :_reduce_none,
+ 1, 54, :_reduce_none,
+ 1, 54, :_reduce_none,
+ 1, 54, :_reduce_none,
+ 1, 54, :_reduce_none,
+ 1, 54, :_reduce_none,
+ 1, 54, :_reduce_11,
+ 3, 58, :_reduce_12,
+ 4, 59, :_reduce_13,
+ 0, 63, :_reduce_14,
+ 3, 63, :_reduce_15,
+ 3, 60, :_reduce_16,
+ 4, 64, :_reduce_17,
+ 3, 55, :_reduce_18,
+ 5, 56, :_reduce_19,
+ 0, 68, :_reduce_20,
+ 2, 68, :_reduce_21,
+ 1, 69, :_reduce_none,
+ 1, 69, :_reduce_none,
+ 1, 69, :_reduce_24,
+ 5, 57, :_reduce_25,
+ 0, 72, :_reduce_26,
+ 2, 72, :_reduce_27,
+ 1, 73, :_reduce_none,
+ 1, 73, :_reduce_none,
+ 1, 73, :_reduce_30,
+ 4, 74, :_reduce_31,
+ 5, 61, :_reduce_32,
+ 0, 76, :_reduce_33,
+ 2, 76, :_reduce_34,
  1, 77, :_reduce_none,
- 3, 64, :_reduce_40,
- 0, 78, :_reduce_41,
- 2, 78, :_reduce_42,
+ 1, 77, :_reduce_none,
+ 1, 77, :_reduce_37,
+ 4, 62, :_reduce_38,
+ 10, 78, :_reduce_39,
+ 0, 79, :_reduce_none,
  1, 79, :_reduce_none,
- 1, 79, :_reduce_none,
- 1, 79, :_reduce_none,
- 1, 79, :_reduce_none,
- 1, 79, :_reduce_none,
- 1, 79, :_reduce_none,
- 1, 79, :_reduce_none,
- 1, 79, :_reduce_50,
- 6, 69, :_reduce_51,
- 6, 68, :_reduce_52,
- 9, 68, :_reduce_53,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 83, :_reduce_none,
- 1, 84, :_reduce_87,
- 3, 84, :_reduce_88,
+ 3, 66, :_reduce_42,
+ 0, 80, :_reduce_43,
+ 2, 80, :_reduce_44,
+ 1, 81, :_reduce_none,
+ 1, 81, :_reduce_none,
+ 1, 81, :_reduce_none,
+ 1, 81, :_reduce_none,
+ 1, 81, :_reduce_none,
+ 1, 81, :_reduce_none,
+ 1, 81, :_reduce_none,
+ 1, 81, :_reduce_52,
+ 6, 71, :_reduce_53,
+ 6, 70, :_reduce_54,
+ 9, 70, :_reduce_55,
  1, 85, :_reduce_none,
- 3, 85, :_reduce_90,
- 4, 80, :_reduce_91,
- 0, 87, :_reduce_92,
- 2, 87, :_reduce_93,
- 1, 86, :_reduce_94,
- 3, 86, :_reduce_95,
- 3, 86, :_reduce_96,
- 1, 81, :_reduce_none,
- 1, 81, :_reduce_none,
- 1, 81, :_reduce_none,
- 1, 82, :_reduce_none,
- 1, 82, :_reduce_none,
- 1, 82, :_reduce_none,
- 1, 82, :_reduce_none,
- 1, 82, :_reduce_none,
- 1, 82, :_reduce_none,
- 1, 82, :_reduce_none,
- 1, 82, :_reduce_none,
- 1, 82, :_reduce_none,
- 1, 82, :_reduce_none,
- 1, 82, :_reduce_none,
- 1, 82, :_reduce_none,
- 1, 82, :_reduce_none,
- 1, 82, :_reduce_none,
- 1, 82, :_reduce_none,
- 1, 82, :_reduce_none,
- 2, 65, :_reduce_116,
- 3, 65, :_reduce_117,
- 1, 63, :_reduce_none,
- 1, 63, :_reduce_none,
- 1, 63, :_reduce_none,
- 1, 63, :_reduce_none,
- 1, 63, :_reduce_none,
- 1, 73, :_reduce_none,
- 1, 73, :_reduce_none,
- 1, 73, :_reduce_none ]
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 85, :_reduce_none,
+ 1, 86, :_reduce_90,
+ 3, 86, :_reduce_91,
+ 1, 87, :_reduce_none,
+ 3, 87, :_reduce_93,
+ 4, 82, :_reduce_94,
+ 0, 89, :_reduce_95,
+ 2, 89, :_reduce_96,
+ 1, 88, :_reduce_97,
+ 3, 88, :_reduce_98,
+ 3, 88, :_reduce_99,
+ 1, 83, :_reduce_none,
+ 1, 83, :_reduce_none,
+ 1, 83, :_reduce_none,
+ 1, 84, :_reduce_none,
+ 1, 84, :_reduce_none,
+ 1, 84, :_reduce_none,
+ 1, 84, :_reduce_none,
+ 1, 84, :_reduce_none,
+ 1, 84, :_reduce_none,
+ 1, 84, :_reduce_none,
+ 1, 84, :_reduce_none,
+ 1, 84, :_reduce_none,
+ 1, 84, :_reduce_none,
+ 1, 84, :_reduce_none,
+ 1, 84, :_reduce_none,
+ 1, 84, :_reduce_none,
+ 1, 84, :_reduce_none,
+ 1, 84, :_reduce_none,
+ 1, 84, :_reduce_none,
+ 2, 67, :_reduce_119,
+ 3, 67, :_reduce_120,
+ 1, 65, :_reduce_none,
+ 1, 65, :_reduce_none,
+ 1, 65, :_reduce_none,
+ 1, 65, :_reduce_none,
+ 1, 65, :_reduce_none,
+ 1, 75, :_reduce_none,
+ 1, 75, :_reduce_none,
+ 1, 75, :_reduce_none ]
 
-racc_reduce_n = 126
+racc_reduce_n = 129
 
-racc_shift_n = 184
+racc_shift_n = 190
 
 racc_action_table = [
-    75,   176,    78,    18,    19,    75,    25,    78,    27,    47,
-     4,     7,    32,    11,    42,    39,    13,   106,    16,     1,
-    18,    19,     6,     9,   177,    38,   170,   103,   105,   109,
-    93,    94,    95,    96,    97,    98,   100,   101,   102,   104,
-   108,    92,    72,    73,    74,    76,    77,    72,    73,    74,
-    76,    77,   123,   110,   131,   134,    66,   141,   111,   147,
-   116,    35,    13,   122,   127,   130,    34,    67,   140,   144,
-    69,   148,   118,   120,   124,   126,   129,   133,   137,   139,
-   143,   146,   115,   117,   119,   121,   125,   128,   132,   136,
-   138,   142,   145,   114,    83,   166,    18,    19,    25,    54,
-    13,    33,    16,     1,   159,    86,     6,    74,    76,    77,
-    56,    74,    76,    77,   167,    51,    53,    57,   170,    90,
-    51,    53,    57,    74,    76,    77,     4,     7,    42,    11,
-    48,   150,    13,   151,    16,     1,    60,   152,     6,     9,
-    64,   154,    13,    74,    76,    77,   155,    61,    74,    76,
-    77,    74,    76,    77,    18,    19,   156,    42,    40,    31,
-   162,    29,    25,   165,    24,    40,   169,    23,   174,   175,
-    22,    42,    21,   180,    50,   182,   183 ]
+    79,    56,    82,    21,    22,    79,    28,    82,    47,    65,
+    53,    73,    57,    68,    52,    16,   115,    16,   114,    47,
+    66,    64,    74,    55,    58,    60,    76,   176,   111,   113,
+    98,   101,   102,   103,   104,   105,   106,   107,   109,   110,
+   112,    97,   100,    77,    78,    80,    81,    83,    77,    78,
+    80,    81,    83,   128,    51,   136,   140,    47,   145,    45,
+   153,   121,    21,    22,   127,   131,   135,   139,    21,    22,
+   149,   152,    21,    22,   125,   129,   132,   134,   138,   142,
+   144,   148,   151,   120,   123,   124,   126,   130,   133,   137,
+   141,   143,   147,   150,   119,   122,    88,   173,   182,    80,
+    81,    83,    16,    28,    18,     1,   167,    90,     6,    80,
+    81,    83,    80,    81,    83,    43,    47,   172,    55,    58,
+    60,   183,    96,   116,   176,    80,    81,    83,    30,    42,
+     4,     7,    39,    12,   154,    38,    16,   156,    18,     1,
+   158,   159,     6,     9,    11,     4,     7,   160,    12,   161,
+   162,    16,    37,    18,     1,   165,    36,     6,     9,    11,
+    80,    81,    83,    80,    81,    83,    35,    33,    32,   171,
+    28,    45,   175,    27,   180,   181,    26,    25,    24,   186,
+    23,   188,   189 ]
 
 racc_action_check = [
-    48,   172,    48,    59,    59,   175,   177,   175,    14,    36,
-    14,    14,    20,    14,    36,    27,    14,    59,    14,    14,
-   150,   150,    14,    14,   172,    26,   177,    59,    59,    59,
-    59,    59,    59,    59,    59,    59,    59,    59,    59,    59,
-    59,    59,    48,    48,    48,    48,    48,   175,   175,   175,
-   175,   175,    99,    64,    99,    99,    46,    99,    69,    99,
-    99,    23,    46,    99,    99,    99,    22,    46,    99,    99,
-    46,   106,    99,    99,    99,    99,    99,    99,    99,    99,
-    99,    99,    99,    99,    99,    99,    99,    99,    99,    99,
-    99,    99,    99,    99,    49,   163,     1,     1,   167,    44,
-    49,    21,    49,    49,   151,    49,    49,   154,   154,   154,
-    44,   152,   152,   152,   163,    49,    49,    49,   167,    49,
-    44,    44,    44,   151,   151,   151,     0,     0,    37,     0,
-    37,   111,     0,   112,     0,     0,    45,   113,     0,     0,
-    45,   135,    45,    90,    90,    90,   148,    45,   110,   110,
-   110,   155,   155,   155,   174,   174,   149,    43,    29,    19,
-   153,    16,    13,   157,    11,   164,   165,     9,   169,   170,
-     7,    30,     6,   176,    42,   178,   182 ]
+    53,    46,    53,    63,    63,   181,   172,   181,    41,    49,
+    41,    50,    46,    49,    40,    49,    68,    50,    63,    40,
+    49,    47,    50,    46,    46,    46,    50,   172,    63,    63,
+    63,    63,    63,    63,    63,    63,    63,    63,    63,    63,
+    63,    63,    63,    53,    53,    53,    53,    53,   181,   181,
+   181,   181,   181,   108,    39,   108,   108,    34,   108,    32,
+   108,   108,   156,   156,   108,   108,   108,   108,     1,     1,
+   108,   108,   180,   180,   108,   108,   108,   108,   108,   108,
+   108,   108,   108,   108,   108,   108,   108,   108,   108,   108,
+   108,   108,   108,   108,   108,   108,    54,   169,   178,   160,
+   160,   160,    54,   183,    54,    54,   159,    54,    54,    96,
+    96,    96,   161,   161,   161,    30,    48,   169,    54,    54,
+    54,   178,    54,    76,   183,   159,   159,   159,    17,    29,
+    17,    17,    26,    17,   114,    25,    17,   116,    17,    17,
+   117,   118,    17,    17,    17,     0,     0,   146,     0,   154,
+   155,     0,    24,     0,     0,   157,    23,     0,     0,     0,
+   115,   115,   115,   158,   158,   158,    22,    20,    18,   164,
+    16,   170,   171,    12,   175,   176,    11,     9,     7,   182,
+     6,   184,   188 ]
 
 racc_action_pointer = [
-   124,    90,   nil,   nil,   nil,   nil,   166,   166,   nil,   161,
-   nil,   158,   nil,   156,     8,   nil,   155,   nil,   nil,   153,
-     0,    89,    64,    49,   nil,   nil,    23,    15,   nil,   146,
-   164,   nil,   nil,   nil,   nil,   nil,     7,   121,   nil,   nil,
-   nil,   nil,   168,   150,    97,   134,    54,   nil,    -4,    92,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,    -3,
-   nil,   nil,   nil,   nil,    44,   nil,   nil,   nil,   nil,    52,
+   143,    62,   nil,   nil,   nil,   nil,   174,   174,   nil,   171,
+   nil,   167,   167,   nil,   nil,   nil,   164,   128,   162,   nil,
+   155,   nil,   160,   144,   150,   123,   128,   nil,   nil,   127,
+   115,   nil,    47,   nil,    50,   nil,   nil,   nil,   nil,    52,
+    12,     1,   nil,   nil,   nil,   nil,    -1,    15,   109,     7,
+     9,   nil,   nil,    -4,    94,   nil,   nil,   nil,   nil,   nil,
+   nil,   nil,   nil,    -3,   nil,   nil,   nil,   nil,     7,   nil,
+   nil,   nil,   nil,   nil,   nil,   nil,   117,   nil,   nil,   nil,
+   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
+   nil,   nil,   nil,   nil,   nil,   nil,    60,   nil,   nil,   nil,
+   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,    50,   nil,
+   nil,   nil,   nil,   nil,   128,   111,   119,    94,   112,   nil,
    nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
    nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-    95,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,    49,
-   nil,   nil,   nil,   nil,   nil,   nil,    65,   nil,   nil,   nil,
-   100,   114,   105,    92,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   132,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   137,   154,
-    14,    75,    63,   158,    59,   103,   nil,   145,   nil,   nil,
-   nil,   nil,   nil,    93,   153,   147,   nil,    92,   nil,   151,
-   160,   nil,   -21,   nil,   148,     1,   171,     0,   157,   nil,
-   nil,   nil,   174,   nil ]
+   nil,   nil,   nil,   nil,   nil,   nil,   138,   nil,   nil,   nil,
+   nil,   nil,   nil,   nil,   140,   148,    56,   153,   114,    76,
+    50,    63,   nil,   nil,   150,   nil,   nil,   nil,   nil,    95,
+   159,   152,     0,   nil,   nil,   156,   166,   nil,    75,   nil,
+    66,     1,   177,    97,   162,   nil,   nil,   nil,   180,   nil ]
 
 racc_action_default = [
-  -126,  -126,    -4,    -5,   -10,    -6,  -126,  -126,    -7,  -126,
-    -8,  -126,    -9,  -126,  -126,    -1,  -126,    -3,   -13,  -126,
-  -126,  -126,  -126,  -126,   -13,   -13,  -126,  -126,    -2,  -126,
-  -116,   -13,   -19,   -25,   -11,   -32,  -126,  -126,   -15,   184,
-   -41,   -17,  -126,  -117,  -126,  -126,  -126,   -12,  -126,  -126,
-   -14,   -97,   -20,   -98,   -23,   -21,   -18,   -99,   -22,  -126,
-   -29,   -24,   -27,   -26,  -126,   -28,   -36,   -31,   -34,  -126,
-   -33,   -35,  -120,  -122,  -123,  -121,  -124,  -125,  -118,  -119,
-   -16,   -46,   -44,   -50,   -43,   -42,   -40,   -48,   -47,   -49,
-  -126,   -45,  -114,  -103,  -104,  -105,  -106,  -107,  -108,  -126,
-  -109,  -110,  -111,  -100,  -112,  -101,  -126,  -115,  -113,  -102,
-  -126,  -126,   -94,   -92,   -86,   -75,   -62,   -76,   -55,   -77,
-   -56,   -78,   -63,   -58,   -57,   -79,   -68,   -64,   -80,   -69,
-   -65,   -59,   -81,   -70,   -54,  -126,   -82,   -71,   -83,   -72,
-   -66,   -60,   -84,   -73,   -67,   -85,   -74,   -61,  -126,  -126,
-   -38,  -126,  -126,  -126,  -126,  -126,   -30,  -126,   -39,   -96,
-   -95,   -93,   -91,  -126,  -126,  -126,   -52,  -126,   -51,  -126,
-  -126,   -89,  -126,   -87,   -38,  -126,  -126,  -126,  -126,   -90,
-   -53,   -88,  -126,   -37 ]
+  -129,  -129,    -3,    -4,   -11,    -5,  -129,  -129,    -6,  -129,
+    -7,  -129,  -129,    -8,    -9,   -10,  -129,  -129,  -129,    -1,
+  -129,   -14,  -129,  -129,  -129,  -129,  -129,   -14,   -14,  -129,
+  -129,    -2,  -129,   -20,  -119,   -14,   -26,   -12,   -33,  -129,
+  -129,  -129,   -16,   190,   -18,   -43,  -129,  -129,  -120,  -129,
+  -129,   -38,   -13,  -129,  -129,  -100,   -24,   -19,  -101,   -21,
+  -102,   -22,   -23,  -129,   -15,   -30,   -25,   -28,  -129,   -27,
+   -29,   -34,   -36,   -37,   -32,   -35,  -129,  -123,  -125,  -124,
+  -126,  -127,  -121,  -128,  -122,   -17,   -47,   -48,   -52,   -46,
+   -42,   -45,   -44,   -51,   -50,   -49,  -129,  -116,  -105,  -118,
+  -117,  -106,  -107,  -108,  -109,  -110,  -111,  -112,  -129,  -113,
+  -114,  -103,  -115,  -104,  -129,  -129,  -129,   -95,   -97,   -88,
+   -77,   -64,   -89,   -78,   -79,   -57,   -80,   -65,   -60,   -58,
+   -81,   -66,   -59,   -82,   -71,   -67,   -61,   -83,   -72,   -68,
+   -56,   -84,   -73,   -85,   -74,   -62,  -129,   -86,   -75,   -69,
+   -87,   -76,   -70,   -63,  -129,  -129,   -40,  -129,  -129,  -129,
+  -129,  -129,   -31,   -41,  -129,   -94,   -96,   -99,   -98,  -129,
+  -129,  -129,  -129,   -54,   -53,  -129,  -129,   -92,  -129,   -90,
+   -40,  -129,  -129,  -129,  -129,   -93,   -55,   -91,  -129,   -39 ]
 
 racc_goto_table = [
-    41,    80,   112,   113,    20,   157,    15,   173,    30,    63,
-    44,    58,    26,    55,    36,    37,    87,   181,    84,    45,
-    28,    43,   149,    62,    68,    52,    65,    89,    82,   178,
-    46,    70,    71,    81,    49,    85,    88,    99,   135,   172,
-    91,    14,   153,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
+    44,    85,   118,   164,    34,    19,   117,    20,   179,    62,
+    40,    41,    61,    69,    46,    29,    49,    94,    48,   187,
+    91,   155,    31,    67,    75,    59,    70,   184,    93,    89,
+    50,    71,    72,    87,    54,    92,    95,   108,   146,   178,
+    86,    17,   157,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
    nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   107,   160,   112,   161,   163,   164,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
+   nil,   nil,   nil,   nil,   118,   168,   169,   170,   166,    99,
    nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
    nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
    nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   179,   nil,
-   nil,   nil,   nil,   nil,   nil,   168 ]
+   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
+   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
+   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   185,
+   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   174 ]
 
 racc_goto_check = [
-    13,    12,    22,    35,    14,    26,     2,    34,    10,    20,
-    15,    18,    11,    17,    10,    10,    18,    34,    17,    19,
-     2,    10,    22,     8,     8,    16,    21,     8,     5,    26,
-    23,    24,    25,     4,    27,    28,    29,    31,    32,    33,
-     3,     1,    36,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
+    14,    13,    23,    27,    11,     2,    36,    15,    35,    19,
+    11,    11,    18,    21,    16,    12,    20,    19,    11,    35,
+    18,    23,     2,     8,     8,    17,    22,    27,     8,     5,
+    24,    25,    26,     4,    28,    29,    30,    32,    33,    34,
+     3,     1,    37,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
    nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,    14,    22,    22,    35,    22,    22,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
+   nil,   nil,   nil,   nil,    23,    23,    23,    23,    36,    15,
    nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
    nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
    nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,    12,   nil,
-   nil,   nil,   nil,   nil,   nil,    13 ]
+   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
+   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
+   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,    13,
+   nil,   nil,   nil,   nil,   nil,   nil,   nil,   nil,    14 ]
 
 racc_goto_pointer = [
-   nil,    41,     6,    -9,   -16,   -21,   nil,   nil,   -22,   nil,
-   -10,    -1,   -47,   -29,     3,   -22,   -19,   -31,   -33,   -14,
-   -36,   -19,   -88,    -5,   -15,   -14,  -145,    -6,   -14,   -13,
-   nil,   -22,   -61,  -128,  -160,   -87,   -71 ]
+   nil,    41,     5,   -14,   -21,   -25,   nil,   nil,   -26,   nil,
+   nil,   -17,    -1,   -52,   -32,     6,   -19,   -21,   -34,   -37,
+   -20,   -36,   -23,   -94,    -8,   -19,   -18,  -153,   -11,   -19,
+   -18,   nil,   -26,   -70,  -133,  -164,   -90,   -75 ]
 
 racc_goto_default = [
-   nil,   nil,   nil,    17,     2,     3,     5,     8,    10,    12,
-   nil,   171,   nil,   nil,   158,   nil,   nil,   nil,   nil,   nil,
-   nil,   nil,    79,   nil,   nil,   nil,   nil,   nil,   nil,   nil,
-    59,   nil,   nil,   nil,   nil,   nil,   nil ]
+   nil,   nil,   nil,     2,     3,     5,     8,    10,    13,    14,
+    15,   nil,   177,   nil,   nil,   163,   nil,   nil,   nil,   nil,
+   nil,   nil,   nil,    84,   nil,   nil,   nil,   nil,   nil,   nil,
+   nil,    63,   nil,   nil,   nil,   nil,   nil,   nil ]
 
 racc_token_table = {
  false => 0,
@@ -799,45 +804,46 @@ racc_token_table = {
  "}" => 13,
  "enum" => 14,
  "service" => 15,
- "rpc" => 16,
- "(" => 17,
- ")" => 18,
- "returns" => 19,
- "group" => 20,
- "[" => 21,
- "]" => 22,
- "required" => 23,
- "optional" => 24,
- "repeated" => 25,
- "default" => 26,
- "extensions" => 27,
- "to" => 28,
- "max" => 29,
- "double" => 30,
- "float" => 31,
- "int32" => 32,
- "int64" => 33,
- "uint32" => 34,
- "uint64" => 35,
- "sint32" => 36,
- "sint64" => 37,
- "fixed32" => 38,
- "fixed64" => 39,
- "sfixed32" => 40,
- "sfixed64" => 41,
- "bool" => 42,
- "string" => 43,
- "bytes" => 44,
- "," => 45,
- :FLOAT_LITERAL => 46,
- :BOOLEAN_LITERAL => 47,
- :DEC_INTEGER => 48,
- :HEX_INTEGER => 49,
- :OCT_INTEGER => 50 }
+ "syntax" => 16,
+ "rpc" => 17,
+ "(" => 18,
+ ")" => 19,
+ "returns" => 20,
+ "group" => 21,
+ "[" => 22,
+ "]" => 23,
+ "required" => 24,
+ "optional" => 25,
+ "repeated" => 26,
+ "default" => 27,
+ "extensions" => 28,
+ "to" => 29,
+ "max" => 30,
+ "double" => 31,
+ "float" => 32,
+ "int32" => 33,
+ "int64" => 34,
+ "uint32" => 35,
+ "uint64" => 36,
+ "sint32" => 37,
+ "sint64" => 38,
+ "fixed32" => 39,
+ "fixed64" => 40,
+ "sfixed32" => 41,
+ "sfixed64" => 42,
+ "bool" => 43,
+ "string" => 44,
+ "bytes" => 45,
+ "," => 46,
+ :FLOAT_LITERAL => 47,
+ :BOOLEAN_LITERAL => 48,
+ :DEC_INTEGER => 49,
+ :HEX_INTEGER => 50,
+ :OCT_INTEGER => 51 }
 
 racc_use_result_var = true
 
-racc_nt_base = 51
+racc_nt_base = 52
 
 Racc_arg = [
  racc_action_table,
@@ -872,6 +878,7 @@ Racc_token_to_s_table = [
 '"}"',
 '"enum"',
 '"service"',
+'"syntax"',
 '"rpc"',
 '"("',
 '")"',
@@ -917,6 +924,7 @@ Racc_token_to_s_table = [
 'package',
 'option',
 'service',
+'syntax',
 'dot_ident_list',
 'option_body',
 'constant',
@@ -979,200 +987,205 @@ module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 5
 
  # reduce 9 omitted
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 14
-  def _reduce_10( val, _values, result )
+ # reduce 10 omitted
+
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 15
+  def _reduce_11( val, _values, result )
  result = nil
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 17
-  def _reduce_11( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 18
+  def _reduce_12( val, _values, result )
  result = Protobuf::Node::ImportNode.new(val[1])
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 20
-  def _reduce_12( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 21
+  def _reduce_13( val, _values, result )
  result = Protobuf::Node::PackageNode.new(val[2].unshift(val[1]))
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 23
-  def _reduce_13( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 24
+  def _reduce_14( val, _values, result )
  result = []
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 25
-  def _reduce_14( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 26
+  def _reduce_15( val, _values, result )
  result << val[2]
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 28
-  def _reduce_15( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 29
+  def _reduce_16( val, _values, result )
  result = Protobuf::Node::OptionNode.new(*val[1])
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 31
-  def _reduce_16( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 32
+  def _reduce_17( val, _values, result )
  result = [val[1].unshift(val[0]), val[3]]
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 34
-  def _reduce_17( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 35
+  def _reduce_18( val, _values, result )
  result = Protobuf::Node::MessageNode.new(val[1], val[2])
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 37
-  def _reduce_18( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 38
+  def _reduce_19( val, _values, result )
  result = Protobuf::Node::ExtendNode.new(val[1], val[3])
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 40
-  def _reduce_19( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 41
+  def _reduce_20( val, _values, result )
  result = []
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 42
-  def _reduce_20( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 43
+  def _reduce_21( val, _values, result )
  result << val[1] if val[1]
    result
   end
 .,.,
 
- # reduce 21 omitted
-
  # reduce 22 omitted
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 46
-  def _reduce_23( val, _values, result )
+ # reduce 23 omitted
+
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 47
+  def _reduce_24( val, _values, result )
  result = nil
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 49
-  def _reduce_24( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 50
+  def _reduce_25( val, _values, result )
  result = Protobuf::Node::EnumNode.new(val[1], val[3])
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 52
-  def _reduce_25( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 53
+  def _reduce_26( val, _values, result )
  result = []
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 54
-  def _reduce_26( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 55
+  def _reduce_27( val, _values, result )
  result << val[1] if val[1]
    result
   end
 .,.,
 
- # reduce 27 omitted
-
  # reduce 28 omitted
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 58
-  def _reduce_29( val, _values, result )
+ # reduce 29 omitted
+
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 59
+  def _reduce_30( val, _values, result )
  result = nil
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 61
-  def _reduce_30( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 62
+  def _reduce_31( val, _values, result )
  result = Protobuf::Node::EnumFieldNode.new(val[0], val[2])
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 64
-  def _reduce_31( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 65
+  def _reduce_32( val, _values, result )
  result = Protobuf::Node::ServiceNode.new(val[1], val[3])
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 67
-  def _reduce_32( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 68
+  def _reduce_33( val, _values, result )
  result = []
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 69
-  def _reduce_33( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 70
+  def _reduce_34( val, _values, result )
  result << val[1] if val[1]
    result
   end
 .,.,
 
- # reduce 34 omitted
-
  # reduce 35 omitted
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 73
-  def _reduce_36( val, _values, result )
+ # reduce 36 omitted
+
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 74
+  def _reduce_37( val, _values, result )
  result = nil
    result
   end
 .,.,
 
 module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 76
-  def _reduce_37( val, _values, result )
+  def _reduce_38( val, _values, result )
+ result = Protobuf::Node::SyntaxNode.new(val[2])
+   result
+  end
+.,.,
+
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 79
+  def _reduce_39( val, _values, result )
  result = Protobuf::Node::RpcNode.new(val[1], val[3], val[7])
    result
   end
 .,.,
 
- # reduce 38 omitted
+ # reduce 40 omitted
 
- # reduce 39 omitted
+ # reduce 41 omitted
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 82
-  def _reduce_40( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 85
+  def _reduce_42( val, _values, result )
  result = val[1]
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 85
-  def _reduce_41( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 88
+  def _reduce_43( val, _values, result )
  result = []
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 87
-  def _reduce_42( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 90
+  def _reduce_44( val, _values, result )
  result << val[1] if val[1]
    result
   end
 .,.,
-
- # reduce 43 omitted
-
- # reduce 44 omitted
 
  # reduce 45 omitted
 
@@ -1184,37 +1197,37 @@ module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 87
 
  # reduce 49 omitted
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 96
-  def _reduce_50( val, _values, result )
+ # reduce 50 omitted
+
+ # reduce 51 omitted
+
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 99
+  def _reduce_52( val, _values, result )
  result = nil
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 99
-  def _reduce_51( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 102
+  def _reduce_53( val, _values, result )
  result = Protobuf::Node::GroupNode.new(val[0], val[2], val[4], val[5])
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 102
-  def _reduce_52( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 105
+  def _reduce_54( val, _values, result )
  result = Protobuf::Node::FieldNode.new(val[0], val[1], val[2], val[4])
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 104
-  def _reduce_53( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 107
+  def _reduce_55( val, _values, result )
  result = Protobuf::Node::FieldNode.new(val[0], val[1], val[2], val[4], val[6])
    result
   end
 .,.,
-
- # reduce 54 omitted
-
- # reduce 55 omitted
 
  # reduce 56 omitted
 
@@ -1278,76 +1291,76 @@ module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 104
 
  # reduce 86 omitted
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 109
-  def _reduce_87( val, _values, result )
+ # reduce 87 omitted
+
+ # reduce 88 omitted
+
+ # reduce 89 omitted
+
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 112
+  def _reduce_90( val, _values, result )
  result = val
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 111
-  def _reduce_88( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 114
+  def _reduce_91( val, _values, result )
  result << val[2]
    result
   end
 .,.,
 
- # reduce 89 omitted
+ # reduce 92 omitted
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 115
-  def _reduce_90( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 118
+  def _reduce_93( val, _values, result )
  result = [:default, val[2]]
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 118
-  def _reduce_91( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 121
+  def _reduce_94( val, _values, result )
  result = Protobuf::Node::ExtensionsNode.new(val[2].unshift(val[1]))
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 121
-  def _reduce_92( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 124
+  def _reduce_95( val, _values, result )
  result = []
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 123
-  def _reduce_93( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 126
+  def _reduce_96( val, _values, result )
  result << val[1]
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 126
-  def _reduce_94( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 129
+  def _reduce_97( val, _values, result )
  result = Protobuf::Node::ExtensionRangeNode.new(val[0])
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 128
-  def _reduce_95( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 131
+  def _reduce_98( val, _values, result )
  result = Protobuf::Node::ExtensionRangeNode.new(val[0], val[2])
    result
   end
 .,.,
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 130
-  def _reduce_96( val, _values, result )
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 133
+  def _reduce_99( val, _values, result )
  result = Protobuf::Node::ExtensionRangeNode.new(val[0], :max)
    result
   end
 .,.,
-
- # reduce 97 omitted
-
- # reduce 98 omitted
-
- # reduce 99 omitted
 
  # reduce 100 omitted
 
@@ -1381,25 +1394,25 @@ module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 130
 
  # reduce 115 omitted
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 141
-  def _reduce_116( val, _values, result )
- result = val[1].unshift(val[0])
-   result
-  end
-.,.,
+ # reduce 116 omitted
 
-module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 143
-  def _reduce_117( val, _values, result )
- result = val[1].unshift(val[0])
-   result
-  end
-.,.,
+ # reduce 117 omitted
 
  # reduce 118 omitted
 
- # reduce 119 omitted
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 144
+  def _reduce_119( val, _values, result )
+ result = val[1].unshift(val[0])
+   result
+  end
+.,.,
 
- # reduce 120 omitted
+module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 146
+  def _reduce_120( val, _values, result )
+ result = val[1].unshift(val[0])
+   result
+  end
+.,.,
 
  # reduce 121 omitted
 
@@ -1410,6 +1423,12 @@ module_eval <<'.,.,', 'lib/protobuf/compiler/proto.y', 143
  # reduce 124 omitted
 
  # reduce 125 omitted
+
+ # reduce 126 omitted
+
+ # reduce 127 omitted
+
+ # reduce 128 omitted
 
  def _reduce_none( val, _values, result )
   result
