@@ -1,7 +1,12 @@
-=== 0.4.6 / 2010-??-??
+=== 0.4.6 / 2010-09-12
 
 * 0.4.6
-  * Ignore "syntax = ...." in .proto.
+  * Implement Message#to_hash method.
+  * Accept String value for enum fields.
+  * Optimizations.
+  * Bug fixes.
+    * Ignore "syntax = ...." in .proto.
+    * Empty packed field.
 * 0.4.5
   * Bug fixes. (enum value, frozen string)
 * 0.4.4
