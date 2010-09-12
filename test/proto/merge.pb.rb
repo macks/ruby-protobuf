@@ -8,12 +8,12 @@
 #   }
 #   message InnerMessage2 {
 #     required string name = 1;
-#     repeated InnerMessage1 repeate_message = 2;
+#     repeated InnerMessage1 repeated_message = 2;
 #   }
 # 
 #   required string name = 1;
-#   repeated InnerMessage1 repeate_message = 2;
-#   required InnerMessage2 require_message = 3;
+#   repeated InnerMessage1 repeated_message = 2;
+#   required InnerMessage2 required_message = 3;
 # }
 
 require 'protobuf/message/message'
@@ -31,10 +31,10 @@ module Test
     class InnerMessage2 < ::Protobuf::Message
       defined_in __FILE__
       required :string, :name, 1
-      repeated :InnerMessage1, :repeate_message, 2
+      repeated :InnerMessage1, :repeated_message, 2
     end
     required :string, :name, 1
-    repeated :InnerMessage1, :repeate_message, 2
-    required :InnerMessage2, :require_message, 3
+    repeated :InnerMessage1, :repeated_message, 2
+    required :InnerMessage2, :required_message, 3
   end
 end

@@ -32,26 +32,32 @@ class MessageTest < Test::Unit::TestCase
   end
 
   def test_initialize_with_hash
-    person = Tutorial::Person.new(:name => 'Jiro', :id => 300, :email => 'jiro@ema.il')
+    hash = { :name => 'Jiro', :id => 300, :email => 'jiro@ema.il' }
+    person = Tutorial::Person.new(hash)
     assert_equal('Jiro', person.name)
     assert_equal(300, person.id)
     assert_equal('jiro@ema.il', person.email)
+    assert_equal(hash, person.to_hash)
 
     # initialize with array of hash
-    person = Tutorial::Person.new(:phone => [{:number => 'phone1'}, {:number => 'phone2'}])
+    hash = { :phone => [{:number => 'phone1'}, {:number => 'phone2'}] }
+    person = Tutorial::Person.new(hash)
     assert_equal('phone1', person.phone[0].number)
     assert_equal('phone2', person.phone[1].number)
+    assert_equal(hash, person.to_hash)
 
     # initalize with hash in hash
-    message = Test::MergeMessage.new(:require_message => { :name => 'name1', :repeate_message => [{:name => 'name2'}] })
-    assert_equal('name1', message.require_message.name)
-    assert_equal('name2', message.require_message.repeate_message[0].name)
+    hash = { :required_message => { :name => 'name1', :repeated_message => [{:name => 'name2'}] } }
+    message = Test::MergeMessage.new(hash)
+    assert_equal('name1', message.required_message.name)
+    assert_equal('name2', message.required_message.repeated_message[0].name)
+    assert_equal(hash, message.to_hash)
 
-    message.require_message = { :name => 'name21' }
-    message.require_message.repeate_message = [ {:name => 'name22'} ]
-    assert_equal('name21', message.require_message.name)
-    assert_equal('name22', message.require_message.repeate_message[0].name)
-    assert_equal(1,        message.require_message.repeate_message.size)
+    message.required_message = { :name => 'name21' }
+    message.required_message.repeated_message = [ {:name => 'name22'} ]
+    assert_equal('name21', message.required_message.name)
+    assert_equal('name22', message.required_message.repeated_message[0].name)
+    assert_equal(1,        message.required_message.repeated_message.size)
   end
 
   def test_defined_filenames
@@ -106,23 +112,23 @@ message AddressBook {
 
   def test_merge_field
     inner_message1_2 = Test::MergeMessage::InnerMessage2.new(:name => 'name12')
-    inner_message1_2.repeate_message << Test::MergeMessage::InnerMessage1.new(:name => 'name121')
-    message1 = Test::MergeMessage.new(:name => 'name1', :require_message => inner_message1_2)
-    message1.repeate_message << Test::MergeMessage::InnerMessage1.new(:name => 'name11')
+    inner_message1_2.repeated_message << Test::MergeMessage::InnerMessage1.new(:name => 'name121')
+    message1 = Test::MergeMessage.new(:name => 'name1', :required_message => inner_message1_2)
+    message1.repeated_message << Test::MergeMessage::InnerMessage1.new(:name => 'name11')
 
     inner_message2_2 = Test::MergeMessage::InnerMessage2.new(:name => 'name22')
-    inner_message2_2.repeate_message << Test::MergeMessage::InnerMessage1.new(:name => 'name221')
-    message2 = Test::MergeMessage.new(:name => 'name2', :require_message => inner_message2_2)
-    message2.repeate_message << Test::MergeMessage::InnerMessage1.new(:name => 'name21')
+    inner_message2_2.repeated_message << Test::MergeMessage::InnerMessage1.new(:name => 'name221')
+    message2 = Test::MergeMessage.new(:name => 'name2', :required_message => inner_message2_2)
+    message2.repeated_message << Test::MergeMessage::InnerMessage1.new(:name => 'name21')
 
     message1.merge_from(message2)
     assert_equal('name2', message1.name)
-    assert_equal(2, message1.repeate_message.size)
-    assert_equal('name11', message1.repeate_message[0].name)
-    assert_equal('name21', message1.repeate_message[1].name)
-    assert_equal('name22', message1.require_message.name)
-    assert_equal(2, message1.require_message.repeate_message.size)
-    assert_equal('name121', message1.require_message.repeate_message[0].name)
-    assert_equal('name221', message1.require_message.repeate_message[1].name)
+    assert_equal(2, message1.repeated_message.size)
+    assert_equal('name11', message1.repeated_message[0].name)
+    assert_equal('name21', message1.repeated_message[1].name)
+    assert_equal('name22', message1.required_message.name)
+    assert_equal(2, message1.required_message.repeated_message.size)
+    assert_equal('name121', message1.required_message.repeated_message[0].name)
+    assert_equal('name221', message1.required_message.repeated_message[1].name)
   end
 end

@@ -36,7 +36,7 @@ module Protobuf
         nil
       end
 
-      attr_reader :message_class, :rule, :type, :name, :tag, :default
+      attr_reader :message_class, :rule, :type, :name, :tag, :default, :extension
       attr_reader :default_value
 
       def descriptor
@@ -53,7 +53,7 @@ module Protobuf
         unless options.empty?
           warn "WARNING: Invalid options: #{options.inspect} (in #{@message_class.name.split('::').last}.#{@name})"
         end
-        if packed? && ! [WireType::VARINT, WireType::FIXED32, WireType::FIXED64].include?(wire_type)
+        if packed? && ! WireType::PACKABLE_TYPES.include?(wire_type)
           raise "Can't use packed encoding for `#{@type}' type"
         end
 
@@ -70,7 +70,7 @@ module Protobuf
         define_accessor
       end
 
-      def ready?
+      def ready? # :nodoc:
         true
       end
 
@@ -83,30 +83,6 @@ module Protobuf
           value.all? {|msg| ! kind_of?(MessageField) || msg.initialized? }
         when :optional
           value.nil? || ! kind_of?(MessageField) || value.initialized?
-        end
-      end
-
-      # Decode +bytes+ and pass to +message_instance+.
-      def set(message_instance, bytes)
-        if packed?
-          array = message_instance.__send__(@name)
-          method = \
-            case wire_type
-            when WireType::FIXED32 then :read_fixed32
-            when WireType::FIXED64 then :read_fixed64
-            when WireType::VARINT  then :read_varint
-            end
-          stream = StringIO.new(bytes)
-          until stream.eof?
-            array << decode(Decoder.__send__(method, stream))
-          end
-        else
-          value = decode(bytes)
-          if repeated?
-            message_instance.__send__(@name) << value
-          else
-            message_instance.__send__("#{@name}=", value)
-          end
         end
       end
 
@@ -146,7 +122,7 @@ module Protobuf
 
       # Is this a packed repeated field?
       def packed?
-        !!@packed
+        @packed
       end
 
       # Upper limit for this field.
@@ -240,7 +216,7 @@ module Protobuf
           message_class, rule, type, name, tag, options
       end
 
-      def ready?
+      def ready? # :nodoc:
         false
       end
 
@@ -338,7 +314,6 @@ module Protobuf
       end
 
       def decode(bytes)
-        bytes.force_encoding(Encoding::ASCII_8BIT) if bytes.respond_to?(:force_encoding)
         bytes
       end
 
@@ -346,7 +321,7 @@ module Protobuf
         if value.respond_to?(:force_encoding)
           # Ruby 1.9
           result = VarintField.encode(value.bytesize)
-          result << value.dup.force_encoding(Encoding::ASCII_8BIT)
+          result << value.dup.force_encoding(Encoding::BINARY)
         else
           # Ruby 1.8
           result = VarintField.encode(value.size)
@@ -592,7 +567,7 @@ module Protobuf
       end
 
       def decode(value)
-        value == 1
+        value != 0
       end
 
       def encode(value)
@@ -652,7 +627,7 @@ module Protobuf
     class EnumField < VarintField
       def acceptable?(val)
         case val
-        when Symbol
+        when Symbol, String
           raise TypeError unless @type.const_defined?(val)
         when EnumValue
           raise TypeError if val.parent_class != @type
@@ -683,9 +658,9 @@ module Protobuf
             if val.nil?
               @values.delete(field.name)
             else
-              val = \
+              enum_value = \
                 case val
-                when Symbol
+                when Symbol, String
                   field.type.const_get(val) rescue nil
                 when Integer
                   field.type.const_get(field.type.name_by_value(val)) rescue nil
@@ -693,9 +668,9 @@ module Protobuf
                   raise TypeError, "Invalid value: #{val.inspect}" if val.parent_class != field.type
                   val
                 end
-              raise TypeError, "Invalid value: #{val.inspect}" unless val
+              raise TypeError, "Invalid value: #{val.inspect}" unless enum_value
 
-              @values[field.name] = val
+              @values[field.name] = enum_value
             end
           end
         end
