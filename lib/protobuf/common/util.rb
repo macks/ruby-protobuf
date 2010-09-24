@@ -16,7 +16,7 @@ module Protobuf
   end
 
   begin
-    Version = File.read(File.dirname(__FILE__) + '/../../../VERSION')
+    Version = File.read(File.dirname(__FILE__) + '/../../../VERSION').strip
   rescue
     Version = 'unknown'
   end
