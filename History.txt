@@ -1,5 +1,10 @@
-=== 0.4.6 / 2010-09-12
+=== 0.4.7 / 2010-09-28
 
+* 0.4.7
+  * Bug fixes.
+    * Compilation error for importing message.
+    * Fixes for Ruby 1.9.2
+    * Compilation problem of string literals.
 * 0.4.6
   * Implement Message#to_hash method.
   * Accept String value for enum fields.
