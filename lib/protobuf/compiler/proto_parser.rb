@@ -498,7 +498,7 @@ module_eval <<'..end lib/protobuf/compiler/proto.y modeval..idf83c19ba1e', 'lib/
         yield [:OCT_INTEGER, @token.to_i(0)]
       when match(/(true|false)\b/)
         yield [:BOOLEAN_LITERAL, @token == 'true']
-      when match(/"(?:[^"\\]+|\\.)*"/, /'(?:[^'\\]+|\\.)*'/)
+      when match(/"(?:[^"\\]|\\.)*"/, /'(?:[^'\\]|\\.)*'/)
         yield [:STRING_LITERAL, eval(@token)]
       when match(/[a-zA-Z_]\w*/)
         yield [:IDENT, @token.to_sym]
