@@ -144,15 +144,15 @@ module Protobuf
         default_port = 9999
         @services.each do |service_name, rpcs|
           underscored_name = Util.underscore(service_name.to_s)
-          message_module = package.map{|p| Util.camelize(p.to_s)}.join('::')
+          module_name = package.map{|p| Util.camelize(p.to_s)}.join('::') if package
           required_file = message_file.sub(/^\.\//, '').sub(/\.rb$/, '')
 
-          create_bin(out_dir, underscored_name, message_module, service_name, default_port)
-          create_service(message_file, out_dir, underscored_name, message_module,
+          create_bin(out_dir, underscored_name, module_name, service_name, default_port)
+          create_service(message_file, out_dir, underscored_name, module_name,
             service_name, default_port, rpcs, required_file)
           rpcs.each do |name, request, response|
             create_client(out_dir, underscored_name, default_port, name, request, response,
-              message_module, required_file)
+              module_name, required_file)
           end
         end
         @file_contents
@@ -172,7 +172,7 @@ module Protobuf
         @file_contents[service_filename] = service_contents
       end
 
-      def create_client(out_dir, underscored_name, default_port, name, request, response, message_module, required_file)
+      def create_client(out_dir, underscored_name, default_port, name, request, response, module_name, required_file)
         client_filename = "#{out_dir}/client_#{Util.underscore(name)}.rb"
         client_contents = template_erb('rpc_client').result binding
         create_file_with_backup(client_filename, client_contents, true) if @create_file
