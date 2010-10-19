@@ -40,7 +40,7 @@ module Protobuf
         end
 
         if fields.include?(tag)
-          raise TagCollisionError, "Field tag #{tag} has already been used."
+          raise TagCollisionError, "Field tag #{tag} has already been used in #{self.name}."
         end
         fields[tag] = Field.build(self, rule, type, fname, tag, options)
       end
