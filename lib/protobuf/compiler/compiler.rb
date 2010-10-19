@@ -15,7 +15,7 @@ module Protobuf
     end
 
     def create_message(proto_file, proto_dir='.', out_dir='.', file_create=true)
-      rb_file = File.join(out_dir, File.basename(proto_file).sub(/\.[^\0]*\z/, '') + '.pb.rb')
+      rb_file = File.join(out_dir, File.basename(proto_file, '.proto') + '.pb.rb')
       proto_path = validate_existence(proto_file, proto_dir)
 
       message_visitor = Visitor::CreateMessageVisitor.new(proto_file, proto_dir, out_dir)
@@ -26,7 +26,7 @@ module Protobuf
     end
 
     def create_rpc(proto_file, proto_dir='.', out_dir='.', file_create=true)
-      message_file = File.join(out_dir, File.basename(proto_file).sub(/\.[^\0]*\z/, '') + '.pb.rb')
+      message_file = File.join(out_dir, File.basename(proto_file, '.proto') + '.pb.rb')
       proto_path = validate_existence(proto_file, proto_dir)
 
       rpc_visitor = Visitor::CreateRpcVisitor.new
