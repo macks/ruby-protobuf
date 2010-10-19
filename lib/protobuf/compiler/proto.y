@@ -76,8 +76,16 @@ rule
 
   syntax : 'syntax' '=' STRING_LITERAL ';'  { result = Protobuf::Node::SyntaxNode.new(val[2]) }
 
-  rpc : 'rpc' IDENT '(' rpc_arg ')' 'returns' '(' rpc_arg ')' ';'
+  rpc : 'rpc' IDENT '(' rpc_arg ')' 'returns' '(' rpc_arg ')' rpc_option_body
         { result = Protobuf::Node::RpcNode.new(val[1], val[3], val[7]) }
+
+  rpc_option_body : '{' option_list '}'
+                  | ';'
+
+  option_list :
+                { result = [] }
+              | option_list option
+                { result << val[1] if val[1] }
 
   rpc_arg :
           | user_type
