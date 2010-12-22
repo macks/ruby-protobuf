@@ -54,6 +54,11 @@ module Protobuf
         @fields ||= {}
       end
 
+      # A collection of field object, which is sorted by tag number.
+      def sorted_fields
+        @sorted_fields ||= fields.sort_by {|tag, _| tag}
+      end
+
       # Find a field object by +name+.
       def get_field_by_name(name)
         name = name.to_sym
@@ -277,8 +282,7 @@ module Protobuf
     #     # do something
     #   end
     def each_field
-      @sorted_fields ||= fields.sort_by {|tag, _| tag}
-      @sorted_fields.each do |_, field|
+      self.class.sorted_fields.each do |_, field|
         value = __send__(field.name)
         yield(field, value)
       end

@@ -93,4 +93,20 @@ phone {
 }
     EOS
   end
+
+  def test_inspect_frozen_object
+    person = Tutorial::Person.new
+    person.name = 'name'
+    person.id = 1234
+    person.email = 'abc@cde.fgh'
+    person.phone << Tutorial::Person::PhoneNumber.new
+    person.phone.last.number = '123-456'
+    person.phone.last.type = Tutorial::Person::PhoneType::MOBILE
+    person.phone << Tutorial::Person::PhoneNumber.new
+    person.phone.last.number = '456-123'
+    person.phone.last.type = Tutorial::Person::PhoneType::WORK
+
+    person.freeze
+    assert_nothing_raised { person.inspect }
+  end
 end
