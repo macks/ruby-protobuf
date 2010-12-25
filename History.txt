@@ -1,5 +1,10 @@
-=== 0.4.7 / 2010-09-28
+=== 0.4.8 / 2010-12-23
 
+* 0.4.8
+  * Bug fixes.
+    * Compilation was failed when rpc service name was on top-level.
+    * Options for rpc service methods are silently ignored.
+    * Frozen message object causes an exception on inspect method.
 * 0.4.7
   * Bug fixes.
     * Compilation error for importing message.
