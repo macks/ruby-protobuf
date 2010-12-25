@@ -43,6 +43,7 @@ module Protobuf
           raise TagCollisionError, "Field tag #{tag} has already been used in #{self.name}."
         end
         fields[tag] = Field.build(self, rule, type, fname, tag, options)
+        clear_field_cache
       end
 
       def extension_tag?(tag)
@@ -58,26 +59,39 @@ module Protobuf
       def sorted_fields
         @sorted_fields ||= fields.sort_by {|tag, _| tag}
       end
+      private :sorted_fields
 
-      # Find a field object by +name+.
-      def get_field_by_name(name)
-        name = name.to_sym
-        fields.values.find {|field| field.name == name}
+      #:nodoc:
+      def field_dictionary
+        return @field_dictionary if @field_dictionary
+        @field_dictionary = fields.dup
+        fields.each do |_, field|
+          @field_dictionary[field.name] = field
+          @field_dictionary[field.name.to_s] = field
+        end
+        @field_dictionary
       end
+      private :field_dictionary
 
-      # Find a field object by +tag+ number.
-      def get_field_by_tag(tag)
-        fields[tag]
+      #:nodoc:
+      def clear_field_cache
+        @field_dictionary = nil
+        @sorted_fields = nil
       end
+      private :clear_field_cache
 
       # Find a field object by +tag_or_name+.
       def get_field(tag_or_name)
         case tag_or_name
-        when Integer        then get_field_by_tag(tag_or_name)
-        when String, Symbol then get_field_by_name(tag_or_name)
-        else                     raise TypeError, tag_or_name.class
+        when Integer, String, Symbol
+          field_dictionary[tag_or_name]
+        else
+          raise TypeError, tag_or_name.class
         end
       end
+
+      alias get_field_by_tag  get_field  # for compatibility
+      alias get_field_by_name get_field  # for compatibility
 
       def descriptor
         @descriptor ||= Descriptor::Descriptor.new(self)
@@ -91,6 +105,7 @@ module Protobuf
         unless field.ready?
           field = field.setup
           self.class.fields[tag] = field
+          self.class.__send__(:clear_field_cache)
         end
         if field.repeated?
           @values[field.name] = Field::FieldArray.new(field)
@@ -163,7 +178,7 @@ module Protobuf
       i = '  ' * indent
       field_value_to_string = lambda {|field, value|
         result << \
-          if field.optional? && ! has_field?(field.name)
+          if field.optional? && ! @values.has_key?(field.name)
             ''
           else
             case field
@@ -282,7 +297,7 @@ module Protobuf
     #     # do something
     #   end
     def each_field
-      self.class.sorted_fields.each do |_, field|
+      self.class.__send__(:sorted_fields).each do |_, field|
         value = __send__(field.name)
         yield(field, value)
       end
@@ -291,7 +306,7 @@ module Protobuf
     def to_hash
       hash = {}
       each_field do |field, value|
-        next unless has_field?(field.tag)
+        next unless @values.has_key?(field.name)
         case value
         when Array
           next if value.empty?
