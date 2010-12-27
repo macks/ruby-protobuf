@@ -1,5 +1,9 @@
-=== 0.4.8 / 2010-12-23
+=== 0.4.9 / 2010-??-??
 
+* 0.4.9
+  * Bug fixes.
+    * EnumValue object in Message#to_hash.
+  * Optimized for speed.
 * 0.4.8
   * Bug fixes.
     * Compilation was failed when rpc service name was on top-level.

@@ -313,6 +313,8 @@ module Protobuf
           hash[field.name] = value.map {|val| val.is_a?(Message) ? val.to_hash : val}
         when Message
           hash[field.name] = value.to_hash
+        when EnumValue
+          hash[field.name] = value.name
         else
           hash[field.name] = value
         end
