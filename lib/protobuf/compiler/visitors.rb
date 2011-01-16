@@ -102,7 +102,7 @@ module Protobuf
         unless File.exist?(File.join(@out_dir, File.basename(proto_file, '.proto') + '.pb.rb'))
           Compiler.compile(proto_file, @proto_dir, @out_dir)
         end
-        proto_file.sub(/\.proto\z/, '')
+        proto_file.sub(/\.proto\z/, '.pb')
       end
 
       def create_files(filename, out_dir, file_create)
