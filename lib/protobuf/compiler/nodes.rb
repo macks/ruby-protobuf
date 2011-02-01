@@ -244,7 +244,7 @@ require 'protobuf/message/extend'
       end
 
       def accept_message_visitor(visitor)
-        opts = @opts.empty? ? '' : ", #{@opts.map{|k, v| ":#{k} => #{v.inspect}" }.join(', ')}"
+        opts = @opts.empty? ? '' : ", #{@opts.map{|k, v| ":#{k.join('.')} => #{v.inspect}" }.join(', ')}"
         if visitor.context.first == ExtendNode
           opts << ', :extension => true'
         end
