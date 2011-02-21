@@ -1,8 +1,5 @@
-=== 0.4.10 / 2011-XX-XX
+=== 0.4.9 / 2011-01-17
 
-* 0.4.10
-  * Bug fixes.
-    * Compilation error for field options in Ruby 1.9.
 * 0.4.9
   * Bug fixes.
     * EnumValue object in Message#to_hash.
