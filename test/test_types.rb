@@ -206,6 +206,7 @@ class TypesTest < Test::Unit::TestCase
     assert_nothing_raised { types.type12 = '' }
     assert_nothing_raised { types.type12 = 'hello' }
     assert_nothing_raised { types.type12 = nil }
+    assert_nothing_raised { types.type12 = Class.new(String).new('test') }
     assert_raise(TypeError) { types.type12 = 0 }
     assert_raise(TypeError) { types.type12 = true }
   end
