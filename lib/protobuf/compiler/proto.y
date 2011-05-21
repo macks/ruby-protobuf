@@ -122,9 +122,10 @@ rule
                     | field_option_list ',' field_option
                       { result << val[2] }
 
-  field_option : option_body
-               | 'default' '=' constant
-                 { result = [:default, val[2]] }
+  field_option : 'default' '=' constant
+				 { result = [:default, val[2]] }
+				| IDENT '=' constant
+				 { result = [val[0], val[2]] }
 
   extensions : 'extensions' extension comma_extension_list ';'
                { result = Protobuf::Node::ExtensionsNode.new(val[2].unshift(val[1])) }
