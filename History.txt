@@ -1,5 +1,8 @@
-=== 0.4.10 / 2011-XX-XX
+=== 0.4.11 / 2011-05-21
 
+* 0.4.11
+  * Bug fix.
+    * Compilation error for field options in Ruby 1.9
 * 0.4.10
   * Relaxed restriction for field values.
   * Bug fix.
