@@ -11,11 +11,11 @@ module Protobuf
     end
 
     def init(*proto_paths)
-      @proto_paths = Rake::FileList[proto_paths]
+      @proto_paths = Rake::FileList.new(proto_paths)
     end
 
     def define
-      for protobuf in @proto_paths
+      @proto_paths.each do |protobuf|
         ruby_protobuf = File.join("lib", File.basename(protobuf, File.extname(protobuf)) + ".pb.rb")
 
         compile_task = file ruby_protobuf => protobuf do
